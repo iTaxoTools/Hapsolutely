@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
-# TaxiGui - GUI for Taxi2
-# Copyright (C) 2022-2023  Patmanidis Stefanos
+# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -16,8 +16,98 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from itaxotools.taxi_gui.model.tasks import TaskModel
+from datetime import datetime
+
+from itaxotools.common.bindings import Binder, EnumObject, Instance, Property
+
+from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
+from itaxotools.taxi_gui.model.partition import PartitionModel
+from itaxotools.taxi_gui.model.sequence import SequenceModel
+from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel
+from itaxotools.taxi_gui.types import FileFormat, Notification
+from itaxotools.taxi_gui.utility import human_readable_seconds
+
+from . import process
 
 
 class Model(TaskModel):
-    task_name = 'ConvPhase'
+    task_name = 'TaxoPhase'
+
+    input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
+    input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
+
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.binder = Binder()
+
+        self.subtask_init = SubtaskModel(self, bind_busy=False)
+        self.subtask_sequences = FileInfoSubtaskModel(self)
+        self.subtask_species = FileInfoSubtaskModel(self)
+
+        self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_info)
+        self.binder.bind(self.subtask_species.done, self.input_species.add_info)
+
+        self.binder.bind(self.input_sequences.notification, self.notification)
+        self.binder.bind(self.input_species.notification, self.notification)
+
+        self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+
+        for handle in [
+            self.properties.busy_subtask,
+            self.input_sequences.updated,
+            self.input_species.updated,
+        ]:
+            self.binder.bind(handle, self.checkReady)
+
+        self.subtask_init.start(process.initialize)
+
+    def isReady(self):
+        if self.busy_subtask:
+            return False
+        if not self.input_sequences.is_valid():
+            return False
+        if not self.input_species.is_valid():
+            return False
+        return True
+
+    def start(self):
+        super().start()
+        timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
+        work_dir = self.temporary_path / timestamp
+        work_dir.mkdir()
+
+        self.exec(
+            process.execute,
+            work_dir=work_dir,
+
+            input_sequences=self.input_sequences.as_dict(),
+            input_species=self.input_species.as_dict(),
+        )
+
+    def propagate_input_index(self, index):
+        if not index:
+            return
+        if not index.isValid():
+            return
+
+        item = self.input_sequences.model.data(index, ItemProxyModel.ItemRole)
+        if not item:
+            self.perform_species = False
+            self.perform_genera = False
+            return
+
+        info = item.object.info
+
+        if info.format in [FileFormat.Tabfile, FileFormat.Fasta]:
+            self.input_species.set_index(index)
+
+    def onDone(self, report):
+        time_taken = human_readable_seconds(report.result.seconds_taken)
+        self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
+        self.dummy_time = report.result.seconds_taken
+        self.busy = False
+        self.done = True
+
+    def clear(self):
+        self.dummy_time = None
+        self.done = False

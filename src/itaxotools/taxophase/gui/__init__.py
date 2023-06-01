@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
-# TaxiGui - GUI for Taxi2
-# Copyright (C) 2022-2023  Patmanidis Stefanos
+# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
