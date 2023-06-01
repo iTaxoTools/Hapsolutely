@@ -1,0 +1,19 @@
+# general things to ignore
+build/
+dist/
+*.whl
+*.egg-info/
+*.egg
+*.py[cod]
+__pycache__/
+*.so
+*~
+
+.DS_Store
+
+# due to using tox and pytest
+.tox
+.cache
+
+Pipfile
+Pipfile.lock

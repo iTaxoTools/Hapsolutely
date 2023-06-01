@@ -1,0 +1,8 @@
+include pyproject.toml
+include README.md
+include LICENSE.txt
+include setup.py
+
+# Include data files
+include src/itaxotools/taxophase/gui/logos/*
+include src/itaxotools/taxophase/gui/icons/*
