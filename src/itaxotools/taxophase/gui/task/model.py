@@ -106,6 +106,7 @@ class Model(TaskModel):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
         self.dummy_time = report.result.seconds_taken
+        print(report.result.haplo_string)
         self.busy = False
         self.done = True
 

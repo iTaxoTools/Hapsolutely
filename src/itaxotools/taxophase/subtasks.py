@@ -22,14 +22,17 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
+from Bio.Phylo.BaseTree import Clade
 from Bio.Phylo import NewickIO
 
 from itaxotools.taxi2.sequences import Sequence, Sequences
+from itaxotools.taxi2.partitions import Partition
 from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import PhasedSequence, UnphasedSequence
+from itaxotools.fitchi import HaploNode, compute_fitchi_tree
 
 
-def phase(sequences: Sequences) -> Sequences:
+def phase_sequences(sequences: Sequences) -> Sequences:
     unphased = (UnphasedSequence(x.id, x.seq) for x in sequences)
     phased = iter_phase(unphased)
     results = []
@@ -39,6 +42,29 @@ def phase(sequences: Sequences) -> Sequences:
     return Sequences(results)
 
 
+def phase_partition(partition: Partition) -> Partition:
+    result = Partition()
+    for k, v in partition.items():
+        result[k + 'a'] = v
+        result[k + 'b'] = v
+    return result
+
+
+def _format_clades(clade: Clade) -> Clade:
+    if not clade.is_terminal():
+        clade.name = ''
+    clade.branch_length = ''
+    for branch in clade:
+        _format_clades(branch)
+
+
+def _format_newick_for_fitchi(newick_string: str) -> str:
+    newick_string = newick_string.strip()
+    newick_string = newick_string.removesuffix(';')
+    newick_string = f'({newick_string})'
+    return newick_string
+
+
 def make_tree_nj(sequences: Sequences) -> str:
     align = MultipleSeqAlignment([
         SeqRecord(Seq(x.seq), id=x.id) for x in sequences
@@ -46,7 +72,19 @@ def make_tree_nj(sequences: Sequences) -> str:
     calculator = DistanceCalculator('identity')
     constructor = DistanceTreeConstructor(calculator, 'nj')
     tree = constructor.build_tree(align)
+    _format_clades(tree.root)
     newick_io = StringIO()
     NewickIO.write([tree], newick_io)
     newick_string = newick_io.getvalue()
-    return newick_string
+    return _format_newick_for_fitchi(newick_string)
+
+
+def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str) -> HaploNode:
+    sequence_dict = {x.id: x.seq for x in sequences}
+    return compute_fitchi_tree(sequence_dict, partition, tree)
+
+
+def get_haplo_string(haplo_tree: HaploNode) -> str:
+    haplo_string = StringIO()
+    haplo_tree.print(file=haplo_string)
+    return haplo_string.getvalue()

@@ -24,6 +24,7 @@ from itaxotools.common.utility import AttrDict
 
 class Results(NamedTuple):
     seconds_taken: float
+    haplo_string: str
 
 
 def initialize():
@@ -41,19 +42,27 @@ def execute(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxophase.subtasks import phase, make_tree_nj
-    from itaxotools.taxi_gui.tasks.common.process import sequences_from_model
+    from itaxotools.taxi2.partitions import Partition
+    from itaxotools.taxophase.subtasks import phase_sequences, phase_partition, make_tree_nj, make_haplo_tree, get_haplo_string
+    from itaxotools.taxi_gui.tasks.common.process import partition_from_model, sequences_from_model
     from time import sleep
 
     sequences = sequences_from_model(input_sequences)
-    phased_sequences = phase(sequences)
+    phased_sequences = phase_sequences(sequences)
 
-    for x in phased_sequences:
-        print(x)
+    # for x in phased_sequences:
+    #     print(x)
 
     tree = make_tree_nj(phased_sequences)
-    print(tree)
+    # print(tree)
+
+    partition = partition_from_model(input_species)
+    partition = phase_partition(partition)
+    # print(partition)
+
+    haplo_tree = make_haplo_tree(phased_sequences, partition, tree)
+    haplo_string = get_haplo_string(haplo_tree)
 
     sleep(0.42)
 
-    return Results(0.42)
+    return Results(0.42, haplo_string)
