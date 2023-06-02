@@ -17,6 +17,7 @@
 # -----------------------------------------------------------------------------
 
 from datetime import datetime
+from pathlib import Path
 
 from itaxotools.common.bindings import Binder, EnumObject, Instance, Property
 
@@ -111,3 +112,6 @@ class Model(TaskModel):
     def clear(self):
         self.dummy_time = None
         self.done = False
+
+    def open(self, path: Path):
+        self.subtask_sequences.start(path)

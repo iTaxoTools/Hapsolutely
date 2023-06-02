@@ -21,6 +21,7 @@ from typing import NamedTuple
 
 from itaxotools.common.utility import AttrDict
 
+
 class Results(NamedTuple):
     seconds_taken: float
 
@@ -40,7 +41,19 @@ def execute(
 
 ) -> tuple[Path, float]:
 
+    from itaxotools.taxophase.subtasks import phase, make_tree_nj
+    from itaxotools.taxi_gui.tasks.common.process import sequences_from_model
     from time import sleep
+
+    sequences = sequences_from_model(input_sequences)
+    phased_sequences = phase(sequences)
+
+    for x in phased_sequences:
+        print(x)
+
+    tree = make_tree_nj(phased_sequences)
+    print(tree)
+
     sleep(0.42)
 
     return Results(0.42)
