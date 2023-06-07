@@ -19,11 +19,23 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.utility import AttrDict
+from itaxotools.haplodemo import Window
 
 from itaxotools.taxi_gui.view.tasks import TaskView
+from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.tasks.common.view import (
     SequenceSelector, PartitionSelector, TitleCard
 )
+
+
+class HaploCard(Card):
+    def __init__(self):
+        super().__init__()
+        widget = Window()
+        widget.setWindowFlags(QtCore.Qt.WindowFlags.Widget)
+        widget.setContentsMargins(0, 0, 0, 0)
+        self.addWidget(widget)
+        self.setContentsMargins(0, 0, 0, 0)
 
 
 class View(TaskView):
@@ -40,6 +52,7 @@ class View(TaskView):
             self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.haplo_view = HaploCard()
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:
@@ -55,6 +68,7 @@ class View(TaskView):
 
         self.binder.bind(object.notification, self.showNotification)
         self.binder.bind(object.properties.editable, self.setEditable)
+        self.binder.bind(object.properties.done, self.setDone)
 
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
         self.binder.bind(object.properties.busy, self.cards.title.setBusy)
@@ -73,7 +87,13 @@ class View(TaskView):
         self.binder.bind(object.properties.index, card.set_index)
         self.binder.bind(object.properties.object, card.bind_object)
 
+    def setDone(self, done):
+        for card in self.cards:
+            card.setVisible(not done)
+        self.cards.haplo_view.setVisible(done)
+
     def setEditable(self, editable: bool):
         for card in self.cards:
             card.setEnabled(editable)
         self.cards.title.setEnabled(True)
+        self.cards.haplo_view.setEnabled(not editable)
