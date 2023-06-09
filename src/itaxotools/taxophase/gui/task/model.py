@@ -28,11 +28,15 @@ from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel, Importe
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
+from itaxotools.fitchi.types import HaploNode
+
 from . import process
 
 
 class Model(TaskModel):
-    task_name = 'TaxoPhase'
+    task_name = 'Hapsolutely'
+
+    fitchi_tree = Property(HaploNode, None)
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
@@ -106,11 +110,12 @@ class Model(TaskModel):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
         self.dummy_time = report.result.seconds_taken
-        print(report.result.haplo_string)
+        self.fitchi_tree = report.result.haplo_tree
         self.busy = False
         self.done = True
 
     def clear(self):
+        self.fitchi_tree = None
         self.dummy_time = None
         self.done = False
 

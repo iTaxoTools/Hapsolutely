@@ -65,7 +65,7 @@ def run():
 
     load_resources()
 
-    parser = ArgumentParser(description='TaxoPhase')
+    parser = ArgumentParser(description='Hapsolutely')
     parser.add_argument('input', nargs='?', type=str, help='Path to input file')
     args = parser.parse_args()
 

@@ -18,6 +18,6 @@
 
 from . import task
 
-title = 'TaxoPhase'
+title = 'Hapsolutely'
 
 tasks = [task]

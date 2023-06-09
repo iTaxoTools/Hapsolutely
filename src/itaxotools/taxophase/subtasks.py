@@ -82,9 +82,3 @@ def make_tree_nj(sequences: Sequences) -> str:
 def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str) -> HaploNode:
     sequence_dict = {x.id: x.seq for x in sequences}
     return compute_fitchi_tree(sequence_dict, partition, tree)
-
-
-def get_haplo_string(haplo_tree: HaploNode) -> str:
-    haplo_string = StringIO()
-    haplo_tree.print(file=haplo_string)
-    return haplo_string.getvalue()
