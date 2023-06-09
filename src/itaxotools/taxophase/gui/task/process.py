@@ -31,7 +31,7 @@ class Results(NamedTuple):
 def initialize():
     import itaxotools
     itaxotools.progress_handler('Initializing...')
-    from itaxotools.taxophase import subtasks  # noqa
+    from . import subtasks  # noqa
 
 
 def execute(
@@ -44,9 +44,10 @@ def execute(
 ) -> tuple[Path, float]:
 
     from itaxotools.taxi2.partitions import Partition
-    from itaxotools.taxophase.subtasks import phase_sequences, phase_partition, make_tree_nj, make_haplo_tree
     from itaxotools.taxi_gui.tasks.common.process import partition_from_model, sequences_from_model
     from time import sleep
+
+    from .subtasks import phase_sequences, phase_partition, make_tree_nj, make_haplo_tree
 
     sequences = sequences_from_model(input_sequences)
     phased_sequences = phase_sequences(sequences)
