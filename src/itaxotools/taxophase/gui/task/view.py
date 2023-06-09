@@ -145,7 +145,11 @@ class View(TaskView):
 
     def _add_fitchi_node_recursive(self, scene, layout, parent, node):
         x, y = layout[node.id]
-        item = scene.create_node(x, y, node.pops.total(), node.id, dict(node.pops))
+
+        if node.pops.total() > 0:
+            item = scene.create_node(x, y, node.pops.total(), node.id, dict(node.pops))
+        else:
+            item = scene.create_vertex(x, y)
 
         if parent:
             scene.add_child(parent, item, node.mutations)
