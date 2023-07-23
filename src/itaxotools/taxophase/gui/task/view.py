@@ -23,6 +23,7 @@ from itaxotools.haplodemo import Window
 
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.cards import Card
+from itaxotools.taxi_gui.view.widgets import ScrollArea
 from itaxotools.taxi_gui.tasks.common.view import (
     SequenceSelector, PartitionSelector, TitleCard
 )
@@ -31,14 +32,17 @@ from itaxotools.taxophase.gui.fitchi import get_fitchi_string, get_fitchi_divisi
 from itaxotools.fitchi.types import HaploNode
 
 
-class HaploCard(Card):
+class HaploView(QtWidgets.QFrame):
     def __init__(self):
         super().__init__()
+
         widget = Window()
-        widget.setWindowFlags(QtCore.Qt.WindowFlags.Widget)
-        widget.setContentsMargins(0, 0, 0, 0)
-        self.addWidget(widget)
-        self.setContentsMargins(0, 0, 0, 0)
+        widget.layout().setContentsMargins(8, 8, 8, 8)
+        self.setWindowFlags(QtCore.Qt.WindowFlags.Widget)
+
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(widget)
 
         self.settings = widget.settings
         self.divisions = widget.settings.divisions
@@ -63,11 +67,21 @@ class HaploCard(Card):
 
 class View(TaskView):
 
-    def __init__(self, parent=None):
+    def __init__(self, parent):
         super().__init__(parent)
-        self.draw()
 
-    def draw(self):
+        self.stack = QtWidgets.QStackedLayout(self)
+        self.stack.setContentsMargins(0, 0, 0, 0)
+
+        self.area = ScrollArea(self)
+        self.haplo_view = HaploView()
+
+        self.stack.addWidget(self.haplo_view)
+        self.stack.addWidget(self.area)
+
+        self.draw_cards()
+
+    def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = TitleCard(
             'TaxoPhase',
@@ -75,7 +89,6 @@ class View(TaskView):
             self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
-        self.cards.haplo_view = HaploCard()
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:
@@ -83,7 +96,15 @@ class View(TaskView):
         layout.addStretch(1)
         layout.setSpacing(6)
         layout.setContentsMargins(6, 6, 6, 6)
-        self.setLayout(layout)
+
+        self.area.setLayout(layout)
+
+    def ensureVisible(self):
+        self.area.ensureVisible(0, 0)
+
+    def start(self):
+        self.area.ensureVisible(0, 0)
+        super().start()
 
     def setObject(self, object):
         self.object = object
@@ -113,20 +134,19 @@ class View(TaskView):
         self.binder.bind(object.properties.object, card.bind_object)
 
     def setDone(self, done):
-        for card in self.cards:
-            card.setVisible(not done)
-        self.cards.haplo_view.setVisible(done)
+        widget = self.haplo_view if done else self.area
+        self.stack.setCurrentWidget(widget)
 
     def setEditable(self, editable: bool):
         for card in self.cards:
             card.setEnabled(editable)
         self.cards.title.setEnabled(True)
-        self.cards.haplo_view.setEnabled(not editable)
+        self.haplo_view.setEnabled(not editable)
 
     def show_fitchi_tree(self, fitchi_tree: HaploNode):
-        card = self.cards.haplo_view
-        scene = self.cards.haplo_view.scene
-        divisions = self.cards.haplo_view.divisions
+        view = self.haplo_view
+        scene = self.haplo_view.scene
+        divisions = self.haplo_view.divisions
 
         scene.clear()
         if fitchi_tree is None:
@@ -138,7 +158,7 @@ class View(TaskView):
 
         self.add_fitchi_nodes(scene, fitchi_layout, fitchi_tree)
         divisions.set_divisions_from_keys(fitchi_divisions)
-        card.reset_settings()
+        view.reset_settings()
 
     def add_fitchi_nodes(self, scene, layout, node: HaploNode):
         self._add_fitchi_node_recursive(scene, layout, None, node)
