@@ -16,8 +16,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from . import task
+from itaxotools.convphase_gui import task as convphase
+
+from . import task as hapsolutely
 
 title = 'Hapsolutely'
 
-tasks = [task]
+tasks = [
+    hapsolutely,
+    convphase,
+]

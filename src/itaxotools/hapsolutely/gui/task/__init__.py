@@ -1,3 +1,3 @@
 
 title = 'Hapsolutely'
-description = 'Reconstruct haplotypes and produce genealogy graphs from population data'
+description = 'From unphased data to haplotype network'
