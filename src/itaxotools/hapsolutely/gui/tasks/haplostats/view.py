@@ -20,6 +20,7 @@ from PySide6 import QtWidgets
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
+from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     PartitionSelector, SequenceSelector, TitleCard)
 from itaxotools.taxi_gui.view.tasks import TaskView
@@ -61,6 +62,7 @@ class View(TaskView):
         self.binder.unbind_all()
 
         self.binder.bind(object.notification, self.showNotification)
+        self.binder.bind(object.request_confirmation, self.requestConfirmation)
         self.binder.bind(object.properties.editable, self.setEditable)
 
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
@@ -84,6 +86,27 @@ class View(TaskView):
         self.binder.bind(object.properties.model, card.set_model)
         self.binder.bind(object.properties.index, card.set_index)
         self.binder.bind(object.properties.object, card.bind_object)
+
+    def requestConfirmation(self, warns, callback, abort):
+        msgBox = QtWidgets.QMessageBox(self.window())
+        msgBox.setWindowTitle(f'{app.config.title} - Warning')
+        msgBox.setIcon(QtWidgets.QMessageBox.Warning)
+        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
+
+        text = (
+            'Problems detected with input file: \n\n' +
+            '\n'.join('- ' + str(warn) for warn in warns) + '\n\n'
+            'The program may produce false results. \n'
+            'Procceed anyway?\n'
+        )
+        msgBox.setText(text)
+
+        result = self.window().msgShow(msgBox)
+        if result == QtWidgets.QMessageBox.Ok:
+            callback()
+        else:
+            abort()
 
     def setEditable(self, editable: bool):
         self.cards.title.setEnabled(True)

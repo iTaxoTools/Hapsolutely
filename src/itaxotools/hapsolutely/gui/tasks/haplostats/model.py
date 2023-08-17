@@ -16,24 +16,44 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
+from PySide6 import QtCore
+
 from datetime import datetime
 from pathlib import Path
 from shutil import copyfile
 
 from itaxotools.common.bindings import Property
+from itaxotools.common.utility import AttrDict
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 from itaxotools.taxi_gui.tasks.common.model import (
     FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel)
-from itaxotools.taxi_gui.types import FileFormat, Notification
+from itaxotools.taxi_gui.threading import ReportDone
+from itaxotools.taxi_gui.types import FileFormat, FileInfo, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
 from . import process
+from .types import ScanResults
+
+
+class SequenceScanSubtaskModel(SubtaskModel):
+    task_name = 'FileScanSubtask'
+
+    done = QtCore.Signal(FileInfo)
+
+    def start(self, input_sequences: AttrDict):
+        super().start(process.scan, input_sequences)
+
+    def onDone(self, report: ReportDone):
+        self.done.emit(report.result)
+        self.busy = False
 
 
 class Model(TaskModel):
     task_name = 'Haplostats'
+
+    request_confirmation = QtCore.Signal(object, object, object)
 
     haplotype_stats = Property(Path, None)
 
@@ -48,9 +68,11 @@ class Model(TaskModel):
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = FileInfoSubtaskModel(self)
         self.subtask_species = FileInfoSubtaskModel(self)
+        self.subtask_scan = SequenceScanSubtaskModel(self)
 
         self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_info)
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)
+        self.binder.bind(self.subtask_scan.done, self.on_done_scan)
 
         self.binder.bind(self.input_sequences.notification, self.notification)
         self.binder.bind(self.input_species.notification, self.notification)
@@ -75,8 +97,29 @@ class Model(TaskModel):
             return False
         return True
 
+    def abort(self):
+        self.busy = False
+
     def start(self):
         super().start()
+        self.start_scan()
+
+    def start_scan(self):
+        self.subtask_scan.start(
+            input_sequences=self.input_sequences.as_dict(),
+        )
+
+    def on_done_scan(self, results: ScanResults):
+        if not results.warns:
+            self.start_main()
+        else:
+            self.request_confirmation.emit(
+                results.warns,
+                lambda: self.start_main(),
+                lambda: self.abort(),
+            )
+
+    def start_main(self):
         timestamp = datetime.now().strftime("%Y%m%dT%H%M%S")
         work_dir = self.temporary_path / timestamp
         work_dir.mkdir()
@@ -120,6 +163,7 @@ class Model(TaskModel):
         self.done = False
 
     def open(self, path: Path):
+        self.clear()
         self.subtask_sequences.start(path)
 
     def save(self, destination: Path):

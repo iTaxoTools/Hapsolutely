@@ -21,13 +21,25 @@ from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
 
-from .types import Results
+from .types import Results, ScanResults
 
 
 def initialize():
     import itaxotools
     itaxotools.progress_handler('Initializing...')
     from . import subtasks  # noqa
+
+
+def scan(input_sequences: AttrDict) -> ScanResults:
+
+    from itaxotools.taxi_gui.tasks.common.process import sequences_from_model
+
+    from .subtasks import scan_sequences
+
+    sequences = sequences_from_model(input_sequences)
+    warns = scan_sequences(sequences)
+
+    return ScanResults(warns)
 
 
 def execute(
