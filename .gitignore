@@ -1,4 +1,3 @@
-# general things to ignore
 build/
 dist/
 *.whl
@@ -10,10 +9,10 @@ __pycache__/
 *~
 
 .DS_Store
-
-# due to using tox and pytest
-.tox
+.vscode
+.pytest_cache
 .cache
+.tox
 
 Pipfile
 Pipfile.lock

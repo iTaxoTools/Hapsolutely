@@ -3,7 +3,7 @@
 block_cipher = None
 
 # Could also use pyinstaller's Entrypoint()
-a = Analysis(['taxophase.py'],
+a = Analysis(['hapsolutely.py'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -32,4 +32,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False,
-          icon='../src/itaxotools/taxophase/gui/logos/convphase.ico' )
+          icon='../src/itaxotools/hapsolutely/gui/logos/convphase.ico' )

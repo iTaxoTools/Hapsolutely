@@ -28,7 +28,7 @@ from itaxotools.taxi_gui.tasks.common.view import (
     SequenceSelector, PartitionSelector, TitleCard
 )
 
-from itaxotools.taxophase.gui.fitchi import get_fitchi_string, get_fitchi_divisions, get_fitchi_layout
+from itaxotools.hapsolutely.gui.fitchi import get_fitchi_string, get_fitchi_divisions, get_fitchi_layout
 from itaxotools.fitchi.types import HaploNode
 
 

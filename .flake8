@@ -4,4 +4,4 @@ exclude =
     build
     dist
 per-file-ignores =
-    src/itaxotools/taxophase/gui/**/__init__.py: F401, F403
+    src/itaxotools/hapsolutely/gui/**/__init__.py: F401, F403

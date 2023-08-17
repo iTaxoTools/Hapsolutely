@@ -1,4 +1,4 @@
-"""The setup module for TaxoPhase"""
+"""The setup module for Hapsulutely"""
 
 # Always prefer setuptools over distutils
 from setuptools import setup, find_namespace_packages
@@ -10,7 +10,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 
 setup(
-    name='taxophase',
+    name='hapsolutely',
     version='0.0.1',
     description='Reconstruct haplotypes and produce genealogy graphs from population data',
     long_description=long_description,
@@ -26,7 +26,10 @@ setup(
     install_requires=[
         'fitchi==0.0.1',
         'convphase==0.0.1',
+        'convphase-gui==0.0.1',
         'haplodemo==0.0.1',
+        'haplostats==0.0.1',
+        'popart_networks==0.0.1',
         'taxi-gui==0.2.0',
         'itaxotools-common==0.3.0',
         'pyside6>=6.1.1, <6.5',
@@ -42,7 +45,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'taxophase-gui = itaxotools.taxophase.gui:run',
+            'hapsolutely = itaxotools.hapsolutely.gui:run',
         ]
     },
     classifiers=[

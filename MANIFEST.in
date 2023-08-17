@@ -4,5 +4,5 @@ include LICENSE.txt
 include setup.py
 
 # Include data files
-include src/itaxotools/taxophase/gui/logos/*
-include src/itaxotools/taxophase/gui/icons/*
+include src/itaxotools/hapsolutely/gui/logos/*
+include src/itaxotools/hapsolutely/gui/icons/*
