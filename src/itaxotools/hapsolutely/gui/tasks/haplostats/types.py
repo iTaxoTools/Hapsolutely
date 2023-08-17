@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Hapsolutely - Reconstruct haplotypes and produce genealogy graphs
 # Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify
@@ -15,3 +15,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
+
+from typing import NamedTuple
+from pathlib import Path
+
+
+class Results(NamedTuple):
+    output_path: Path
+    seconds_taken: float
+
+
+class Entry(NamedTuple):
+    subset: str
+    allele_a: str
+    allele_b: str

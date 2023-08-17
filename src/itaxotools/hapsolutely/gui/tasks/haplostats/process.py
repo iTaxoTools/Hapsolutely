@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Hapsolutely - Reconstruct haplotypes and produce genealogy graphs
 # Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify
@@ -17,15 +17,12 @@
 # -----------------------------------------------------------------------------
 
 from pathlib import Path
-from typing import NamedTuple
+from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.fitchi.types import HaploNode
 
-
-class Results(NamedTuple):
-    seconds_taken: float
-    haplo_tree: HaploNode
+from .types import Results
 
 
 def initialize():
@@ -43,22 +40,25 @@ def execute(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi2.partitions import Partition
+    from itaxotools.haplostats import HaploStats
     from itaxotools.taxi_gui.tasks.common.process import partition_from_model, sequences_from_model
-    from time import sleep
 
-    from .subtasks import phase_sequences, phase_partition, make_tree_nj, make_haplo_tree
+    from .subtasks import bundle_entries, write_all_stats
+
+    output_path = work_dir / 'out'
+
+    ts = perf_counter()
 
     sequences = sequences_from_model(input_sequences)
-    phased_sequences = phase_sequences(sequences)
-
-    tree = make_tree_nj(phased_sequences)
-
     partition = partition_from_model(input_species)
-    partition = phase_partition(partition)
 
-    haplo_tree = make_haplo_tree(phased_sequences, partition, tree)
+    stats = HaploStats()
+    for entry in bundle_entries(sequences, partition):
+        stats.add(entry.subset, [entry.allele_a, entry.allele_b])
 
-    sleep(0.42)
+    with open(output_path, 'w') as file:
+        write_all_stats(stats, file)
 
-    return Results(0.42, haplo_tree)
+    tf = perf_counter()
+
+    return Results(output_path, tf - ts)

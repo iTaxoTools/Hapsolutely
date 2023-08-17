@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Hapsolutely - Reconstruct haplotypes and produce genealogy graphs
 # Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify
@@ -43,7 +43,8 @@ class Model(TaskModel):
 
     def __init__(self, name=None):
         super().__init__(name)
-        self.binder = Binder()
+        self.can_open = True
+        self.can_save = True
 
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = FileInfoSubtaskModel(self)

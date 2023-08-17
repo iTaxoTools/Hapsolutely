@@ -1,5 +1,5 @@
 # -----------------------------------------------------------------------------
-# TaxoPhase - Reconstruct haplotypes and produce genealogy graphs
+# Hapsolutely - Reconstruct haplotypes and produce genealogy graphs
 # Copyright (C) 2023  Patmanidis Stefanos
 #
 # This program is free software: you can redistribute it and/or modify

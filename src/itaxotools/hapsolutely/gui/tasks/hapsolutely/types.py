@@ -16,15 +16,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from itaxotools.convphase_gui import task as convphase
+from typing import NamedTuple
 
-from .tasks import hapsolutely, haplostats
+from itaxotools.fitchi.types import HaploNode
 
 
-title = 'Hapsolutely'
-
-tasks = [
-    hapsolutely,
-    convphase,
-    haplostats,
-]
+class Results(NamedTuple):
+    haplo_tree: HaploNode
+    seconds_taken: float
