@@ -37,7 +37,7 @@ from . import process
 class Model(TaskModel):
     task_name = 'Haplostats'
 
-    output_path = Property(Path, None)
+    haplotype_stats = Property(Path, None)
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
@@ -112,12 +112,12 @@ class Model(TaskModel):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
         self.dummy_time = report.result.seconds_taken
-        self.output_path = report.result.output_path
+        self.haplotype_stats = report.result.haplotype_stats
         self.busy = False
         self.done = True
 
     def clear(self):
-        self.output_path = None
+        self.haplotype_stats = None
         self.dummy_time = None
         self.done = False
 
@@ -125,7 +125,7 @@ class Model(TaskModel):
         self.subtask_sequences.start(path)
 
     def save(self, destination: Path):
-        copyfile(self.output_path, destination)
+        copyfile(self.haplotype_stats, destination)
         self.notification.emit(Notification.Info('Saved file successfully!'))
 
     @property

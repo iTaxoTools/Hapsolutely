@@ -21,7 +21,7 @@ from pathlib import Path
 
 
 class Results(NamedTuple):
-    output_path: Path
+    haplotype_stats: Path
     seconds_taken: float
 
 

@@ -21,6 +21,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from itaxotools.common.utility import AttrDict
 from itaxotools.haplodemo import Window
 
+from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.widgets import ScrollArea
@@ -29,37 +30,10 @@ from itaxotools.taxi_gui.tasks.common.view import (
 )
 
 
-class HaploView(QtWidgets.QFrame):
-    def __init__(self):
-        super().__init__()
-
-        widget = Window()
-        widget.layout().setContentsMargins(8, 8, 8, 8)
-        self.setWindowFlags(QtCore.Qt.WindowFlags.Widget)
-
-        layout = QtWidgets.QHBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(widget)
-
-        self.settings = widget.settings
-        self.divisions = widget.settings.divisions
-        self.scene = widget.scene
-
-    def reset_settings(self):
-        self.settings.rotational_movement = False
-        self.settings.recursive_movement = False
-        self.settings.node_a = 0.0
-        self.settings.node_e = 5.0
-        self.settings.node_f = 10.0
-
-        self.scene.styleNodes(
-            self.settings.node_a,
-            self.settings.node_b,
-            self.settings.node_c,
-            self.settings.node_d,
-            self.settings.node_e,
-            self.settings.node_f,
-        )
+class TightResultViewer(ResultViewer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setContentsMargins(0, 0, 0, 0)
 
 
 class View(TaskView):
@@ -71,9 +45,10 @@ class View(TaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = TitleCard(
-            'TaxoPhase',
-            'Reconstruct haplotypes and produce genealogy graphs from population data.',
+            'Haplostats',
+            'Find unique haplotypes, fields of recombination and subset sharing.',
             self)
+        self.cards.results = TightResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
 
@@ -99,6 +74,12 @@ class View(TaskView):
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
 
+        self.binder.bind(object.properties.haplotype_stats, self.cards.results.setPath)
+        self.binder.bind(object.properties.haplotype_stats, self.cards.results.setVisible, lambda x: x is not None)
+
+        self.binder.bind(self.cards.results.view, self.view_results)
+        self.binder.bind(self.cards.results.save, self.save_results)
+
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
 
@@ -111,11 +92,20 @@ class View(TaskView):
         self.binder.bind(object.properties.object, card.bind_object)
 
     def setEditable(self, editable: bool):
-        for card in self.cards:
-            card.setEnabled(editable)
         self.cards.title.setEnabled(True)
+        self.cards.results.setEnabled(True)
+        self.cards.input_sequences.setEnabled(editable)
+        self.cards.input_species.setEnabled(editable)
 
-    def save(self):
+    def view_results(self, text, path):
+        dialog = ResultDialog(text, path, self.window())
+        dialog.save.connect(self.save_results)
+        self.window().msgShow(dialog)
+
+    def save_results(self):
         path = self.getSavePath('Save statistics', str(self.object.suggested_results))
         if path:
             self.object.save(path)
+
+    def save(self):
+        self.save_results()

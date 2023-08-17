@@ -45,7 +45,7 @@ def execute(
 
     from .subtasks import bundle_entries, write_all_stats
 
-    output_path = work_dir / 'out'
+    haplotype_stats = work_dir / 'out'
 
     ts = perf_counter()
 
@@ -56,9 +56,9 @@ def execute(
     for entry in bundle_entries(sequences, partition):
         stats.add(entry.subset, [entry.allele_a, entry.allele_b])
 
-    with open(output_path, 'w') as file:
+    with open(haplotype_stats, 'w') as file:
         write_all_stats(stats, file)
 
     tf = perf_counter()
 
-    return Results(output_path, tf - ts)
+    return Results(haplotype_stats, tf - ts)

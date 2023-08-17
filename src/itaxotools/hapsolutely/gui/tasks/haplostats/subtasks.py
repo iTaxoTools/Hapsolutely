@@ -96,6 +96,8 @@ def bundle_entries(
 
 def write_all_stats(stats: HaploStats, file: TextIO):
 
+    print(file=file)
+
     data = stats.get_haplotypes()
     print(_yamlify(data, 'Haplotype sequences'), file=file)
     _separate(file=file)
