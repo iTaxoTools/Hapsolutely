@@ -74,6 +74,8 @@ def bundle_entries(
                 cached_seq_a = sequence.seq
             case 'b':
                 cached_seq_b = sequence.seq
+            case _:
+                raise ValueError(f"Individual {repr(sequence.id)} not ending with 'a' or 'b'. Is the input phased?")
 
     yield Entry(
         partition[cached_id + 'a'],
