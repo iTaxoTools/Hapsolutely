@@ -20,7 +20,6 @@ from pathlib import Path
 from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.fitchi.types import HaploNode
 
 from .types import Results
 
@@ -41,7 +40,8 @@ def execute(
 ) -> tuple[Path, float]:
 
     from itaxotools.haplostats import HaploStats
-    from itaxotools.taxi_gui.tasks.common.process import partition_from_model, sequences_from_model
+    from itaxotools.taxi_gui.tasks.common.process import (
+        partition_from_model, sequences_from_model)
 
     from .subtasks import bundle_entries, write_all_stats
 

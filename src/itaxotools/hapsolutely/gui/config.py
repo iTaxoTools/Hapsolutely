@@ -18,8 +18,7 @@
 
 from itaxotools.convphase_gui import task as convphase
 
-from .tasks import hapsolutely, haplostats
-
+from .tasks import haplostats, hapsolutely
 
 title = 'Hapsolutely'
 

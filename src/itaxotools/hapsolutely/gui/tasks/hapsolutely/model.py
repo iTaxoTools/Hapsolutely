@@ -19,16 +19,15 @@
 from datetime import datetime
 from pathlib import Path
 
-from itaxotools.common.bindings import Binder, EnumObject, Instance, Property
-
-from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
+from itaxotools.common.bindings import Property
+from itaxotools.fitchi.types import HaploNode
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
-from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel
+from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
+from itaxotools.taxi_gui.tasks.common.model import (
+    FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel)
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
-
-from itaxotools.fitchi.types import HaploNode
 
 from . import process
 

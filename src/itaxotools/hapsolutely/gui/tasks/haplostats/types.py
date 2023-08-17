@@ -16,8 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from typing import NamedTuple
 from pathlib import Path
+from typing import NamedTuple
 
 
 class Results(NamedTuple):

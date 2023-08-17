@@ -39,11 +39,11 @@ def execute(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi2.partitions import Partition
-    from itaxotools.taxi_gui.tasks.common.process import partition_from_model, sequences_from_model
-    from time import sleep
+    from itaxotools.taxi_gui.tasks.common.process import (
+        partition_from_model, sequences_from_model)
 
-    from .subtasks import phase_sequences, phase_partition, make_tree_nj, make_haplo_tree
+    from .subtasks import (
+        make_haplo_tree, make_tree_nj, phase_partition, phase_sequences)
 
     ts = perf_counter()
 

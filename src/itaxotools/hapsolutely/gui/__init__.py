@@ -21,7 +21,7 @@
 
 def load_resources():
 
-    from PySide6 import QtGui, QtCore
+    from PySide6 import QtCore, QtGui
 
     from itaxotools.common.resources import get_local
     from itaxotools.common.widgets import VectorPixmap
@@ -38,6 +38,7 @@ def load_resources():
 
 def find_task():
     from itaxotools.taxi_gui.app import model
+
     from .task.model import Model as TaxoPhase
 
     index = model.items.find_task(TaxoPhase)
@@ -54,7 +55,7 @@ def run():
     from argparse import ArgumentParser
     from pathlib import Path
 
-    from itaxotools.taxi_gui.app import Application, skin, model
+    from itaxotools.taxi_gui.app import Application, skin
     from itaxotools.taxi_gui.main import Main
 
     from . import config

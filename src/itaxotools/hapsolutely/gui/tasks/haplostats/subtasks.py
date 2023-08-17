@@ -18,24 +18,12 @@
 
 from __future__ import annotations
 
-from io import StringIO
 from typing import TextIO
+
 import yaml
-
-from Bio.Seq import Seq
-from Bio.SeqRecord import SeqRecord
-from Bio.Align import MultipleSeqAlignment
-from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
-from Bio.Phylo.BaseTree import Clade
-from Bio.Phylo import NewickIO
-
-from itaxotools.taxi2.sequences import Sequence, Sequences
-from itaxotools.taxi2.partitions import Partition
-from itaxotools.convphase.phase import iter_phase
-from itaxotools.convphase.types import PhasedSequence, UnphasedSequence
-from itaxotools.fitchi import HaploNode, compute_fitchi_tree
-
 from itaxotools.haplostats import HaploStats
+from itaxotools.taxi2.partitions import Partition
+from itaxotools.taxi2.sequences import Sequences
 
 from .types import Entry
 
@@ -72,7 +60,7 @@ def bundle_entries(
         id = sequence.id[:-1]
         allele = sequence.id[-1]
 
-        if id != cached_id != None:
+        if id != cached_id and cached_id is not None:
             yield Entry(
                 partition[cached_id + 'a'],
                 cached_seq_a,

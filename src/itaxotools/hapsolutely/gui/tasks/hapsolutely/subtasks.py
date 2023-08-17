@@ -18,18 +18,18 @@
 
 from io import StringIO
 
+from Bio.Align import MultipleSeqAlignment
+from Bio.Phylo import NewickIO
+from Bio.Phylo.BaseTree import Clade
+from Bio.Phylo.TreeConstruction import (
+    DistanceCalculator, DistanceTreeConstructor)
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.Align import MultipleSeqAlignment
-from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
-from Bio.Phylo.BaseTree import Clade
-from Bio.Phylo import NewickIO
-
-from itaxotools.taxi2.sequences import Sequence, Sequences
-from itaxotools.taxi2.partitions import Partition
 from itaxotools.convphase.phase import iter_phase
-from itaxotools.convphase.types import PhasedSequence, UnphasedSequence
+from itaxotools.convphase.types import UnphasedSequence
 from itaxotools.fitchi import HaploNode, compute_fitchi_tree
+from itaxotools.taxi2.partitions import Partition
+from itaxotools.taxi2.sequences import Sequence, Sequences
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:

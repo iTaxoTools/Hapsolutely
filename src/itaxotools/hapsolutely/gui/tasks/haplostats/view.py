@@ -16,18 +16,13 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtGui, QtWidgets
+from PySide6 import QtWidgets
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.haplodemo import Window
-
 from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
-from itaxotools.taxi_gui.view.tasks import TaskView
-from itaxotools.taxi_gui.view.cards import Card
-from itaxotools.taxi_gui.view.widgets import ScrollArea
 from itaxotools.taxi_gui.tasks.common.view import (
-    SequenceSelector, PartitionSelector, TitleCard
-)
+    PartitionSelector, SequenceSelector, TitleCard)
+from itaxotools.taxi_gui.view.tasks import TaskView
 
 
 class TightResultViewer(ResultViewer):
@@ -82,7 +77,6 @@ class View(TaskView):
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
-
 
     def _bind_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)
