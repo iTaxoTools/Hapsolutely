@@ -29,9 +29,9 @@ def load_resources():
 
     root = __package__
     resources.icons.app = lambda: QtGui.QIcon(
-        get_local(root, 'logos/convphase.ico'))
+        get_local(root, 'logos/hapsolutely.ico'))
     resources.pixmaps.logo_tool = lambda: VectorPixmap(
-        get_local(root, 'logos/convphase.svg'),
+        get_local(root, 'logos/hapsolutely.svg'),
         size=QtCore.QSize(192, 48),
         colormap=skin.colormap_icon)
 

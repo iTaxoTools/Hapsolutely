@@ -28,4 +28,4 @@ def get_graph_divisions(haplo_graph: HaploGraph) -> list[str]:
         for pop in node.pops
     }
 
-    return list(divisions)
+    return list(sorted(divisions))

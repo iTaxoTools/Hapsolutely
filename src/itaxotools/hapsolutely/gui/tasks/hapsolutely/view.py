@@ -231,7 +231,7 @@ class View(TaskView):
         scene.clear()
         view.reset_settings()
 
-        print(get_fitchi_string(haplo_tree))
+        # print(get_fitchi_string(haplo_tree))
 
         fitchi_divisions = get_fitchi_divisions(haplo_tree)
         divisions.set_divisions_from_keys(fitchi_divisions)
@@ -249,7 +249,7 @@ class View(TaskView):
         scene.clear()
         view.reset_settings()
 
-        print(haplo_graph)
+        # print(haplo_graph)
 
         graph_divisions = get_graph_divisions(haplo_graph)
         divisions.set_divisions_from_keys(graph_divisions)
