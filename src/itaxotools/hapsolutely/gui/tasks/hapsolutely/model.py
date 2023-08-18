@@ -22,7 +22,7 @@ from datetime import datetime
 from pathlib import Path
 
 from itaxotools.common.bindings import Property
-from itaxotools.fitchi.types import HaploNode
+from itaxotools.haplodemo.types import HaploGraph, HaploNode
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
@@ -42,7 +42,7 @@ class Model(TaskModel):
     request_confirmation = QtCore.Signal(object, object, object)
 
     haplo_tree = Property(HaploNode, None)
-    haplo_net = Property(object, None)
+    haplo_net = Property(HaploGraph, None)
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
@@ -136,6 +136,8 @@ class Model(TaskModel):
         self.dummy_time = report.result.seconds_taken
         self.haplo_tree = report.result.haplo_tree
         self.haplo_net = report.result.haplo_net
+        self.properties.haplo_tree.update()
+        self.properties.haplo_net.update()
         self.busy = False
         self.done = True
 

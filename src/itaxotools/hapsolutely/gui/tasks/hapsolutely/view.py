@@ -19,6 +19,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.utility import AttrDict
+from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo import Window
 from itaxotools.taxi_gui import app
@@ -30,6 +31,8 @@ from itaxotools.taxi_gui.view.cards import Card
 
 from itaxotools.hapsolutely.gui.fitchi import (
     get_fitchi_divisions, get_fitchi_string)
+
+from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
 
 from .types import NetworkAlgorithm
 
@@ -174,6 +177,7 @@ class View(TaskView):
         self.binder.bind(self.cards.network_algorithm.valueChanged, object.properties.network_algorithm)
 
         self.binder.bind(object.properties.haplo_tree, self.show_fitchi_tree)
+        self.binder.bind(object.properties.haplo_net, self.show_haplo_graph)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -233,3 +237,21 @@ class View(TaskView):
         divisions.set_divisions_from_keys(fitchi_divisions)
 
         scene.add_nodes_from_tree(haplo_tree)
+
+    def show_haplo_graph(self, haplo_graph: HaploGraph):
+        if haplo_graph is None:
+            return
+
+        view = self.haplo_view
+        scene = self.haplo_view.scene
+        divisions = self.haplo_view.divisions
+
+        scene.clear()
+        view.reset_settings()
+
+        print(haplo_graph)
+
+        graph_divisions = get_graph_divisions(haplo_graph)
+        divisions.set_divisions_from_keys(graph_divisions)
+
+        scene.add_nodes_from_graph(haplo_graph)

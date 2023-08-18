@@ -41,6 +41,7 @@ def bundle_entries(
 
         if id != cached_id and cached_id is not None:
             yield Entry(
+                cached_id,
                 partition[cached_id + 'a'],
                 cached_seq_a,
                 cached_seq_b,
@@ -57,6 +58,7 @@ def bundle_entries(
                 raise ValueError(f"Individual {repr(sequence.id)} not ending with 'a' or 'b'. Is the input phased?")
 
     yield Entry(
+        cached_id,
         partition[cached_id + 'a'],
         cached_seq_a,
         cached_seq_b,

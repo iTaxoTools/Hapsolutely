@@ -46,7 +46,7 @@ def execute(
         partition_from_model, sequences_from_model)
 
     from ..common.subtasks import bundle_entries, scan_sequences
-    from .subtasks import scan_sequences, write_all_stats
+    from .subtasks import write_all_stats
 
     haplotype_stats = work_dir / 'out'
 
@@ -64,7 +64,7 @@ def execute(
 
     stats = HaploStats()
     for entry in bundle_entries(sequences, partition):
-        stats.add(entry.subset, [entry.allele_a, entry.allele_b])
+        stats.add(entry.subset, [entry.seq_a, entry.seq_b])
 
     with open(haplotype_stats, 'w') as file:
         write_all_stats(stats, file)

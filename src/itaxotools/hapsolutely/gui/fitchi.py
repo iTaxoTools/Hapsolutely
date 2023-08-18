@@ -33,7 +33,7 @@ def _recursive_update_divisions(divisions: set, node: HaploNode):
         _recursive_update_divisions(divisions, child)
 
 
-def get_fitchi_divisions(haplo_tree: HaploNode) -> set[str]:
+def get_fitchi_divisions(haplo_tree: HaploNode) -> list[str]:
     divisions = set()
     _recursive_update_divisions(divisions, haplo_tree)
     return list(divisions)

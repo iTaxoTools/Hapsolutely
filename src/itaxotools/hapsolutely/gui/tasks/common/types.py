@@ -20,6 +20,7 @@ from typing import NamedTuple
 
 
 class Entry(NamedTuple):
+    id: str
     subset: str
-    allele_a: str
-    allele_b: str
+    seq_a: str
+    seq_b: str

@@ -17,6 +17,7 @@
 # -----------------------------------------------------------------------------
 
 from io import StringIO
+from collections import Counter
 
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo import NewickIO
@@ -27,9 +28,12 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import UnphasedSequence
-from itaxotools.fitchi import HaploNode, compute_fitchi_tree
+from itaxotools.fitchi import compute_fitchi_tree
+from itaxotools.haplodemo.types import HaploNode
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
+from itaxotools.popart_networks.types import Network
+from itaxotools.haplodemo.types import HaploGraph, HaploGraphNode, HaploGraphEdge
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -82,3 +86,22 @@ def make_tree_nj(sequences: Sequences) -> str:
 def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str) -> HaploNode:
     sequence_dict = {x.id: x.seq for x in sequences}
     return compute_fitchi_tree(sequence_dict, partition, tree)
+
+
+def make_haplo_net(graph: Network) -> HaploGraph:
+    return HaploGraph(
+        [
+            HaploGraphNode(
+                f'node_{i}',
+                Counter({
+                    color.color: color.weight
+                    for color in node.colors
+                })
+            )
+            for i, node in enumerate(graph.vertices)
+        ],
+        [
+            HaploGraphEdge(edge.u, edge.v, edge.d)
+            for edge in graph.edges
+        ],
+    )

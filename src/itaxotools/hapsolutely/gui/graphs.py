@@ -16,25 +16,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from typing import NamedTuple
-from enum import Enum
+from io import StringIO
 
-from itaxotools.haplodemo.types import HaploGraph, HaploNode
-
-
-class Results(NamedTuple):
-    haplo_tree: HaploNode
-    haplo_net: HaploGraph
-    seconds_taken: float
+from itaxotools.haplodemo.types import HaploGraph, HaploGraphNode, HaploGraphEdge
 
 
-class NetworkAlgorithm(Enum):
-    Fitchi = 'Fitchi', 'Haplotype genealogies based on Fitch distances'
-    TCS = 'TCS', 'Templeton, Crandall, and Sing network (slow)'
-    TSW = 'TSW', 'Tight span walker (from PopArt)'
-    MSN = 'MSN', 'Minimum spanning network'
-    MJN = 'MJN', 'Median joining network'
+def get_graph_divisions(haplo_graph: HaploGraph) -> list[str]:
+    divisions = {
+        pop
+        for node in haplo_graph.nodes
+        for pop in node.pops
+    }
 
-    def __init__(self, label, description):
-        self.label = label
-        self.description = description
+    return list(divisions)

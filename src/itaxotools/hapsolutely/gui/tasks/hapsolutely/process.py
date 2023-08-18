@@ -27,8 +27,10 @@ from .types import Results, NetworkAlgorithm
 def initialize():
     import itaxotools
     itaxotools.progress_handler('Initializing...')
+    import itaxotools.popart_networks  # noqa
     import itaxotools.taxi_gui.tasks.common.process  # noqa
 
+    from ..common.subtasks import scan_sequences
     from . import subtasks  # noqa
 
 
@@ -47,12 +49,14 @@ def execute(
 
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
+    from itaxotools.popart_networks import build_msn, build_mjn, build_tsw, build_tcs
+    from itaxotools.popart_networks import Sequence
 
     from ..common.subtasks import scan_sequences
-    from .subtasks import make_haplo_tree, make_tree_nj
+    from .subtasks import make_haplo_tree, make_haplo_net, make_tree_nj
 
-    if not network_algorithm == NetworkAlgorithm.Fitchi:
-        raise ValueError('Must be fitchi for now')
+    haplo_tree = None
+    haplo_net = None
 
     ts = perf_counter()
 
@@ -66,10 +70,26 @@ def execute(
 
     partition = partition_from_model(input_species)
 
-    tree = make_tree_nj(sequences)
+    if network_algorithm == NetworkAlgorithm.Fitchi:
+        tree = make_tree_nj(sequences)
+        haplo_tree = make_haplo_tree(sequences, partition, tree)
+    else:
+        build_method = {
+            NetworkAlgorithm.MSN: build_msn,
+            NetworkAlgorithm.MJN: build_mjn,
+            NetworkAlgorithm.TCS: build_tcs,
+            NetworkAlgorithm.TSW: build_tsw,
+        }[network_algorithm]
 
-    haplo_tree = make_haplo_tree(sequences, partition, tree)
+        graph = build_method(
+            Sequence(
+                sequence.id,
+                sequence.seq,
+                partition.get(sequence.id, 'unknown')
+            )
+            for sequence in sequences)
+        haplo_net = make_haplo_net(graph)
 
     tf = perf_counter()
 
-    return Results(haplo_tree, None, tf - ts)
+    return Results(haplo_tree, haplo_net, tf - ts)
