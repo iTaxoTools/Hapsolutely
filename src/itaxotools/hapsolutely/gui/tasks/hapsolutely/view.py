@@ -25,10 +25,13 @@ from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     PartitionSelector, SequenceSelector, TitleCard)
 from itaxotools.taxi_gui.view.tasks import TaskView
-from itaxotools.taxi_gui.view.widgets import ScrollArea
+from itaxotools.taxi_gui.view.widgets import ScrollArea, RadioButtonGroup, RichRadioButton
+from itaxotools.taxi_gui.view.cards import Card
 
 from itaxotools.hapsolutely.gui.fitchi import (
     get_fitchi_divisions, get_fitchi_string)
+
+from .types import NetworkAlgorithm
 
 
 class HaploView(QtWidgets.QFrame):
@@ -70,6 +73,46 @@ class HaploView(QtWidgets.QFrame):
         self.settings.font = QtGui.QFont('Arial', 14)
 
 
+class NetworkAlgorithmSelector(Card):
+    valueChanged = QtCore.Signal(NetworkAlgorithm)
+
+    resetScores = QtCore.Signal()
+    algorithms = list(NetworkAlgorithm)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        label = QtWidgets.QLabel('Network algorithm')
+        label.setStyleSheet("""font-size: 16px;""")
+
+        description = QtWidgets.QLabel(
+            'Select the algorithm that will be used for building the haplotype network.')
+        description.setWordWrap(True)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(label)
+        layout.addWidget(description)
+        layout.setSpacing(8)
+
+        group = RadioButtonGroup()
+        group.valueChanged.connect(self.valueChanged)
+        self.controls.algorithm = group
+
+        radios = QtWidgets.QVBoxLayout()
+        radios.setSpacing(8)
+        for algorithm in self.algorithms:
+            button = RichRadioButton(f'{algorithm.label}:', algorithm.description, self)
+            radios.addWidget(button)
+            group.add(button, algorithm)
+        layout.addLayout(radios)
+        layout.setContentsMargins(0, 0, 0, 0)
+
+        self.addLayout(layout)
+
+    def setValue(self, value: NetworkAlgorithm):
+        self.controls.algorithm.setValue(value)
+
+
 class View(TaskView):
 
     def __init__(self, parent):
@@ -90,10 +133,11 @@ class View(TaskView):
         self.cards = AttrDict()
         self.cards.title = TitleCard(
             'TaxoPhase',
-            'Reconstruct haplotypes and produce genealogy graphs from population data.',
+            'Create haplotype networks from phased sequences.',
             self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.network_algorithm = NetworkAlgorithmSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:
@@ -126,7 +170,10 @@ class View(TaskView):
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
 
-        self.binder.bind(object.properties.fitchi_tree, self.show_fitchi_tree)
+        self.binder.bind(object.properties.network_algorithm, self.cards.network_algorithm.setValue)
+        self.binder.bind(self.cards.network_algorithm.valueChanged, object.properties.network_algorithm)
+
+        self.binder.bind(object.properties.haplo_tree, self.show_fitchi_tree)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -169,8 +216,8 @@ class View(TaskView):
         self.cards.title.setEnabled(True)
         self.haplo_view.setEnabled(not editable)
 
-    def show_fitchi_tree(self, fitchi_tree: HaploNode):
-        if fitchi_tree is None:
+    def show_fitchi_tree(self, haplo_tree: HaploNode):
+        if haplo_tree is None:
             return
 
         view = self.haplo_view
@@ -180,9 +227,9 @@ class View(TaskView):
         scene.clear()
         view.reset_settings()
 
-        print(get_fitchi_string(fitchi_tree))
+        print(get_fitchi_string(haplo_tree))
 
-        fitchi_divisions = get_fitchi_divisions(fitchi_tree)
+        fitchi_divisions = get_fitchi_divisions(haplo_tree)
         divisions.set_divisions_from_keys(fitchi_divisions)
 
-        scene.add_nodes_from_tree(fitchi_tree)
+        scene.add_nodes_from_tree(haplo_tree)

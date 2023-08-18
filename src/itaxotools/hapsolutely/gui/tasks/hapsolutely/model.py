@@ -33,6 +33,7 @@ from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
 from . import process
+from .types import NetworkAlgorithm
 
 
 class Model(TaskModel):
@@ -40,10 +41,13 @@ class Model(TaskModel):
 
     request_confirmation = QtCore.Signal(object, object, object)
 
-    fitchi_tree = Property(HaploNode, None)
+    haplo_tree = Property(HaploNode, None)
+    haplo_net = Property(object, None)
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
+
+    network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
 
     def __init__(self, name=None):
         super().__init__(name)
@@ -94,6 +98,8 @@ class Model(TaskModel):
 
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
+
+            network_algorithm=self.network_algorithm,
         )
 
     def on_query(self, query: DataQuery):
@@ -128,12 +134,13 @@ class Model(TaskModel):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
         self.dummy_time = report.result.seconds_taken
-        self.fitchi_tree = report.result.haplo_tree
+        self.haplo_tree = report.result.haplo_tree
+        self.haplo_net = report.result.haplo_net
         self.busy = False
         self.done = True
 
     def clear(self):
-        self.fitchi_tree = None
+        self.haplo_tree = None
         self.dummy_time = None
         self.done = False
 

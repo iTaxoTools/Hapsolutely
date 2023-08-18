@@ -21,7 +21,7 @@ from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
 
-from .types import Results
+from .types import Results, NetworkAlgorithm
 
 
 def initialize():
@@ -39,6 +39,8 @@ def execute(
     input_sequences: AttrDict,
     input_species: AttrDict,
 
+    network_algorithm: NetworkAlgorithm,
+
 ) -> tuple[Path, float]:
 
     from itaxotools import abort, get_feedback
@@ -48,6 +50,9 @@ def execute(
 
     from ..common.subtasks import scan_sequences
     from .subtasks import make_haplo_tree, make_tree_nj
+
+    if not network_algorithm == NetworkAlgorithm.Fitchi:
+        raise ValueError('Must be fitchi for now')
 
     ts = perf_counter()
 
@@ -67,4 +72,4 @@ def execute(
 
     tf = perf_counter()
 
-    return Results(haplo_tree, tf - ts)
+    return Results(haplo_tree, None, tf - ts)

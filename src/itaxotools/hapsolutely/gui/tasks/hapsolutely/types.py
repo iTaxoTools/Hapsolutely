@@ -17,10 +17,24 @@
 # -----------------------------------------------------------------------------
 
 from typing import NamedTuple
+from enum import Enum
 
 from itaxotools.fitchi.types import HaploNode
 
 
 class Results(NamedTuple):
     haplo_tree: HaploNode
+    haplo_net: object
     seconds_taken: float
+
+
+class NetworkAlgorithm(Enum):
+    Fitchi = 'Fitchi', 'Haplotype genealogies based on Fitch distances'
+    TCS = 'TCS', 'Templeton, Crandall, and Sing network (slow)'
+    TSW = 'TSW', 'Tight span walker (from PopArt)'
+    MST = 'MST', 'Minimum spanning network'
+    MJ = 'MJ', 'Median joining network'
+
+    def __init__(self, label, description):
+        self.label = label
+        self.description = description
