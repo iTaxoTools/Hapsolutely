@@ -25,10 +25,6 @@ class Results(NamedTuple):
     seconds_taken: float
 
 
-class ScanResults(NamedTuple):
-    warns: list[str]
-
-
 class Entry(NamedTuple):
     subset: str
     allele_a: str
