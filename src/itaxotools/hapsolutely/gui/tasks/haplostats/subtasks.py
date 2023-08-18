@@ -22,10 +22,7 @@ from typing import TextIO
 
 import yaml
 from itaxotools.haplostats import HaploStats
-from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequences
-
-from .types import Entry
 
 
 def _dict_representer(dumper, data):
@@ -43,45 +40,6 @@ def _yamlify(data, title: str = None) -> str:
 
 def _separate(file: TextIO):
     print('---\n', file=file)
-
-
-def bundle_entries(
-
-    sequences: Sequences,
-    partition: Partition
-
-) -> iter[Entry]:
-
-    cached_id = None
-    cached_seq_a = None
-    cached_seq_b = None
-
-    for sequence in sequences:
-        id = sequence.id[:-1]
-        allele = sequence.id[-1]
-
-        if id != cached_id and cached_id is not None:
-            yield Entry(
-                partition[cached_id + 'a'],
-                cached_seq_a,
-                cached_seq_b,
-            )
-
-        cached_id = id
-
-        match allele:
-            case 'a':
-                cached_seq_a = sequence.seq
-            case 'b':
-                cached_seq_b = sequence.seq
-            case _:
-                raise ValueError(f"Individual {repr(sequence.id)} not ending with 'a' or 'b'. Is the input phased?")
-
-    yield Entry(
-        partition[cached_id + 'a'],
-        cached_seq_a,
-        cached_seq_b,
-    )
 
 
 def write_all_stats(stats: HaploStats, file: TextIO):

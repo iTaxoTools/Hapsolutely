@@ -1,3 +1,3 @@
 
 title = 'Hapsolutely'
-description = 'From unphased data to haplotype network'
+description = 'Create haplotype networks from phased sequences'

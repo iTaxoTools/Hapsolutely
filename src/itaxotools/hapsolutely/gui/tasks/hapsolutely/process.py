@@ -27,6 +27,8 @@ from .types import Results
 def initialize():
     import itaxotools
     itaxotools.progress_handler('Initializing...')
+    import itaxotools.taxi_gui.tasks.common.process  # noqa
+
     from . import subtasks  # noqa
 
 
@@ -42,20 +44,17 @@ def execute(
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
 
-    from .subtasks import (
-        make_haplo_tree, make_tree_nj, phase_partition, phase_sequences)
+    # from ..common.subtasks import bundle_entries
+    from .subtasks import make_haplo_tree, make_tree_nj
 
     ts = perf_counter()
 
     sequences = sequences_from_model(input_sequences)
-    phased_sequences = phase_sequences(sequences)
-
-    tree = make_tree_nj(phased_sequences)
-
     partition = partition_from_model(input_species)
-    partition = phase_partition(partition)
 
-    haplo_tree = make_haplo_tree(phased_sequences, partition, tree)
+    tree = make_tree_nj(sequences)
+
+    haplo_tree = make_haplo_tree(sequences, partition, tree)
 
     tf = perf_counter()
 

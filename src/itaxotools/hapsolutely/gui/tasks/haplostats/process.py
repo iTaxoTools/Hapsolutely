@@ -45,7 +45,8 @@ def execute(
 
     from itaxotools import abort, get_feedback
 
-    from .subtasks import bundle_entries, scan_sequences, write_all_stats
+    from ..common.subtasks import bundle_entries
+    from .subtasks import scan_sequences, write_all_stats
 
     haplotype_stats = work_dir / 'out'
 
