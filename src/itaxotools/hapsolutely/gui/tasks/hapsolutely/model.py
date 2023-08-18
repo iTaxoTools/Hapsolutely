@@ -120,4 +120,5 @@ class Model(TaskModel):
         self.done = False
 
     def open(self, path: Path):
+        self.clear()
         self.subtask_sequences.start(path)

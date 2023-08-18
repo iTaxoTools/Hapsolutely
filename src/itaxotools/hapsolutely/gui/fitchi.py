@@ -37,15 +37,3 @@ def get_fitchi_divisions(haplo_tree: HaploNode) -> set[str]:
     divisions = set()
     _recursive_update_divisions(divisions, haplo_tree)
     return list(divisions)
-
-
-def _recursive_update_layout(layout: dict[str, tuple[float, float]], node: HaploNode):
-    layout[node.id] = (50 + 30 * len(layout), 100 + 60 * (len(layout) % 2))
-    for child in node.children:
-        _recursive_update_layout(layout, child)
-
-
-def get_fitchi_layout(haplo_tree: HaploNode) -> dict[str, tuple[float, float]]:
-    layout = dict()
-    _recursive_update_layout(layout, haplo_tree)
-    return layout

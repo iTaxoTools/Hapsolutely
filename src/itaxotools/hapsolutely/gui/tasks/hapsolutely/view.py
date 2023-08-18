@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.fitchi.types import HaploNode
@@ -27,7 +27,7 @@ from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import ScrollArea
 
 from itaxotools.hapsolutely.gui.fitchi import (
-    get_fitchi_divisions, get_fitchi_layout, get_fitchi_string)
+    get_fitchi_divisions, get_fitchi_string)
 
 
 class HaploView(QtWidgets.QFrame):
@@ -47,20 +47,26 @@ class HaploView(QtWidgets.QFrame):
         self.scene = widget.scene
 
     def reset_settings(self):
-        self.settings.rotational_movement = False
-        self.settings.recursive_movement = False
-        self.settings.node_a = 0.0
-        self.settings.node_e = 5.0
-        self.settings.node_f = 10.0
+        self.settings.rotational_movement = True
+        self.settings.recursive_movement = True
 
-        self.scene.styleNodes(
-            self.settings.node_a,
-            self.settings.node_b,
-            self.settings.node_c,
-            self.settings.node_d,
-            self.settings.node_e,
-            self.settings.node_f,
-        )
+        self.settings.show_legend = True
+        self.settings.show_scale = True
+
+        self.settings.node_sizes.a = 20
+        self.settings.node_sizes.b = 10
+        self.settings.node_sizes.c = 1
+        self.settings.node_sizes.d = 0
+        self.settings.node_sizes.e = 0
+        self.settings.node_sizes.f = 20
+
+        self.settings.pen_width_nodes = 1
+        self.settings.pen_width_edges = 2
+
+        self.settings.edge_length = 40
+        self.settings.node_label_template = 'WEIGHT'
+
+        self.settings.font = QtGui.QFont('Arial', 14)
 
 
 class View(TaskView):
@@ -118,7 +124,7 @@ class View(TaskView):
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
 
-        # self.binder.bind(object.properties.fitchi_tree, self.show_fitchi_tree)
+        self.binder.bind(object.properties.fitchi_tree, self.show_fitchi_tree)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -141,37 +147,19 @@ class View(TaskView):
         self.haplo_view.setEnabled(not editable)
 
     def show_fitchi_tree(self, fitchi_tree: HaploNode):
+        if fitchi_tree is None:
+            return
+
         view = self.haplo_view
         scene = self.haplo_view.scene
         divisions = self.haplo_view.divisions
 
         scene.clear()
-        if fitchi_tree is None:
-            return
-
-        print(get_fitchi_string(fitchi_tree))
-        fitchi_layout = get_fitchi_layout(fitchi_tree)
-        fitchi_divisions = get_fitchi_divisions(fitchi_tree)
-
-        self.add_fitchi_nodes(scene, fitchi_layout, fitchi_tree)
-        divisions.set_divisions_from_keys(fitchi_divisions)
         view.reset_settings()
 
-    def add_fitchi_nodes(self, scene, layout, node: HaploNode):
-        self._add_fitchi_node_recursive(scene, layout, None, node)
+        print(get_fitchi_string(fitchi_tree))
 
-    def _add_fitchi_node_recursive(self, scene, layout, parent, node):
-        x, y = layout[node.id]
+        fitchi_divisions = get_fitchi_divisions(fitchi_tree)
+        divisions.set_divisions_from_keys(fitchi_divisions)
 
-        if node.pops.total() > 0:
-            item = scene.create_node(x, y, node.pops.total(), node.id, dict(node.pops))
-        else:
-            item = scene.create_vertex(x, y)
-
-        if parent:
-            scene.add_child(parent, item, node.mutations)
-        else:
-            scene.addItem(item)
-
-        for child in node.children:
-            self._add_fitchi_node_recursive(scene, layout, item, child)
+        scene.add_nodes_from_tree(fitchi_tree)
