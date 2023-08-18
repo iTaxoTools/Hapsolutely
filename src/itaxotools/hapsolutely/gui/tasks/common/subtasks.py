@@ -61,3 +61,15 @@ def bundle_entries(
         cached_seq_a,
         cached_seq_b,
     )
+
+
+def scan_sequences(sequences: Sequences) -> list[str]:
+    ambiguity = set()
+    for sequence in sequences:
+        for character in sequence.seq:
+            if character not in 'ACGT':
+                ambiguity.add(character)
+    if ambiguity:
+        codes = ''.join(c for c in ambiguity)
+        return [f'Ambiguity codes detected: {repr(codes)}']
+    return []

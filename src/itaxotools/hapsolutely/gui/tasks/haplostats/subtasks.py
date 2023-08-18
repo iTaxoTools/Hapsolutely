@@ -76,15 +76,3 @@ def write_all_stats(stats: HaploStats, file: TextIO):
 
     data = stats.get_dataset_sizes()
     print(_yamlify(data, 'Dataset size'), file=file)
-
-
-def scan_sequences(sequences: Sequences) -> list[str]:
-    ambiguity = set()
-    for sequence in sequences:
-        for character in sequence.seq:
-            if character not in 'ACGT':
-                ambiguity.add(character)
-    if ambiguity:
-        codes = ''.join(c for c in ambiguity)
-        return [f'Ambiguity codes detected: {repr(codes)}']
-    return []

@@ -39,13 +39,13 @@ def execute(
 
 ) -> tuple[Path, float]:
 
+    from itaxotools import abort, get_feedback
+
     from itaxotools.haplostats import HaploStats
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
 
-    from itaxotools import abort, get_feedback
-
-    from ..common.subtasks import bundle_entries
+    from ..common.subtasks import bundle_entries, scan_sequences
     from .subtasks import scan_sequences, write_all_stats
 
     haplotype_stats = work_dir / 'out'

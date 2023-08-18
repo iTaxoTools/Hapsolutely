@@ -16,11 +16,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
+from PySide6 import QtCore
+
 from datetime import datetime
 from pathlib import Path
 
 from itaxotools.common.bindings import Property
 from itaxotools.fitchi.types import HaploNode
+from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
@@ -34,6 +37,8 @@ from . import process
 
 class Model(TaskModel):
     task_name = 'Hapsolutely'
+
+    request_confirmation = QtCore.Signal(object, object, object)
 
     fitchi_tree = Property(HaploNode, None)
 
@@ -56,6 +61,8 @@ class Model(TaskModel):
         self.binder.bind(self.input_species.notification, self.notification)
 
         self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+
+        self.binder.bind(self.query, self.on_query)
 
         for handle in [
             self.properties.busy_subtask,
@@ -88,6 +95,17 @@ class Model(TaskModel):
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
         )
+
+    def on_query(self, query: DataQuery):
+        warns = query.data
+        if not warns:
+            self.answer(True)
+        else:
+            self.request_confirmation.emit(
+                warns,
+                lambda: self.answer(True),
+                lambda: self.answer(False),
+            )
 
     def propagate_input_index(self, index):
         if not index:

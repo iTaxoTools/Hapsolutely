@@ -41,15 +41,24 @@ def execute(
 
 ) -> tuple[Path, float]:
 
+    from itaxotools import abort, get_feedback
+
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
 
-    # from ..common.subtasks import bundle_entries
+    from ..common.subtasks import scan_sequences
     from .subtasks import make_haplo_tree, make_tree_nj
 
     ts = perf_counter()
 
     sequences = sequences_from_model(input_sequences)
+    warns = scan_sequences(sequences)
+
+    if warns:
+        answer = get_feedback(warns)
+        if not answer:
+            abort()
+
     partition = partition_from_model(input_species)
 
     tree = make_tree_nj(sequences)
