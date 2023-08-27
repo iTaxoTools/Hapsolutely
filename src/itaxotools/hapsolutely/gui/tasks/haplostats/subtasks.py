@@ -49,29 +49,29 @@ def write_all_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     partition = yaml.dump({'Partition': name}, default_flow_style=False)
     print(partition, file=file)
 
+    data = stats.get_dataset_sizes()
+    print(_yamlify(data, 'Dataset size'), file=file)
+
     data = stats.get_haplotypes()
     print(_yamlify(data, 'Haplotype sequences'), file=file)
 
     data = stats.get_haplotypes_per_subset()
-    print(_yamlify(data, 'Haplotypes per species'), file=file)
+    print(_yamlify(data, 'Haplotypes per subsets'), file=file)
 
     data = stats.get_haplotypes_shared_between_subsets()
-    print(_yamlify(data, 'Haplotypes shared between species'), file=file)
+    print(_yamlify(data, 'Haplotypes shared between subsets'), file=file)
 
     data = stats.get_fields_of_recombination()
     print(_yamlify(data, 'Fields of recombination'), file=file)
 
     data = stats.get_subsets_per_field_of_recombination()
-    print(_yamlify(data, 'Species count per FOR'), file=file)
+    print(_yamlify(data, 'Subsets count per FOR'), file=file)
 
     data = stats.get_fields_of_recombination_per_subset()
-    print(_yamlify(data, 'FOR count per species'), file=file)
+    print(_yamlify(data, 'FOR count per subsets'), file=file)
 
     data = stats.get_fields_of_recombination_shared_between_subsets()
-    print(_yamlify(data, 'FORs shared between species'), file=file)
-
-    data = stats.get_dataset_sizes()
-    print(_yamlify(data, 'Dataset size'), file=file)
+    print(_yamlify(data, 'FORs shared between subsets'), file=file)
 
 
 def write_stats_to_path(sequences: Sequences, partition: Partition, name: str, path: Path):

@@ -63,6 +63,7 @@ class Model(TaskModel):
         self.binder.bind(self.input_species.notification, self.notification)
 
         self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+        self.binder.bind(self.input_species.properties.format, self.update_bulk_mode)
 
         self.binder.bind(self.query, self.on_query)
 
@@ -128,6 +129,10 @@ class Model(TaskModel):
 
         if info.format in [FileFormat.Tabfile, FileFormat.Fasta]:
             self.input_species.set_index(index)
+
+    def update_bulk_mode(self, format):
+        if format != FileFormat.Spart:
+            self.bulk_mode = False
 
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)

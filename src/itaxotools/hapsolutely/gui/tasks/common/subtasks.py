@@ -77,17 +77,36 @@ def scan_sequences(sequences: Sequences) -> list[str]:
     return []
 
 
-def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences) -> Partition:
+def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences) -> tuple[Partition, list[str]]:
     """
     It is possible that the allele markers (a/b) are suffixed to the
     individuals name in the partition but not the sequences, or vice versa.
     Detect such mismatches and return a partition suitable for the sequences.
+    If some individuals could not be matched, return a warning.
     """
 
-    # for sequence in sequences:
-    #     if sequence.id in partition:
-    #         print('OK', sequence.id)
-    #     else:
-    #         print('NOPE', sequence.id)
+    matched = dict()
+    unknowns = list()
 
-    return partition
+    for sequence in sequences:
+        if sequence.id in partition:
+            matched[sequence.id] = partition[sequence.id]
+            continue
+        if 'allele' in sequence.extras:
+            raise NotImplementedError
+        if sequence.id[-1] in 'ab':
+            if sequence.id[:-1] in partition:
+                matched[sequence.id] = partition[sequence.id[:-1]]
+                continue
+        matched[sequence.id] = 'unknown'
+        unknowns.append(sequence.id)
+
+    if unknowns:
+        unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
+        if len(unknowns) > 3:
+            unknowns_str += f' and {len(unknowns) - 3} more'
+        warns = [f'Could not match individuals to partition: {unknowns_str}']
+    else:
+        warns = []
+
+    return matched, warns
