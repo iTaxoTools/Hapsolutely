@@ -41,14 +41,15 @@ def execute(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.haplostats import HaploStats
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import bundle_entries, scan_sequences
-    from .subtasks import write_all_stats
+    from ..common.subtasks import scan_sequences
+    from .subtasks import (
+        get_all_possible_partition_models, write_bulk_stats_to_path,
+        write_stats_to_path)
 
     haplotype_stats = work_dir / 'out'
 
@@ -62,14 +63,15 @@ def execute(
         if not answer:
             abort()
 
-    partition = partition_from_model(input_species)
-
-    stats = HaploStats()
-    for entry in bundle_entries(sequences, partition):
-        stats.add(entry.subset, [entry.seq_a, entry.seq_b])
-
-    with open(haplotype_stats, 'w') as file:
-        write_all_stats(stats, file)
+    if not bulk_mode:
+        partition = partition_from_model(input_species)
+        partition_name = input_species.spartition
+        write_stats_to_path(sequences, partition, partition_name, haplotype_stats)
+    else:
+        models = get_all_possible_partition_models(input_species)
+        partitions = (partition_from_model(model) for model in models)
+        names = input_species.info.spartitions
+        write_bulk_stats_to_path(sequences, partitions, names, haplotype_stats)
 
     tf = perf_counter()
 

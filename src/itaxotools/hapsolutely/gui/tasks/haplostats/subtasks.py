@@ -18,10 +18,16 @@
 
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TextIO
 
 import yaml
+from itaxotools.common.utility import AttrDict
 from itaxotools.haplostats import HaploStats
+from itaxotools.taxi2.partitions import Partition
+from itaxotools.taxi2.sequences import Sequences
+
+from ..common.subtasks import bundle_entries
 
 
 def _dict_representer(dumper, data):
@@ -37,41 +43,62 @@ def _yamlify(data, title: str = None) -> str:
     return yaml.dump(data, default_flow_style=False)
 
 
-def _separate(file: TextIO):
-    print('---\n', file=file)
-
-
-def write_all_stats(stats: HaploStats, file: TextIO):
+def write_all_stats_to_file(name: str, stats: HaploStats, file: TextIO):
 
     print(file=file)
+    partition = yaml.dump({'Partition': name}, default_flow_style=False)
+    print(partition, file=file)
 
     data = stats.get_haplotypes()
     print(_yamlify(data, 'Haplotype sequences'), file=file)
-    _separate(file=file)
 
     data = stats.get_haplotypes_per_subset()
     print(_yamlify(data, 'Haplotypes per species'), file=file)
-    _separate(file=file)
 
     data = stats.get_haplotypes_shared_between_subsets()
     print(_yamlify(data, 'Haplotypes shared between species'), file=file)
-    _separate(file=file)
 
     data = stats.get_fields_of_recombination()
     print(_yamlify(data, 'Fields of recombination'), file=file)
-    _separate(file=file)
 
     data = stats.get_subsets_per_field_of_recombination()
     print(_yamlify(data, 'Species count per FOR'), file=file)
-    _separate(file=file)
 
     data = stats.get_fields_of_recombination_per_subset()
     print(_yamlify(data, 'FOR count per species'), file=file)
-    _separate(file=file)
 
     data = stats.get_fields_of_recombination_shared_between_subsets()
     print(_yamlify(data, 'FORs shared between species'), file=file)
-    _separate(file=file)
 
     data = stats.get_dataset_sizes()
     print(_yamlify(data, 'Dataset size'), file=file)
+
+
+def write_stats_to_path(sequences: Sequences, partition: Partition, name: str, path: Path):
+
+    stats = HaploStats()
+    for entry in bundle_entries(sequences, partition):
+        stats.add(entry.subset, [entry.seq_a, entry.seq_b])
+
+    with open(path, 'w') as file:
+        write_all_stats_to_file(name, stats, file)
+
+
+def write_bulk_stats_to_path(sequences: Sequences, partitions: iter[Partition], names: list[str], path: Path):
+
+    with open(path, 'w') as file:
+        for partition, name in zip(partitions, names):
+
+            print('---', file=file)
+
+            stats = HaploStats()
+            for entry in bundle_entries(sequences, partition):
+                stats.add(entry.subset, [entry.seq_a, entry.seq_b])
+
+            write_all_stats_to_file(name, stats, file)
+
+
+def get_all_possible_partition_models(input: AttrDict) -> iter[AttrDict]:
+    for partition in input.info.spartitions:
+        input.spartition = partition
+        yield AttrDict(input)
