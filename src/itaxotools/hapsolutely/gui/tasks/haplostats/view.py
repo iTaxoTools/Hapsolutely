@@ -78,7 +78,7 @@ class View(TaskView):
             self)
         self.cards.results = TightResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
-        self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)
         self.cards.bulk_mode = BulkModeSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
@@ -157,6 +157,7 @@ class View(TaskView):
         self.cards.results.setEnabled(True)
         self.cards.input_sequences.setEnabled(editable)
         self.cards.input_species.setEnabled(editable)
+        self.cards.bulk_mode.setEnabled(editable)
 
     def view_results(self, text, path):
         dialog = ResultDialog(text, path, self.window())

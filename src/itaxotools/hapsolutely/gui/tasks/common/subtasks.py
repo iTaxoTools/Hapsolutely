@@ -75,3 +75,19 @@ def scan_sequences(sequences: Sequences) -> list[str]:
         codes = ''.join(c for c in ambiguity)
         return [f'Ambiguity codes detected: {repr(codes)}']
     return []
+
+
+def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences) -> Partition:
+    """
+    It is possible that the allele markers (a/b) are suffixed to the
+    individuals name in the partition but not the sequences, or vice versa.
+    Detect such mismatches and return a partition suitable for the sequences.
+    """
+
+    # for sequence in sequences:
+    #     if sequence.id in partition:
+    #         print('OK', sequence.id)
+    #     else:
+    #         print('NOPE', sequence.id)
+
+    return partition

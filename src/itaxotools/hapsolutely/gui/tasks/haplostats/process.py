@@ -46,7 +46,8 @@ def execute(
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import scan_sequences
+    from ..common.subtasks import (
+        match_partition_to_phased_sequences, scan_sequences)
     from .subtasks import (
         get_all_possible_partition_models, write_bulk_stats_to_path,
         write_stats_to_path)
@@ -65,11 +66,13 @@ def execute(
 
     if not bulk_mode:
         partition = partition_from_model(input_species)
-        partition_name = input_species.spartition
+        partition = match_partition_to_phased_sequences(partition, sequences)
+        partition_name = input_species.partition_name
         write_stats_to_path(sequences, partition, partition_name, haplotype_stats)
     else:
         models = get_all_possible_partition_models(input_species)
         partitions = (partition_from_model(model) for model in models)
+        partitions = (match_partition_to_phased_sequences(partition, sequences) for partition in partitions)
         names = input_species.info.spartitions
         write_bulk_stats_to_path(sequences, partitions, names, haplotype_stats)
 
