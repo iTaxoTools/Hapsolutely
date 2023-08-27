@@ -19,19 +19,18 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo import Window
+from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     PartitionSelector, SequenceSelector, TitleCard)
-from itaxotools.taxi_gui.view.tasks import TaskView
-from itaxotools.taxi_gui.view.widgets import ScrollArea, RadioButtonGroup, RichRadioButton
 from itaxotools.taxi_gui.view.cards import Card
+from itaxotools.taxi_gui.view.tasks import TaskView
+from itaxotools.taxi_gui.view.widgets import (
+    RadioButtonGroup, RichRadioButton, ScrollArea)
 
-from itaxotools.hapsolutely.gui.fitchi import (
-    get_fitchi_divisions, get_fitchi_string)
-
+from itaxotools.hapsolutely.gui.fitchi import get_fitchi_divisions
 from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
 
 from .types import NetworkAlgorithm

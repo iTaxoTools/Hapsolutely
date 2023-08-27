@@ -22,7 +22,6 @@ from typing import TextIO
 
 import yaml
 from itaxotools.haplostats import HaploStats
-from itaxotools.taxi2.sequences import Sequences
 
 
 def _dict_representer(dumper, data):

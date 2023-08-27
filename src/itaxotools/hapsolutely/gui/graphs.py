@@ -16,9 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from io import StringIO
 
-from itaxotools.haplodemo.types import HaploGraph, HaploGraphNode, HaploGraphEdge
+from itaxotools.haplodemo.types import HaploGraph
 
 
 def get_graph_divisions(haplo_graph: HaploGraph) -> list[str]:

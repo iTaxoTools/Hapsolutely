@@ -21,7 +21,7 @@ from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
 
-from .types import Results, NetworkAlgorithm
+from .types import NetworkAlgorithm, Results
 
 
 def initialize():
@@ -30,7 +30,7 @@ def initialize():
     import itaxotools.popart_networks  # noqa
     import itaxotools.taxi_gui.tasks.common.process  # noqa
 
-    from ..common.subtasks import scan_sequences
+    from ..common.subtasks import scan_sequences  # noqa
     from . import subtasks  # noqa
 
 
@@ -45,15 +45,15 @@ def execute(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools import abort, get_feedback
-
+    from itaxotools.popart_networks import (
+        Sequence, build_mjn, build_msn, build_tcs, build_tsw)
     from itaxotools.taxi_gui.tasks.common.process import (
         partition_from_model, sequences_from_model)
-    from itaxotools.popart_networks import build_msn, build_mjn, build_tsw, build_tcs
-    from itaxotools.popart_networks import Sequence
+
+    from itaxotools import abort, get_feedback
 
     from ..common.subtasks import scan_sequences
-    from .subtasks import make_haplo_tree, make_haplo_net, make_tree_nj
+    from .subtasks import make_haplo_net, make_haplo_tree, make_tree_nj
 
     haplo_tree = None
     haplo_net = None

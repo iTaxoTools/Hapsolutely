@@ -16,8 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from io import StringIO
 from collections import Counter
+from io import StringIO
 
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo import NewickIO
@@ -29,11 +29,11 @@ from Bio.SeqRecord import SeqRecord
 from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import UnphasedSequence
 from itaxotools.fitchi import compute_fitchi_tree
-from itaxotools.haplodemo.types import HaploNode
+from itaxotools.haplodemo.types import (
+    HaploGraph, HaploGraphEdge, HaploGraphNode, HaploNode)
+from itaxotools.popart_networks.types import Network
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
-from itaxotools.popart_networks.types import Network
-from itaxotools.haplodemo.types import HaploGraph, HaploGraphNode, HaploGraphEdge
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:

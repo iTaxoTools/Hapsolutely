@@ -16,13 +16,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtWidgets
+from PySide6 import QtCore, QtWidgets
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     PartitionSelector, SequenceSelector, TitleCard)
+from itaxotools.taxi_gui.types import FileFormat
+from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 
 
@@ -30,6 +32,36 @@ class TightResultViewer(ResultViewer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.setContentsMargins(0, 0, 0, 0)
+
+
+class BulkModeSelector(Card):
+    toggled = QtCore.Signal(bool)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        title = QtWidgets.QCheckBox('  Bulk mode:')
+        title.setStyleSheet("""font-size: 16px;""")
+        title.toggled.connect(self.toggled)
+        title.setMinimumWidth(140)
+
+        description = QtWidgets.QLabel('Get statistics for each spartition in the SPART file.')
+        description.setWordWrap(True)
+
+        contents = QtWidgets.QHBoxLayout()
+        contents.addWidget(title)
+        contents.addWidget(description, 1)
+        contents.setSpacing(16)
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.addLayout(contents, 1)
+        layout.addSpacing(80)
+        self.addLayout(layout)
+
+        self.controls.title = title
+
+    def setChecked(self, checked: bool):
+        self.controls.title.setChecked(checked)
 
 
 class View(TaskView):
@@ -47,6 +79,7 @@ class View(TaskView):
         self.cards.results = TightResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.bulk_mode = BulkModeSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:
@@ -70,6 +103,17 @@ class View(TaskView):
 
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
+
+        self.binder.bind(self.cards.bulk_mode.toggled, object.properties.bulk_mode)
+        self.binder.bind(object.properties.bulk_mode, self.cards.bulk_mode.setChecked)
+        self.binder.bind(
+            self.cards.bulk_mode.toggled,
+            self.cards.input_species.controls.spart.spartition.setEnabled,
+            lambda bulk: not bulk)
+        self.binder.bind(
+            object.input_species.properties.format,
+            self.cards.bulk_mode.roll_animation.setAnimatedVisible,
+            lambda format: format == FileFormat.Spart)
 
         self.binder.bind(object.properties.haplotype_stats, self.cards.results.setPath)
         self.binder.bind(object.properties.haplotype_stats, self.cards.results.setVisible, lambda x: x is not None)

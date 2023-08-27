@@ -45,6 +45,8 @@ class Model(TaskModel):
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
 
+    bulk_mode = Property(bool, False)
+
     def __init__(self, name=None):
         super().__init__(name)
         self.can_open = True
@@ -95,6 +97,8 @@ class Model(TaskModel):
 
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
+
+            bulk_mode=self.bulk_mode,
         )
 
     def on_query(self, query: DataQuery):

@@ -16,8 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from typing import NamedTuple
 from enum import Enum
+from typing import NamedTuple
 
 from itaxotools.haplodemo.types import HaploGraph, HaploNode
 
