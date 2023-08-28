@@ -49,6 +49,7 @@ class Model(TaskModel):
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
 
+    transversions_only = Property(bool, False)
     epsilon = Property(int, 0)
 
     def __init__(self, name=None):
@@ -102,6 +103,7 @@ class Model(TaskModel):
             input_species=self.input_species.as_dict(),
 
             network_algorithm=self.network_algorithm,
+            transversions_only=self.transversions_only,
             epsilon=self.epsilon,
         )
 

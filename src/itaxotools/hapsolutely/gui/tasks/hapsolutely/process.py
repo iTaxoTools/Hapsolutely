@@ -42,6 +42,7 @@ def execute(
     input_species: AttrDict,
 
     network_algorithm: NetworkAlgorithm,
+    transversions_only: bool,
     epsilon: int,
 
 ) -> tuple[Path, float]:
@@ -73,7 +74,7 @@ def execute(
 
     if network_algorithm == NetworkAlgorithm.Fitchi:
         tree = make_tree_nj(sequences)
-        haplo_tree = make_haplo_tree(sequences, partition, tree)
+        haplo_tree = make_haplo_tree(sequences, partition, tree, transversions_only)
     else:
         build_method, args = {
             NetworkAlgorithm.MSN: (build_msn, []),

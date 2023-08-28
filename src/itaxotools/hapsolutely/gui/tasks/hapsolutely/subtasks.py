@@ -83,9 +83,9 @@ def make_tree_nj(sequences: Sequences) -> str:
     return _format_newick_for_fitchi(newick_string)
 
 
-def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str) -> HaploNode:
+def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, transversions_only: bool) -> HaploNode:
     sequence_dict = {x.id: x.seq for x in sequences}
-    return compute_fitchi_tree(sequence_dict, partition, tree)
+    return compute_fitchi_tree(sequence_dict, partition, tree, transversions_only)
 
 
 def make_haplo_net(graph: Network) -> HaploGraph:

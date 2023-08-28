@@ -46,6 +46,7 @@ class BulkModeSelector(Card):
         title.setMinimumWidth(140)
 
         description = QtWidgets.QLabel('Get statistics for each spartition in the SPART file.')
+        description.setStyleSheet("""padding-top: 2px;""")
         description.setWordWrap(True)
 
         contents = QtWidgets.QHBoxLayout()

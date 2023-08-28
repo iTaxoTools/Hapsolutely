@@ -93,6 +93,7 @@ class NetworkAlgorithmSelector(Card):
 
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(label)
+        layout.addSpacing(4)
         layout.addWidget(description)
         layout.setSpacing(8)
 
@@ -113,6 +114,37 @@ class NetworkAlgorithmSelector(Card):
 
     def setValue(self, value: NetworkAlgorithm):
         self.controls.algorithm.setValue(value)
+
+
+class TransversionsOnlySelector(Card):
+    toggled = QtCore.Signal(bool)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        title = QtWidgets.QCheckBox('  Transversions only:')
+        title.setStyleSheet("""font-size: 16px;""")
+        title.toggled.connect(self.toggled)
+        title.setMinimumWidth(140)
+
+        description = QtWidgets.QLabel('Ignore transitions and show transversions only (default: off).')
+        description.setStyleSheet("""padding-top: 2px;""")
+        description.setWordWrap(True)
+
+        contents = QtWidgets.QHBoxLayout()
+        contents.addWidget(title)
+        contents.addWidget(description, 1)
+        contents.setSpacing(16)
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.addLayout(contents, 1)
+        layout.addSpacing(80)
+        self.addLayout(layout)
+
+        self.controls.title = title
+
+    def setChecked(self, checked: bool):
+        self.controls.title.setChecked(checked)
 
 
 class EpsilonSelector(Card):
@@ -167,6 +199,7 @@ class View(TaskView):
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
+        self.cards.transversions_only = TransversionsOnlySelector(self)
         self.cards.epsilon = EpsilonSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
@@ -209,6 +242,13 @@ class View(TaskView):
             object.properties.network_algorithm,
             self.cards.epsilon.roll_animation.setAnimatedVisible,
             lambda algo: algo == NetworkAlgorithm.MJN)
+
+        self.binder.bind(self.cards.transversions_only.toggled, object.properties.transversions_only)
+        self.binder.bind(object.properties.transversions_only, self.cards.transversions_only.setChecked)
+        self.binder.bind(
+            object.properties.network_algorithm,
+            self.cards.transversions_only.roll_animation.setAnimatedVisible,
+            lambda algo: algo == NetworkAlgorithm.Fitchi)
 
         self.binder.bind(object.properties.haplo_tree, self.show_fitchi_tree)
         self.binder.bind(object.properties.haplo_net, self.show_haplo_graph)
