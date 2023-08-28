@@ -40,6 +40,7 @@ def execute(
 
     input_sequences: AttrDict,
     input_species: AttrDict,
+    input_tree: AttrDict,
 
     network_algorithm: NetworkAlgorithm,
     transversions_only: bool,
@@ -56,7 +57,9 @@ def execute(
 
     from ..common.subtasks import (
         match_partition_to_phased_sequences, scan_sequences)
-    from .subtasks import make_haplo_net, make_haplo_tree, make_tree_nj
+    from .subtasks import (
+        get_newick_string_from_tree, get_tree_from_model, make_haplo_net,
+        make_haplo_tree, make_tree_nj, validate_sequences_in_tree)
 
     haplo_tree = None
     haplo_net = None
@@ -69,7 +72,13 @@ def execute(
     partition = partition_from_model(input_species)
     partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
 
-    warns = sequence_warns + partition_warns
+    if network_algorithm == NetworkAlgorithm.Fitchi and input_tree is not None:
+        tree = get_tree_from_model(input_tree)
+        tree_warns = validate_sequences_in_tree(sequences, tree)
+    else:
+        tree_warns = []
+
+    warns = sequence_warns + partition_warns + tree_warns
 
     tm = perf_counter()
 
@@ -81,8 +90,11 @@ def execute(
     tx = perf_counter()
 
     if network_algorithm == NetworkAlgorithm.Fitchi:
-        tree = make_tree_nj(sequences)
-        haplo_tree = make_haplo_tree(sequences, partition, tree, transversions_only)
+        if input_tree is None:
+            newick_string = make_tree_nj(sequences)
+        else:
+            newick_string = get_newick_string_from_tree(tree)
+        haplo_tree = make_haplo_tree(sequences, partition, newick_string, transversions_only)
     else:
         build_method, args = {
             NetworkAlgorithm.MSN: (build_msn, []),

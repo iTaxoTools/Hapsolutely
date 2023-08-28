@@ -27,6 +27,7 @@ from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
+from itaxotools.taxi_gui.model.tree import TreeModel
 from itaxotools.taxi_gui.tasks.common.model import (
     FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel)
 from itaxotools.taxi_gui.types import FileFormat, Notification
@@ -46,6 +47,7 @@ class Model(TaskModel):
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
+    input_tree = Property(ImportedInputModel, ImportedInputModel(TreeModel))
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
 
@@ -57,15 +59,20 @@ class Model(TaskModel):
         self.can_open = True
         self.can_save = True
 
+        self.input_tree.model.unselected = 'Generate from input sequences using Neighbour Joining'
+
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = FileInfoSubtaskModel(self)
         self.subtask_species = FileInfoSubtaskModel(self)
+        self.subtask_tree = FileInfoSubtaskModel(self)
 
         self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_info)
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)
+        self.binder.bind(self.subtask_tree.done, self.input_tree.add_info)
 
         self.binder.bind(self.input_sequences.notification, self.notification)
         self.binder.bind(self.input_species.notification, self.notification)
+        self.binder.bind(self.input_tree.notification, self.notification)
 
         self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
 
@@ -101,6 +108,7 @@ class Model(TaskModel):
 
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
+            input_tree=self.input_tree.as_dict(),
 
             network_algorithm=self.network_algorithm,
             transversions_only=self.transversions_only,

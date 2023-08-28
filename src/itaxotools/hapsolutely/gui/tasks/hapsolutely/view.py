@@ -24,7 +24,7 @@ from itaxotools.haplodemo import Window
 from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
-    PartitionSelector, SequenceSelector, TitleCard)
+    InputSelector, PartitionSelector, SequenceSelector, TitleCard)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
@@ -199,6 +199,7 @@ class View(TaskView):
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
+        self.cards.input_tree = InputSelector('Fitchi tree', self)
         self.cards.transversions_only = TransversionsOnlySelector(self)
         self.cards.epsilon = EpsilonSelector(self)
 
@@ -245,6 +246,12 @@ class View(TaskView):
 
         self.binder.bind(self.cards.transversions_only.toggled, object.properties.transversions_only)
         self.binder.bind(object.properties.transversions_only, self.cards.transversions_only.setChecked)
+
+        self.binder.bind(
+            object.properties.network_algorithm,
+            self.cards.input_tree.roll_animation.setAnimatedVisible,
+            lambda algo: algo == NetworkAlgorithm.Fitchi)
+
         self.binder.bind(
             object.properties.network_algorithm,
             self.cards.transversions_only.roll_animation.setAnimatedVisible,
@@ -255,6 +262,7 @@ class View(TaskView):
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
+        self._bind_input_selector(self.cards.input_tree, object.input_tree, object.subtask_tree)
 
     def _bind_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)
@@ -273,7 +281,7 @@ class View(TaskView):
         text = (
             'Problems detected with input file: \n\n' +
             '\n'.join('- ' + str(warn) for warn in warns) + '\n\n'
-            'The program may produce false results. \n'
+            'The program may fail or produce false results. \n'
             'Procceed anyway?\n'
         )
         msgBox.setText(text)

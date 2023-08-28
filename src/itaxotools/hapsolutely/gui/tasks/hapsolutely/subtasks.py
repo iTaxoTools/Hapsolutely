@@ -26,6 +26,7 @@ from Bio.Phylo.TreeConstruction import (
     DistanceCalculator, DistanceTreeConstructor)
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+from itaxotools.common.utility import AttrDict
 from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import UnphasedSequence
 from itaxotools.fitchi import compute_fitchi_tree
@@ -34,6 +35,7 @@ from itaxotools.haplodemo.types import (
 from itaxotools.popart_networks.types import Network
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
+from itaxotools.taxi2.trees import Tree, Trees
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -80,7 +82,37 @@ def make_tree_nj(sequences: Sequences) -> str:
     newick_io = StringIO()
     NewickIO.write([tree], newick_io)
     newick_string = newick_io.getvalue()
+    tree = Tree.from_newick_string(newick_string)
+    newick_string = tree.get_newick_string(lengths=False, semicolon=True, comments=True)
     return _format_newick_for_fitchi(newick_string)
+
+
+def get_tree_from_model(model: AttrDict) -> Tree:
+    trees = Trees.fromPath(model.info.path)
+    return trees[model.index]
+
+
+def get_newick_string_from_tree(tree: Tree) -> str:
+    newick_string = tree.get_newick_string(lengths=False, semicolon=True, comments=True)
+    return _format_newick_for_fitchi(newick_string)
+
+
+def validate_sequences_in_tree(sequences: Sequences, tree: Tree) -> list[str]:
+    names = tree.get_node_names()
+    unknowns = list()
+    for sequence in sequences:
+        if sequence.id not in names:
+            unknowns.append(sequence.id)
+
+    if unknowns:
+        unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
+        if len(unknowns) > 3:
+            unknowns_str += f' and {len(unknowns) - 3} more'
+        warns = [f'Could not match individuals to tree: {unknowns_str}']
+    else:
+        warns = []
+
+    return warns
 
 
 def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, transversions_only: bool) -> HaploNode:
