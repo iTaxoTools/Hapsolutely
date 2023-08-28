@@ -54,7 +54,8 @@ def execute(
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import scan_sequences
+    from ..common.subtasks import (
+        match_partition_to_phased_sequences, scan_sequences)
     from .subtasks import make_haplo_net, make_haplo_tree, make_tree_nj
 
     haplo_tree = None
@@ -63,14 +64,21 @@ def execute(
     ts = perf_counter()
 
     sequences = sequences_from_model(input_sequences)
-    warns = scan_sequences(sequences)
+    sequence_warns = scan_sequences(sequences)
+
+    partition = partition_from_model(input_species)
+    partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
+
+    warns = sequence_warns + partition_warns
+
+    tm = perf_counter()
 
     if warns:
         answer = get_feedback(warns)
         if not answer:
             abort()
 
-    partition = partition_from_model(input_species)
+    tx = perf_counter()
 
     if network_algorithm == NetworkAlgorithm.Fitchi:
         tree = make_tree_nj(sequences)
@@ -98,4 +106,4 @@ def execute(
 
     tf = perf_counter()
 
-    return Results(haplo_tree, haplo_net, tf - ts)
+    return Results(haplo_tree, haplo_net, tm - ts + tf - tx)
