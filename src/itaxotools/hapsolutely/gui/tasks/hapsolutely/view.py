@@ -115,6 +115,33 @@ class NetworkAlgorithmSelector(Card):
         self.controls.algorithm.setValue(value)
 
 
+class EpsilonSelector(Card):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        title = QtWidgets.QLabel('Epsilon parameter:')
+        title.setStyleSheet("""font-size: 16px;""")
+        title.setMinimumWidth(140)
+
+        description = QtWidgets.QLabel('Mutation cost weighting in median vector calculation (default: 0).')
+        description.setStyleSheet("""padding-top: 2px;""")
+        description.setWordWrap(True)
+
+        control = QtWidgets.QSpinBox()
+        control.setFixedWidth(80)
+        control.setMinimum(0)
+        control.setMaximum(9)
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.addWidget(title)
+        layout.addWidget(description, 1)
+        layout.addWidget(control)
+        layout.setSpacing(16)
+        self.addLayout(layout)
+
+        self.controls.epsilon = control
+
+
 class View(TaskView):
 
     def __init__(self, parent):
@@ -140,6 +167,7 @@ class View(TaskView):
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
+        self.cards.epsilon = EpsilonSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:
@@ -174,6 +202,13 @@ class View(TaskView):
 
         self.binder.bind(object.properties.network_algorithm, self.cards.network_algorithm.setValue)
         self.binder.bind(self.cards.network_algorithm.valueChanged, object.properties.network_algorithm)
+
+        self.binder.bind(self.cards.epsilon.controls.epsilon.valueChanged, object.properties.epsilon)
+        self.binder.bind(object.properties.epsilon, self.cards.epsilon.controls.epsilon.setValue)
+        self.binder.bind(
+            object.properties.network_algorithm,
+            self.cards.epsilon.roll_animation.setAnimatedVisible,
+            lambda algo: algo == NetworkAlgorithm.MJN)
 
         self.binder.bind(object.properties.haplo_tree, self.show_fitchi_tree)
         self.binder.bind(object.properties.haplo_net, self.show_haplo_graph)

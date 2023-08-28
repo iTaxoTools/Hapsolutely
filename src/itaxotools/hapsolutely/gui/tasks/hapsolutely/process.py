@@ -42,6 +42,7 @@ def execute(
     input_species: AttrDict,
 
     network_algorithm: NetworkAlgorithm,
+    epsilon: int,
 
 ) -> tuple[Path, float]:
 
@@ -74,20 +75,24 @@ def execute(
         tree = make_tree_nj(sequences)
         haplo_tree = make_haplo_tree(sequences, partition, tree)
     else:
-        build_method = {
-            NetworkAlgorithm.MSN: build_msn,
-            NetworkAlgorithm.MJN: build_mjn,
-            NetworkAlgorithm.TCS: build_tcs,
-            NetworkAlgorithm.TSW: build_tsw,
+        build_method, args = {
+            NetworkAlgorithm.MSN: (build_msn, []),
+            NetworkAlgorithm.MJN: (build_mjn, [epsilon]),
+            NetworkAlgorithm.TCS: (build_tcs, []),
+            NetworkAlgorithm.TSW: (build_tsw, []),
         }[network_algorithm]
 
-        graph = build_method(
+        popart_sequences = (
             Sequence(
                 sequence.id,
                 sequence.seq,
                 partition.get(sequence.id, 'unknown')
             )
-            for sequence in sequences)
+            for sequence in sequences
+        )
+
+        graph = build_method(popart_sequences, *args)
+
         haplo_net = make_haplo_net(graph)
 
     tf = perf_counter()

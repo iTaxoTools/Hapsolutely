@@ -49,6 +49,8 @@ class Model(TaskModel):
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
 
+    epsilon = Property(int, 0)
+
     def __init__(self, name=None):
         super().__init__(name)
         self.can_open = True
@@ -100,6 +102,7 @@ class Model(TaskModel):
             input_species=self.input_species.as_dict(),
 
             network_algorithm=self.network_algorithm,
+            epsilon=self.epsilon,
         )
 
     def on_query(self, query: DataQuery):
