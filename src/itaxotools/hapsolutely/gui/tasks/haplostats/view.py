@@ -21,11 +21,12 @@ from PySide6 import QtCore, QtWidgets
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
 from itaxotools.taxi_gui import app
-from itaxotools.taxi_gui.tasks.common.view import (
-    PartitionSelector, SequenceSelector, TitleCard)
+from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, TitleCard
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
+
+from ..common.view import PhasedSequenceSelector
 
 
 class TightResultViewer(ResultViewer):
@@ -78,7 +79,7 @@ class View(TaskView):
             'Find unique haplotypes, fields of recombination and subset sharing.',
             self)
         self.cards.results = TightResultViewer('Haplotype statistics', self)
-        self.cards.input_sequences = SequenceSelector('Input sequences', self)
+        self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)
         self.cards.bulk_mode = BulkModeSelector(self)
 

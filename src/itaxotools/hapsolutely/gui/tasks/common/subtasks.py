@@ -21,49 +21,6 @@ from __future__ import annotations
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequences
 
-from .types import Entry
-
-
-def bundle_entries(
-
-    sequences: Sequences,
-    partition: Partition
-
-) -> iter[Entry]:
-
-    cached_id = None
-    cached_seq_a = None
-    cached_seq_b = None
-
-    for sequence in sequences:
-        id = sequence.id[:-1]
-        allele = sequence.id[-1]
-
-        if id != cached_id and cached_id is not None:
-            yield Entry(
-                cached_id,
-                partition[cached_id + 'a'],
-                cached_seq_a,
-                cached_seq_b,
-            )
-
-        cached_id = id
-
-        match allele:
-            case 'a':
-                cached_seq_a = sequence.seq
-            case 'b':
-                cached_seq_b = sequence.seq
-            case _:
-                raise ValueError(f"Individual {repr(sequence.id)} not ending with 'a' or 'b'. Is the input phased?")
-
-    yield Entry(
-        cached_id,
-        partition[cached_id + 'a'],
-        cached_seq_a,
-        cached_seq_b,
-    )
-
 
 def scan_sequences(sequences: Sequences) -> list[str]:
     ambiguity = set()
@@ -92,8 +49,6 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
         if sequence.id in partition:
             matched[sequence.id] = partition[sequence.id]
             continue
-        if 'allele' in sequence.extras:
-            raise NotImplementedError
         if sequence.id[-1] in 'ab':
             if sequence.id[:-1] in partition:
                 matched[sequence.id] = partition[sequence.id[:-1]]

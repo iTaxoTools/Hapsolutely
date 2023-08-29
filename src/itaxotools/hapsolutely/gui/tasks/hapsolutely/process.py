@@ -59,7 +59,7 @@ def execute(
         match_partition_to_phased_sequences, scan_sequences)
     from .subtasks import (
         get_newick_string_from_tree, get_tree_from_model, make_haplo_net,
-        make_haplo_tree, make_tree_nj, validate_sequences_in_tree)
+        make_haplo_tree, make_tree_nj, validate_sequences_in_tree, append_alleles_to_sequence_ids)
 
     haplo_tree = None
     haplo_net = None
@@ -68,6 +68,8 @@ def execute(
 
     sequences = sequences_from_model(input_sequences)
     sequence_warns = scan_sequences(sequences)
+
+    sequences = append_alleles_to_sequence_ids(sequences)
 
     partition = partition_from_model(input_species)
     partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)

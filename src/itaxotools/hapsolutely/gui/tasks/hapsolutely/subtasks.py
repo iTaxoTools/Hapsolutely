@@ -16,6 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 from collections import Counter
 from io import StringIO
 
@@ -137,3 +139,19 @@ def make_haplo_net(graph: Network) -> HaploGraph:
             for edge in graph.edges
         ],
     )
+
+
+def _iter_append_alleles_to_sequence_ids(sequences: Sequences) -> iter[Sequence]:
+    for sequence in sequences:
+        new_id = sequence.id
+        if 'allele' in sequence.extras:
+            new_id += sequence.extras['allele']
+        yield Sequence(
+            new_id,
+            sequence.seq,
+            sequence.extras,
+        )
+
+
+def append_alleles_to_sequence_ids(sequences: Sequences) -> Sequences:
+    return Sequences(_iter_append_alleles_to_sequence_ids, sequences)

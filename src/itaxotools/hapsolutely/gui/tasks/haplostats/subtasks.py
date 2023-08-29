@@ -27,7 +27,7 @@ from itaxotools.haplostats import HaploStats
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequences
 
-from ..common.subtasks import bundle_entries
+from .types import Entry
 
 
 def _dict_representer(dumper, data):
@@ -74,6 +74,54 @@ def write_all_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     print(_yamlify(data, 'FORs shared between subsets'), file=file)
 
 
+def bundle_entries(
+
+    sequences: Sequences,
+    partition: Partition
+
+) -> iter[Entry]:
+
+    cached_id = None
+    cached_subset = None
+    cached_seq_a = None
+    cached_seq_b = None
+
+    for sequence in sequences:
+        if 'allele' in sequence.extras:
+            id = sequence.id
+            allele = sequence.extras['allele']
+        else:
+            id = sequence.id[:-1]
+            allele = sequence.id[-1]
+        subset = partition[sequence.id]
+
+        if id != cached_id and cached_id is not None:
+            yield Entry(
+                cached_id,
+                cached_subset,
+                cached_seq_a,
+                cached_seq_b,
+            )
+
+        cached_id = id
+        cached_subset = subset
+
+        match allele:
+            case 'a':
+                cached_seq_a = sequence.seq
+            case 'b':
+                cached_seq_b = sequence.seq
+            case _:
+                raise ValueError(f"Could not determine alleles for individual {repr(sequence.id)}. Is the input phased?")
+
+    yield Entry(
+        cached_id,
+        cached_subset,
+        cached_seq_a,
+        cached_seq_b,
+    )
+
+
 def write_stats_to_path(sequences: Sequences, partition: Partition, name: str, path: Path):
 
     stats = HaploStats()
@@ -100,5 +148,6 @@ def write_bulk_stats_to_path(sequences: Sequences, partitions: iter[Partition], 
 
 def get_all_possible_partition_models(input: AttrDict) -> iter[AttrDict]:
     for partition in input.info.spartitions:
-        input.spartition = partition
-        yield AttrDict(input)
+        model = AttrDict(input)
+        model.spartition = partition
+        yield model
