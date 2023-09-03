@@ -19,42 +19,6 @@
 """GUI entry point"""
 
 
-def load_resources():
-
-    from PySide6 import QtCore, QtGui
-
-    from itaxotools.common.resources import get_local
-    from itaxotools.common.widgets import VectorPixmap
-    from itaxotools.taxi_gui.app import resources, skin
-
-    root = __package__
-    resources.graphics = resources.ResourceLoader(
-        about = lambda: VectorPixmap(
-            get_local(root, 'graphics/about.svg'),
-            size=QtCore.QSize(84, 84),
-            colormap=skin.colormap_icon),
-        nets = lambda: VectorPixmap(
-            get_local(root, 'graphics/nets.svg'),
-            size=QtCore.QSize(84, 84),
-            colormap=skin.colormap_icon),
-        phase = lambda: VectorPixmap(
-            get_local(root, 'graphics/phase.svg'),
-            size=QtCore.QSize(84, 84),
-            colormap=skin.colormap_icon),
-        stats = lambda: VectorPixmap(
-            get_local(root, 'graphics/stats.svg'),
-            size=QtCore.QSize(84, 84),
-            colormap=skin.colormap_icon),
-    )
-
-    resources.icons.app = lambda: QtGui.QIcon(
-        get_local(root, 'logos/hapsolutely.ico'))
-    resources.pixmaps.logo_tool = lambda: VectorPixmap(
-        get_local(root, 'logos/hapsolutely.svg'),
-        size=QtCore.QSize(192, 48),
-        colormap=skin.colormap_icon)
-
-
 def find_task():
     from itaxotools.taxi_gui.app import model
 
@@ -82,8 +46,6 @@ def run():
     app = Application()
     app.set_config(config)
     app.set_skin(skin)
-
-    load_resources()
 
     parser = ArgumentParser(description='Hapsolutely')
     parser.add_argument('input', nargs='?', type=str, help='Path to input file')

@@ -16,17 +16,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from itaxotools.convphase_gui import task as convphase
+from PySide6 import QtCore, QtGui
 
-from .tasks import haplostats, hapsolutely
-from .resources import icons, pixmaps
+from itaxotools.common.resources import get_local
+from itaxotools.common.widgets import VectorPixmap
+from itaxotools.taxi_gui.app.resources import LazyResourceCollection
+from itaxotools.taxi_gui.app import skin
 
-title = 'Hapsolutely'
-icon = icons.hapsolutely
-pixmap = pixmaps.hapsolutely
 
-tasks = [
-    hapsolutely,
-    convphase,
-    haplostats,
-]
+icons = LazyResourceCollection(
+    hapsolutely = lambda: QtGui.QIcon(
+        get_local(__package__, 'logos/hapsolutely.ico')),
+)
+
+
+pixmaps = LazyResourceCollection(
+    hapsolutely = lambda: VectorPixmap(
+        get_local(__package__, 'logos/hapsolutely.svg'),
+        size=QtCore.QSize(192, 48),
+        colormap=skin.colormap_icon)
+)
