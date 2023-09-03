@@ -34,11 +34,11 @@ from itaxotools.taxi_gui.utility import human_readable_seconds
 from itaxotools.hapsolutely.gui.model.phased_sequence import (
     PhasedSequenceModel)
 
-from . import process
+from . import process, title
 
 
 class Model(TaskModel):
-    task_name = 'Haplostats'
+    task_name = title
 
     request_confirmation = QtCore.Signal(object, object, object)
 

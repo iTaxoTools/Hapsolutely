@@ -24,10 +24,10 @@ from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, TitleCard
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
-from itaxotools.taxi_gui.view.tasks import TaskView
+from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
 
-class View(TaskView):
+class View(ScrollTaskView):
 
     def __init__(self, parent):
         super().__init__(parent)

@@ -28,12 +28,13 @@ from itaxotools.taxi_gui.tasks.common.view import (
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
-    RadioButtonGroup, RichRadioButton, ScrollArea)
+    RadioButtonGroup, RichRadioButton, ScrollArea, DisplayFrame)
 
 from itaxotools.hapsolutely.gui.fitchi import get_fitchi_divisions
 from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
 
 from .types import NetworkAlgorithm
+from . import title, long_description
 
 
 class HaploView(QtWidgets.QFrame):
@@ -176,8 +177,9 @@ class EpsilonSelector(Card):
 
 class View(TaskView):
 
-    def __init__(self, parent):
+    def __init__(self, parent=None, max_width=920):
         super().__init__(parent)
+        self.max_width = max_width
 
         self.stack = QtWidgets.QStackedLayout(self)
         self.stack.setContentsMargins(0, 0, 0, 0)
@@ -188,14 +190,19 @@ class View(TaskView):
         self.stack.addWidget(self.haplo_view)
         self.stack.addWidget(self.area)
 
+        self.frame = DisplayFrame(stretch=999, center_vertical=False)
+        self.inner_frame = DisplayFrame(stretch=99, center_vertical=False)
+        self.inner_frame.setStyleSheet('DisplayFrame {background: Palette(mid);}')
+        self.inner_frame.setMaximumWidth(self.max_width)
+        self.inner_frame.setContentsMargins(4, 8, 4, 8)
+        self.area.setWidget(self.frame)
+        self.frame.setWidget(self.inner_frame)
+
         self.draw_cards()
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(
-            'TaxoPhase',
-            'Create haplotype networks from phased sequences.',
-            self)
+        self.cards.title = TitleCard(title, long_description, self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
@@ -210,7 +217,10 @@ class View(TaskView):
         layout.setSpacing(6)
         layout.setContentsMargins(6, 6, 6, 6)
 
-        self.area.setLayout(layout)
+        widget = QtWidgets.QWidget()
+        widget.setLayout(layout)
+
+        self.inner_frame.setWidget(widget)
 
     def ensureVisible(self):
         self.area.ensureVisible(0, 0)

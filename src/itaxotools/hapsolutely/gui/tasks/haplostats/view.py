@@ -24,9 +24,10 @@ from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, TitleCard
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
-from itaxotools.taxi_gui.view.tasks import TaskView
+from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
 from ..common.view import PhasedSequenceSelector
+from . import title, long_description
 
 
 class TightResultViewer(ResultViewer):
@@ -66,7 +67,7 @@ class BulkModeSelector(Card):
         self.controls.title.setChecked(checked)
 
 
-class View(TaskView):
+class View(ScrollTaskView):
 
     def __init__(self, parent):
         super().__init__(parent)
@@ -74,10 +75,7 @@ class View(TaskView):
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(
-            'Haplostats',
-            'Find unique haplotypes, fields of recombination and subset sharing.',
-            self)
+        self.cards.title = TitleCard(title, long_description, self)
         self.cards.results = TightResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)

@@ -18,5 +18,12 @@
 
 from itaxotools.taxi_gui.model.tasks import TaskModel
 
+from . import title
+
 class Model(TaskModel):
-    task_name = 'About'
+    task_name = title
+
+    def __init__(self, name=None):
+        super().__init__(name)
+        self.can_open = True
+        self.can_save = True
