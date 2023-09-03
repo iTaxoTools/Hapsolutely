@@ -28,6 +28,25 @@ def load_resources():
     from itaxotools.taxi_gui.app import resources, skin
 
     root = __package__
+    resources.graphics = resources.ResourceLoader(
+        about = lambda: VectorPixmap(
+            get_local(root, 'graphics/about.svg'),
+            size=QtCore.QSize(84, 84),
+            colormap=skin.colormap_icon),
+        nets = lambda: VectorPixmap(
+            get_local(root, 'graphics/nets.svg'),
+            size=QtCore.QSize(84, 84),
+            colormap=skin.colormap_icon),
+        phase = lambda: VectorPixmap(
+            get_local(root, 'graphics/phase.svg'),
+            size=QtCore.QSize(84, 84),
+            colormap=skin.colormap_icon),
+        stats = lambda: VectorPixmap(
+            get_local(root, 'graphics/stats.svg'),
+            size=QtCore.QSize(84, 84),
+            colormap=skin.colormap_icon),
+    )
+
     resources.icons.app = lambda: QtGui.QIcon(
         get_local(root, 'logos/hapsolutely.ico'))
     resources.pixmaps.logo_tool = lambda: VectorPixmap(
@@ -39,9 +58,9 @@ def load_resources():
 def find_task():
     from itaxotools.taxi_gui.app import model
 
-    from .task.model import Model as TaxoPhase
+    from .tasks.haplostats.model import Model as Hapsolutely
 
-    index = model.items.find_task(TaxoPhase)
+    index = model.items.find_task(Hapsolutely)
     item = model.items.data(index, role=model.items.ItemRole)
     return item.object
 

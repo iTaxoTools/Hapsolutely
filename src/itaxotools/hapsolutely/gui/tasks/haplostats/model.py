@@ -75,6 +75,7 @@ class Model(TaskModel):
             self.input_species.updated,
         ]:
             self.binder.bind(handle, self.checkReady)
+        self.checkReady()
 
         self.subtask_init.start(process.initialize)
 
