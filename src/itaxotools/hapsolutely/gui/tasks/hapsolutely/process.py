@@ -30,8 +30,8 @@ def initialize():
     import itaxotools.popart_networks  # noqa
     import itaxotools.taxi_gui.tasks.common.process  # noqa
 
-    from ..common.subtasks import scan_sequences  # noqa
-    from . import subtasks  # noqa
+    from ..common.work import scan_sequences  # noqa
+    from . import work  # noqa
 
 
 def execute(
@@ -55,9 +55,9 @@ def execute(
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import (
+    from ..common.work import (
         match_partition_to_phased_sequences, scan_sequences)
-    from .subtasks import (
+    from .work import (
         get_newick_string_from_tree, get_tree_from_model, make_haplo_net,
         make_haplo_tree, make_tree_nj, validate_sequences_in_tree, append_alleles_to_sequence_ids)
 

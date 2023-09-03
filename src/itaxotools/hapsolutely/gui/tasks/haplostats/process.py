@@ -28,7 +28,7 @@ from .types import Results
 def initialize():
     import itaxotools
     itaxotools.progress_handler('Initializing...')
-    from . import subtasks  # noqa
+    from . import work  # noqa
 
 
 def execute(
@@ -70,9 +70,9 @@ def execute_single(
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import (
+    from ..common.work import (
         match_partition_to_phased_sequences, scan_sequences)
-    from .subtasks import write_stats_to_path
+    from .work import write_stats_to_path
 
     haplotype_stats = work_dir / 'out'
 
@@ -117,9 +117,9 @@ def execute_bulk(
 
     from itaxotools import abort, get_feedback
 
-    from ..common.subtasks import (
+    from ..common.work import (
         match_partition_to_phased_sequences, scan_sequences)
-    from .subtasks import (
+    from .work import (
         get_all_possible_partition_models, write_bulk_stats_to_path)
 
     haplotype_stats = work_dir / 'out'

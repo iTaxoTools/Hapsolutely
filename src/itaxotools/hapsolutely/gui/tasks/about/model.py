@@ -16,21 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from .tasks import haplostats, hapsolutely, convphase, about
-from .resources import icons, pixmaps
+from itaxotools.taxi_gui.model.tasks import TaskModel
 
-title = 'Hapsolutely'
-icon = icons.hapsolutely
-pixmap = pixmaps.hapsolutely
-
-dashboard = 'constrained'
-
-tasks = [
-    [
-        convphase,
-        hapsolutely,
-        haplostats,
-    ],
-
-    about,
-]
+class Model(TaskModel):
+    task_name = 'About'

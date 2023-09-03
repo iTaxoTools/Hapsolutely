@@ -34,5 +34,17 @@ pixmaps = LazyResourceCollection(
     hapsolutely = lambda: VectorPixmap(
         get_local(__package__, 'logos/hapsolutely.svg'),
         size=QtCore.QSize(192, 48),
-        colormap=skin.colormap_icon)
+        colormap=skin.colormap_icon),
+    about = lambda: VectorPixmap(
+        get_local(__package__, 'graphics/about.svg'),
+        size=QtCore.QSize(128, 128)),
+    nets = lambda: VectorPixmap(
+        get_local(__package__, 'graphics/nets.svg'),
+        size=QtCore.QSize(128, 128)),
+    phase = lambda: VectorPixmap(
+        get_local(__package__, 'graphics/phase.svg'),
+        size=QtCore.QSize(128, 128)),
+    stats = lambda: VectorPixmap(
+        get_local(__package__, 'graphics/stats.svg'),
+        size=QtCore.QSize(128, 128)),
 )
