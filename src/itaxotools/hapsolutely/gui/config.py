@@ -25,6 +25,9 @@ pixmap = pixmaps.hapsolutely
 
 dashboard = 'constrained'
 
+show_open = True
+show_save = True
+
 tasks = [
     [
         convphase,

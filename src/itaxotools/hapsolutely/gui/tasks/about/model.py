@@ -25,5 +25,6 @@ class Model(TaskModel):
 
     def __init__(self, name=None):
         super().__init__(name)
-        self.can_open = True
-        self.can_save = True
+        self.can_open = False
+        self.can_save = False
+        self.ready = False
