@@ -27,7 +27,7 @@ from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
 from ..common.view import PhasedSequenceSelector
-from . import title, long_description
+from . import long_description, title
 
 
 class TightResultViewer(ResultViewer):

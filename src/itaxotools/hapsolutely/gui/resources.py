@@ -20,9 +20,8 @@ from PySide6 import QtCore, QtGui
 
 from itaxotools.common.resources import get_local
 from itaxotools.common.widgets import VectorPixmap
-from itaxotools.taxi_gui.app.resources import LazyResourceCollection
 from itaxotools.taxi_gui.app import skin
-
+from itaxotools.taxi_gui.app.resources import LazyResourceCollection
 
 icons = LazyResourceCollection(
     hapsolutely = lambda: QtGui.QIcon(

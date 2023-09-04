@@ -16,14 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtWidgets
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
-from itaxotools.taxi_gui import app
-from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, TitleCard
-from itaxotools.taxi_gui.types import FileFormat
-from itaxotools.taxi_gui.view.cards import Card
+from itaxotools.taxi_gui.tasks.common.view import TitleCard
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
 

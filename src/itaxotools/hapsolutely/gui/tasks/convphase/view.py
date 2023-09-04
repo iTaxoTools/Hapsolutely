@@ -16,14 +16,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtGui, QtWidgets
-
-from itaxotools.convphase_gui.task.view import ParameterCard, OutputFormatCard, InputSequencesSelector,ResultViewer, View as _View
+from PySide6 import QtWidgets
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.taxi_gui.tasks.common.view import InputSelector, ProgressCard, TitleCard
+from itaxotools.convphase_gui.task.view import (
+    InputSequencesSelector, OutputFormatCard, ParameterCard, ResultViewer)
+from itaxotools.convphase_gui.task.view import View as _View
+from itaxotools.taxi_gui.tasks.common.view import ProgressCard, TitleCard
 
-from . import title, long_description
+from . import long_description, title
 
 
 class View(_View):

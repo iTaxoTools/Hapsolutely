@@ -33,7 +33,7 @@ from itaxotools.taxi_gui.tasks.common.model import (
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
-from . import title, process
+from . import process, title
 from .types import NetworkAlgorithm
 
 

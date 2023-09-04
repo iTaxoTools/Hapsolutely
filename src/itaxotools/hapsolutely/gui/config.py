@@ -16,8 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from .tasks import haplostats, hapsolutely, convphase, about
 from .resources import icons, pixmaps
+from .tasks import about, convphase, haplostats, hapsolutely
 
 title = 'Hapsolutely'
 icon = icons.hapsolutely

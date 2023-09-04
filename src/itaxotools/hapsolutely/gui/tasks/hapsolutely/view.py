@@ -18,40 +18,193 @@
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import AttrDict
+from itaxotools.common.widgets import HLineSeparator
 from itaxotools.fitchi.types import HaploNode
-from itaxotools.haplodemo import Window
+from itaxotools.haplodemo.dialogs import (
+    EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
+    NodeSizeDialog, PenWidthDialog, ScaleMarksDialog)
+from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
+from itaxotools.haplodemo.widgets import (
+    ColorDelegate, DivisionView, PaletteSelector, ToggleButton)
+from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     InputSelector, PartitionSelector, SequenceSelector, TitleCard)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
-    RadioButtonGroup, RichRadioButton, ScrollArea, DisplayFrame)
+    DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
 
 from itaxotools.hapsolutely.gui.fitchi import get_fitchi_divisions
 from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
 
+from . import long_description, title
 from .types import NetworkAlgorithm
-from . import title, long_description
 
 
 class HaploView(QtWidgets.QFrame):
     def __init__(self):
         super().__init__()
+        self.draw()
 
-        widget = Window()
-        widget.layout().setContentsMargins(8, 8, 8, 8)
-        self.setWindowFlags(QtCore.Qt.WindowFlags.Widget)
+    def draw(self, opengl=False):
+        settings = Settings()
 
-        layout = QtWidgets.QHBoxLayout(self)
+        scene = GraphicsScene(settings)
+
+        scene.style_labels(settings.node_label_template, settings.edge_label_template)
+
+        scene_view = GraphicsView(scene, opengl)
+
+        palette_selector = PaletteSelector()
+
+        self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
+        self.edge_style_dialog = EdgeStyleDialog(self, scene)
+        self.edge_length_dialog = EdgeLengthDialog(self, scene, settings)
+        self.scale_style_dialog = ScaleMarksDialog(self, scene, settings.scale)
+        self.pen_style_dialog = PenWidthDialog(self, scene, settings)
+        self.label_format_dialog = LabelFormatDialog(self, scene, settings)
+        self.font_dialog = FontDialog(self, settings)
+
+        mass_resize_nodes = QtWidgets.QPushButton('Set node size')
+        mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
+
+        mass_resize_edges = QtWidgets.QPushButton('Set edge length')
+        mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
+
+        mass_style_edges = QtWidgets.QPushButton('Set edge style')
+        mass_style_edges.clicked.connect(self.edge_style_dialog.show)
+
+        style_pens = QtWidgets.QPushButton('Set pen width')
+        style_pens.clicked.connect(self.pen_style_dialog.show)
+
+        style_scale = QtWidgets.QPushButton('Set scale marks')
+        style_scale.clicked.connect(self.scale_style_dialog.show)
+
+        mass_format_labels = QtWidgets.QPushButton('Set label format')
+        mass_format_labels.clicked.connect(self.label_format_dialog.show)
+
+        select_font = QtWidgets.QPushButton('Set font')
+        select_font.clicked.connect(self.font_dialog.exec)
+
+        toggle_lock_distances = ToggleButton('Lock distances')
+        toggle_lock_labels = ToggleButton('Lock labels')
+        toggle_legend = ToggleButton('Show legend')
+        toggle_scale = ToggleButton('Show scale')
+        toggle_scene_rotation = ToggleButton('Rotate scene')
+
+        division_view = DivisionView(settings.divisions)
+
+        toggles = QtWidgets.QVBoxLayout()
+        toggles.addWidget(toggle_legend)
+        toggles.addWidget(toggle_scale)
+        toggles.addWidget(toggle_lock_labels)
+        toggles.addWidget(toggle_lock_distances)
+        toggles.addWidget(toggle_scene_rotation)
+
+        dialogs = QtWidgets.QVBoxLayout()
+        dialogs.addWidget(mass_resize_nodes)
+        dialogs.addWidget(mass_resize_edges)
+        dialogs.addWidget(mass_style_edges)
+        dialogs.addWidget(style_pens)
+        dialogs.addWidget(style_scale)
+        dialogs.addWidget(mass_format_labels)
+        dialogs.addWidget(select_font)
+
+        sidebar_layout = QtWidgets.QVBoxLayout()
+        sidebar_layout.setContentsMargins(8, 16, 8, 16)
+        sidebar_layout.addLayout(dialogs)
+        sidebar_layout.addSpacing(4)
+        sidebar_layout.addWidget(HLineSeparator(1))
+        sidebar_layout.addSpacing(4)
+        sidebar_layout.addWidget(palette_selector)
+        sidebar_layout.addWidget(division_view, 1)
+        sidebar_layout.addSpacing(4)
+        sidebar_layout.addWidget(HLineSeparator(1))
+        sidebar_layout.addSpacing(4)
+        sidebar_layout.addLayout(toggles)
+
+        sidebar = QtWidgets.QFrame()
+        sidebar.setStyleSheet('QFrame {background: Palette(window);}')
+        sidebar.setLayout(sidebar_layout)
+        sidebar.setFixedWidth(192)
+
+        layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.addWidget(widget)
+        layout.setSpacing(0)
+        layout.addWidget(sidebar)
+        layout.addWidget(scene_view, 1)
+        self.setLayout(layout)
 
-        self.settings = widget.settings
-        self.divisions = widget.settings.divisions
-        self.scene = widget.scene
+        zoom_control = ZoomControl(scene_view, self)
+
+        self.scene = scene
+        self.scene_view = scene_view
+        self.zoom_control = zoom_control
+        self.settings = settings
+        self.divisions = settings.divisions
+
+        self.binder = Binder()
+
+        self.binder.bind(palette_selector.currentValueChanged, settings.properties.palette)
+        self.binder.bind(settings.properties.palette, palette_selector.setValue)
+        self.binder.bind(settings.properties.palette, ColorDelegate.setCustomColors)
+
+        self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
+        self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
+        self.binder.bind(toggle_lock_distances.toggled, settings.properties.rotational_movement)
+        self.binder.bind(toggle_lock_distances.toggled, settings.properties.recursive_movement)
+
+        self.binder.bind(settings.properties.label_movement, toggle_lock_labels.setChecked, lambda x: not x)
+        self.binder.bind(toggle_lock_labels.toggled, settings.properties.label_movement, lambda x: not x)
+
+        self.binder.bind(settings.properties.show_legend, toggle_legend.setChecked)
+        self.binder.bind(toggle_legend.toggled, settings.properties.show_legend)
+
+        self.binder.bind(settings.properties.show_scale, toggle_scale.setChecked)
+        self.binder.bind(toggle_scale.toggled, settings.properties.show_scale)
+
+        self.binder.bind(settings.properties.rotate_scene, toggle_scene_rotation.setChecked)
+        self.binder.bind(toggle_scene_rotation.toggled, settings.properties.rotate_scene)
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        gg = self.scene_view.geometry()
+        gg.setTopLeft(QtCore.QPoint(
+            gg.bottomRight().x() - self.zoom_control.width() - 16,
+            gg.bottomRight().y() - self.zoom_control.height() - 16,
+        ))
+        self.zoom_control.setGeometry(gg)
+
+    def export_svg(self, file=None):
+        if file is None:
+            file, _ = QtWidgets.QFileDialog.getSaveFileName(
+                self, 'Export As...', 'graph.svg', 'SVG Files (*.svg)')
+        if not file:
+            return
+        print('SVG >', file)
+        self.scene_view.export_svg(file)
+
+    def export_pdf(self, file=None):
+        if file is None:
+            file, _ = QtWidgets.QFileDialog.getSaveFileName(
+                self, 'Export As...', 'graph.pdf', 'PDF Files (*.pdf)')
+        if not file:
+            return
+        print('PDF >', file)
+        self.scene_view.export_pdf(file)
+
+    def export_png(self, file=None):
+        if file is None:
+            file, _ = QtWidgets.QFileDialog.getSaveFileName(
+                self, 'Export As...', 'graph.png', 'PNG Files (*.png)')
+        if not file:
+            return
+        print('PNG >', file)
+        self.scene_view.export_png(file)
 
     def reset_settings(self):
         self.settings.rotational_movement = True

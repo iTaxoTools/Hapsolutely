@@ -20,6 +20,7 @@ from itaxotools.taxi_gui.model.tasks import TaskModel
 
 from . import title
 
+
 class Model(TaskModel):
     task_name = title
 
