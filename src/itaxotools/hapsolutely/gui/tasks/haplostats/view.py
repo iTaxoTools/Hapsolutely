@@ -18,8 +18,10 @@
 
 from PySide6 import QtCore, QtWidgets
 
+from pathlib import Path
+
 from itaxotools.common.utility import AttrDict
-from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
+from itaxotools.convphase_gui.task.view import ResultDialog
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import PartitionSelector
 from itaxotools.taxi_gui.types import FileFormat
@@ -28,12 +30,6 @@ from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
-
-
-class TightResultViewer(ResultViewer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.setContentsMargins(0, 0, 0, 0)
 
 
 class BulkModeSelector(Card):
@@ -67,6 +63,43 @@ class BulkModeSelector(Card):
         self.controls.title.setChecked(checked)
 
 
+class StatsResultViewer(Card):
+    view = QtCore.Signal(str, Path)
+
+    def __init__(self, label_text, parent=None):
+        super().__init__(parent)
+        self.setContentsMargins(0, 0, 0, 0)
+        self.text = label_text
+        self.path = None
+
+        label = QtWidgets.QLabel(label_text)
+        label.setStyleSheet("""font-size: 16px;""")
+
+        check = QtWidgets.QLabel('\u2714')
+        check.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
+
+        view = QtWidgets.QPushButton('Preview')
+        view.clicked.connect(self.handleView)
+
+        layout = QtWidgets.QHBoxLayout()
+        layout.setSpacing(0)
+        layout.addWidget(label)
+        layout.addSpacing(12)
+        layout.addWidget(check)
+        layout.addStretch(1)
+        layout.addWidget(view)
+        self.addLayout(layout)
+
+        self.controls.view = view
+
+    def setPath(self, path):
+        self.path = path
+        self.setVisible(path is not None)
+
+    def handleView(self):
+        self.view.emit(self.text, self.path)
+
+
 class View(ScrollTaskView):
 
     def __init__(self, parent):
@@ -76,7 +109,7 @@ class View(ScrollTaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
-        self.cards.results = TightResultViewer('Haplotype statistics', self)
+        self.cards.results = StatsResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)
         self.cards.bulk_mode = BulkModeSelector(self)
@@ -119,7 +152,6 @@ class View(ScrollTaskView):
         self.binder.bind(object.properties.haplotype_stats, self.cards.results.setVisible, lambda x: x is not None)
 
         self.binder.bind(self.cards.results.view, self.view_results)
-        self.binder.bind(self.cards.results.save, self.save_results)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)

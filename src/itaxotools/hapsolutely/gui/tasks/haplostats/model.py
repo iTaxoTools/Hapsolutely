@@ -26,14 +26,14 @@ from itaxotools.common.bindings import Property
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
-from itaxotools.taxi_gui.tasks.common.model import (
-    FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel)
+from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
 from itaxotools.hapsolutely.gui.model.phased_sequence import (
     PhasedSequenceModel)
 
+from ..common.model import PhasedInputModel, PhasedItemProxyModel
 from . import process, title
 
 
@@ -44,8 +44,8 @@ class Model(TaskModel):
 
     haplotype_stats = Property(Path, None)
 
-    input_sequences = Property(ImportedInputModel, ImportedInputModel(PhasedSequenceModel))
-    input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
+    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel))
+    input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
 
     bulk_mode = Property(bool, False)
 
@@ -122,7 +122,7 @@ class Model(TaskModel):
         if not index.isValid():
             return
 
-        item = self.input_sequences.model.data(index, ItemProxyModel.ItemRole)
+        item = self.input_sequences.model.data(index, PhasedItemProxyModel.ItemRole)
         if not item:
             self.perform_species = False
             self.perform_genera = False

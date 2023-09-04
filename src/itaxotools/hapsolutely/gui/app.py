@@ -16,16 +16,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from itaxotools.convphase_gui.task.model import Model as _Model
+from .model.phased_results import PhasedResultsModel
 
-from itaxotools.hapsolutely.gui import app
-
-from . import title
-
-
-class Model(_Model):
-    task_name = title
-
-    def __init__(self, *argts, **kwargs):
-        super().__init__(*argts, **kwargs)
-        self.binder.bind(self.properties.phased_info, app.phased_results.properties.info)
+phased_results = PhasedResultsModel()
