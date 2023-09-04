@@ -24,7 +24,7 @@ from itaxotools.haplodemo.types import HaploGraph, HaploNode
 
 class Results(NamedTuple):
     haplo_tree: HaploNode
-    haplo_net: HaploGraph
+    haplo_graph: HaploGraph
     seconds_taken: float
 
 

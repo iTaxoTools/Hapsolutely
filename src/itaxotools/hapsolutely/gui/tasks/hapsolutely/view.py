@@ -448,8 +448,7 @@ class View(TaskView):
             self.cards.transversions_only.roll_animation.setAnimatedVisible,
             lambda algo: algo == NetworkAlgorithm.Fitchi)
 
-        self.binder.bind(object.properties.haplo_tree, self.show_fitchi_tree)
-        self.binder.bind(object.properties.haplo_net, self.show_haplo_graph)
+        self.binder.bind(object.haplo_ready, self.show_haplo_network)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -492,6 +491,12 @@ class View(TaskView):
             card.setEnabled(editable)
         self.cards.title.setEnabled(True)
         self.haplo_view.setEnabled(not editable)
+
+    def show_haplo_network(self):
+        if self.object.haplo_tree is not None:
+            self.show_fitchi_tree(self.object.haplo_tree)
+        if self.object.haplo_graph is not None:
+            self.show_haplo_graph(self.object.haplo_graph)
 
     def show_fitchi_tree(self, haplo_tree: HaploNode):
         if haplo_tree is None:

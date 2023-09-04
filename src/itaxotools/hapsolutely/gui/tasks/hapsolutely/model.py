@@ -41,9 +41,10 @@ class Model(TaskModel):
     task_name = title
 
     request_confirmation = QtCore.Signal(object, object, object)
+    haplo_ready = QtCore.Signal()
 
     haplo_tree = Property(HaploNode, None)
-    haplo_net = Property(HaploGraph, None)
+    haplo_graph = Property(HaploGraph, None)
 
     input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
     input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
@@ -148,9 +149,8 @@ class Model(TaskModel):
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
         self.dummy_time = report.result.seconds_taken
         self.haplo_tree = report.result.haplo_tree
-        self.haplo_net = report.result.haplo_net
-        self.properties.haplo_tree.update()
-        self.properties.haplo_net.update()
+        self.haplo_graph = report.result.haplo_graph
+        self.haplo_ready.emit()
         self.busy = False
         self.done = True
 

@@ -122,7 +122,7 @@ def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, trans
     return compute_fitchi_tree(sequence_dict, partition, tree, transversions_only)
 
 
-def make_haplo_net(graph: Network) -> HaploGraph:
+def make_haplo_graph(graph: Network) -> HaploGraph:
     return HaploGraph(
         [
             HaploGraphNode(

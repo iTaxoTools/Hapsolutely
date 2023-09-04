@@ -59,11 +59,11 @@ def execute(
         match_partition_to_phased_sequences, scan_sequences)
     from .work import (
         append_alleles_to_sequence_ids, get_newick_string_from_tree,
-        get_tree_from_model, make_haplo_net, make_haplo_tree, make_tree_nj,
+        get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
         validate_sequences_in_tree)
 
     haplo_tree = None
-    haplo_net = None
+    haplo_graph = None
 
     ts = perf_counter()
 
@@ -117,8 +117,8 @@ def execute(
 
         graph = build_method(popart_sequences, *args)
 
-        haplo_net = make_haplo_net(graph)
+        haplo_graph = make_haplo_graph(graph)
 
     tf = perf_counter()
 
-    return Results(haplo_tree, haplo_net, tm - ts + tf - tx)
+    return Results(haplo_tree, haplo_graph, tm - ts + tf - tx)
