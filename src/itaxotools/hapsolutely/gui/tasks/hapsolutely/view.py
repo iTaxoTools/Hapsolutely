@@ -26,7 +26,7 @@ from itaxotools.common.widgets import HLineSeparator
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
     EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
-    NodeSizeDialog, PenWidthDialog, ScaleMarksDialog)
+    NodeSizeDialog, PenWidthDialog, ScaleMarksDialog, OptionsDialog)
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.haplodemo.widgets import (
@@ -47,6 +47,57 @@ from . import long_description, title
 from .types import NetworkAlgorithm
 
 
+class ColorDialog(OptionsDialog):
+    def __init__(self, parent, settings):
+        super().__init__(parent)
+
+        self.setWindowTitle(f'{app.config.title} - Subset colors')
+
+        self.settings = settings
+        self.binder = Binder()
+
+        contents = self.draw_contents()
+        self.draw_dialog(contents)
+        self.hintedResize(280, 60)
+
+    def draw_contents(self):
+        label = QtWidgets.QLabel(
+            'Select a color theme for population subsets. '
+            'Double-click a subset to customize its color.'
+        )
+        label.setWordWrap(True)
+        palette_selector = PaletteSelector()
+        division_view = DivisionView(self.settings.divisions)
+
+        self.binder.bind(palette_selector.currentValueChanged, self.settings.properties.palette)
+        self.binder.bind(self.settings.properties.palette, palette_selector.setValue)
+        self.binder.bind(self.settings.properties.palette, ColorDelegate.setCustomColors)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.setSpacing(8)
+        layout.addWidget(label)
+        layout.addSpacing(8)
+        layout.addWidget(palette_selector)
+        layout.addWidget(division_view)
+        return layout
+
+    def draw_dialog(self, contents):
+        ok = QtWidgets.QPushButton('OK')
+
+        ok.clicked.connect(self.accept)
+        ok.setAutoDefault(True)
+
+        buttons = QtWidgets.QHBoxLayout()
+        buttons.addStretch(1)
+        buttons.addWidget(ok)
+
+        layout = QtWidgets.QVBoxLayout()
+        layout.addLayout(contents, 1)
+        layout.addSpacing(8)
+        layout.addLayout(buttons)
+        self.setLayout(layout)
+
+
 class HaploView(QtWidgets.QFrame):
     def __init__(self):
         super().__init__()
@@ -61,15 +112,23 @@ class HaploView(QtWidgets.QFrame):
 
         scene_view = GraphicsView(scene, opengl)
 
-        palette_selector = PaletteSelector()
-
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
         self.edge_length_dialog = EdgeLengthDialog(self, scene, settings)
         self.scale_style_dialog = ScaleMarksDialog(self, scene, settings.scale)
         self.pen_style_dialog = PenWidthDialog(self, scene, settings)
         self.label_format_dialog = LabelFormatDialog(self, scene, settings)
+        self.color_dialog = ColorDialog(self, settings)
         self.font_dialog = FontDialog(self, settings)
+
+        self.node_size_dialog.setWindowTitle(f'{app.config.title} - Node size')
+        self.edge_style_dialog.setWindowTitle(f'{app.config.title} - Edge styles')
+        self.edge_length_dialog.setWindowTitle(f'{app.config.title} - Edge lengths')
+        self.scale_style_dialog.setWindowTitle(f'{app.config.title} - Scale marks')
+        self.pen_style_dialog.setWindowTitle(f'{app.config.title} - Pen width')
+        self.label_format_dialog.setWindowTitle(f'{app.config.title} - Label format')
+        self.color_dialog.setWindowTitle(f'{app.config.title} - Subset colors')
+        self.font_dialog.setWindowTitle(f'{app.config.title} - Select font')
 
         mass_resize_nodes = QtWidgets.QPushButton('Set node size')
         mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
@@ -77,7 +136,7 @@ class HaploView(QtWidgets.QFrame):
         mass_resize_edges = QtWidgets.QPushButton('Set edge length')
         mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
 
-        mass_style_edges = QtWidgets.QPushButton('Set edge style')
+        mass_style_edges = QtWidgets.QPushButton('Set edge styles')
         mass_style_edges.clicked.connect(self.edge_style_dialog.show)
 
         style_pens = QtWidgets.QPushButton('Set pen width')
@@ -89,6 +148,9 @@ class HaploView(QtWidgets.QFrame):
         mass_format_labels = QtWidgets.QPushButton('Set label format')
         mass_format_labels.clicked.connect(self.label_format_dialog.show)
 
+        select_colors = QtWidgets.QPushButton('Set subset colors')
+        select_colors.clicked.connect(self.color_dialog.show)
+
         select_font = QtWidgets.QPushButton('Set font')
         select_font.clicked.connect(self.font_dialog.exec)
 
@@ -98,15 +160,6 @@ class HaploView(QtWidgets.QFrame):
         toggle_scale = ToggleButton('Show scale')
         toggle_scene_rotation = ToggleButton('Rotate scene')
 
-        division_view = DivisionView(settings.divisions)
-
-        toggles = QtWidgets.QVBoxLayout()
-        toggles.addWidget(toggle_legend)
-        toggles.addWidget(toggle_scale)
-        toggles.addWidget(toggle_lock_labels)
-        toggles.addWidget(toggle_lock_distances)
-        toggles.addWidget(toggle_scene_rotation)
-
         dialogs = QtWidgets.QVBoxLayout()
         dialogs.addWidget(mass_resize_nodes)
         dialogs.addWidget(mass_resize_edges)
@@ -114,7 +167,15 @@ class HaploView(QtWidgets.QFrame):
         dialogs.addWidget(style_pens)
         dialogs.addWidget(style_scale)
         dialogs.addWidget(mass_format_labels)
+        dialogs.addWidget(select_colors)
         dialogs.addWidget(select_font)
+
+        toggles = QtWidgets.QVBoxLayout()
+        toggles.addWidget(toggle_scene_rotation)
+        toggles.addWidget(toggle_lock_distances)
+        toggles.addWidget(toggle_lock_labels)
+        toggles.addWidget(toggle_legend)
+        toggles.addWidget(toggle_scale)
 
         sidebar_layout = QtWidgets.QVBoxLayout()
         sidebar_layout.setContentsMargins(8, 16, 8, 16)
@@ -122,12 +183,8 @@ class HaploView(QtWidgets.QFrame):
         sidebar_layout.addSpacing(4)
         sidebar_layout.addWidget(HLineSeparator(1))
         sidebar_layout.addSpacing(4)
-        sidebar_layout.addWidget(palette_selector)
-        sidebar_layout.addWidget(division_view, 1)
-        sidebar_layout.addSpacing(4)
-        sidebar_layout.addWidget(HLineSeparator(1))
-        sidebar_layout.addSpacing(4)
         sidebar_layout.addLayout(toggles)
+        sidebar_layout.addStretch(1)
 
         sidebar = QtWidgets.QFrame()
         sidebar.setStyleSheet('QFrame {background: Palette(window);}')
@@ -150,10 +207,6 @@ class HaploView(QtWidgets.QFrame):
         self.divisions = settings.divisions
 
         self.binder = Binder()
-
-        self.binder.bind(palette_selector.currentValueChanged, settings.properties.palette)
-        self.binder.bind(settings.properties.palette, palette_selector.setValue)
-        self.binder.bind(settings.properties.palette, ColorDelegate.setCustomColors)
 
         self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
         self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
