@@ -493,10 +493,15 @@ class View(TaskView):
         self.haplo_view.setEnabled(not editable)
 
     def show_haplo_network(self):
+        wait_cursor = QtGui.QCursor(QtCore.Qt.WaitCursor)
+        QtGui.QGuiApplication.setOverrideCursor(wait_cursor)
+
         if self.object.haplo_tree is not None:
             self.show_fitchi_tree(self.object.haplo_tree)
         if self.object.haplo_graph is not None:
             self.show_haplo_graph(self.object.haplo_graph)
+
+        QtGui.QGuiApplication.restoreOverrideCursor()
 
     def show_fitchi_tree(self, haplo_tree: HaploNode):
         if haplo_tree is None:
