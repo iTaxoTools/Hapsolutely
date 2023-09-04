@@ -22,16 +22,17 @@ from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import (
     InputSequencesSelector, OutputFormatCard, ParameterCard, ResultViewer)
 from itaxotools.convphase_gui.task.view import View as _View
-from itaxotools.taxi_gui.tasks.common.view import ProgressCard, TitleCard
+from itaxotools.taxi_gui.tasks.common.view import ProgressCard
 
-from . import long_description, title
+from ..common.view import GraphicTitleCard
+from . import long_description, pixmap_medium, title
 
 
 class View(_View):
 
     def draw(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(title, long_description, self)
+        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
         self.cards.results = ResultViewer('Phased sequences', self)
         self.cards.progress_matrix = ProgressCard(self)
         self.cards.progress_mcmc = ProgressCard(self)

@@ -21,13 +21,13 @@ from PySide6 import QtCore, QtWidgets
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog, ResultViewer
 from itaxotools.taxi_gui import app
-from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, TitleCard
+from itaxotools.taxi_gui.tasks.common.view import PartitionSelector
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
 
-from ..common.view import PhasedSequenceSelector
-from . import long_description, title
+from ..common.view import GraphicTitleCard, PhasedSequenceSelector
+from . import long_description, pixmap_medium, title
 
 
 class TightResultViewer(ResultViewer):
@@ -75,7 +75,7 @@ class View(ScrollTaskView):
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(title, long_description, self)
+        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
         self.cards.results = TightResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)

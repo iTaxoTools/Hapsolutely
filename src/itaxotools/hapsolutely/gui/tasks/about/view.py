@@ -19,8 +19,10 @@
 from PySide6 import QtWidgets
 
 from itaxotools.common.utility import AttrDict
-from itaxotools.taxi_gui.tasks.common.view import TitleCard
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
+
+from ..common.view import GraphicTitleCard
+from . import pixmap_medium
 
 
 class View(ScrollTaskView):
@@ -31,9 +33,10 @@ class View(ScrollTaskView):
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(
+        self.cards.title = GraphicTitleCard(
             'About Hapsolutely',
             'Insert citations here.',
+            pixmap_medium.resource,
             self)
 
         layout = QtWidgets.QVBoxLayout()

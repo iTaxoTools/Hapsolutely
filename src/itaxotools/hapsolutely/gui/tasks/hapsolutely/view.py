@@ -26,7 +26,7 @@ from itaxotools.common.widgets import HLineSeparator
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
     EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
-    NodeSizeDialog, PenWidthDialog, ScaleMarksDialog, OptionsDialog)
+    NodeSizeDialog, OptionsDialog, PenWidthDialog, ScaleMarksDialog)
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.haplodemo.widgets import (
@@ -34,7 +34,7 @@ from itaxotools.haplodemo.widgets import (
 from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
-    InputSelector, PartitionSelector, SequenceSelector, TitleCard)
+    InputSelector, PartitionSelector, SequenceSelector)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
@@ -43,7 +43,8 @@ from itaxotools.taxi_gui.view.widgets import (
 from itaxotools.hapsolutely.gui.fitchi import get_fitchi_divisions
 from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
 
-from . import long_description, title
+from ..common.view import GraphicTitleCard
+from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
 
 
@@ -383,7 +384,7 @@ class View(TaskView):
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = TitleCard(title, long_description, self)
+        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
         self.cards.input_sequences = SequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
