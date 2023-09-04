@@ -18,6 +18,8 @@
 
 from PySide6 import QtCore, QtGui, QtWidgets
 
+from pathlib import Path
+
 from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import AttrDict
 from itaxotools.common.widgets import HLineSeparator
@@ -178,33 +180,6 @@ class HaploView(QtWidgets.QFrame):
             gg.bottomRight().y() - self.zoom_control.height() - 16,
         ))
         self.zoom_control.setGeometry(gg)
-
-    def export_svg(self, file=None):
-        if file is None:
-            file, _ = QtWidgets.QFileDialog.getSaveFileName(
-                self, 'Export As...', 'graph.svg', 'SVG Files (*.svg)')
-        if not file:
-            return
-        print('SVG >', file)
-        self.scene_view.export_svg(file)
-
-    def export_pdf(self, file=None):
-        if file is None:
-            file, _ = QtWidgets.QFileDialog.getSaveFileName(
-                self, 'Export As...', 'graph.pdf', 'PDF Files (*.pdf)')
-        if not file:
-            return
-        print('PDF >', file)
-        self.scene_view.export_pdf(file)
-
-    def export_png(self, file=None):
-        if file is None:
-            file, _ = QtWidgets.QFileDialog.getSaveFileName(
-                self, 'Export As...', 'graph.png', 'PNG Files (*.png)')
-        if not file:
-            return
-        print('PNG >', file)
-        self.scene_view.export_png(file)
 
     def reset_settings(self):
         self.settings.rotational_movement = True
@@ -500,3 +475,19 @@ class View(TaskView):
         divisions.set_divisions_from_keys(graph_divisions)
 
         scene.add_nodes_from_graph(haplo_graph)
+
+    def save(self):
+        path = Path(self.object.input_sequences.object.info.path)
+        path = path.with_name(f'{path.stem}.network')
+        scene_view = self.haplo_view.scene_view
+        filters = {
+            'PNG Files (*.png)': scene_view.export_png,
+            'SVG Files (*.svg)': scene_view.export_svg,
+            'PDF Files (*.pdf)': scene_view.export_pdf,
+        }
+        filename, format = QtWidgets.QFileDialog.getSaveFileName(
+            self.window(), f'{app.config.title} - Export Network',
+            dir=str(path), filter=';;'.join(filters.keys()))
+        if not filename:
+            return None
+        filters[format](filename)

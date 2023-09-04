@@ -162,3 +162,6 @@ class Model(TaskModel):
     def open(self, path: Path):
         self.clear()
         self.subtask_sequences.start(path)
+
+    def save(self, path: Path):
+        pass
