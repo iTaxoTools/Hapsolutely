@@ -43,20 +43,28 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
     """
 
     matched = dict()
-    unknowns = list()
+    unknowns = set()
+
+    def has_subset(index: str, partition: Partition) -> bool:
+        if not index in partition:
+            return False
+        if not partition[index]:
+            return False
+        return True
 
     for sequence in sequences:
-        if sequence.id in partition:
+        if has_subset(sequence.id, partition):
             matched[sequence.id] = partition[sequence.id]
             continue
         if sequence.id[-1] in 'ab':
-            if sequence.id[:-1] in partition:
+            if has_subset(sequence.id[:-1], partition):
                 matched[sequence.id] = partition[sequence.id[:-1]]
                 continue
         matched[sequence.id] = 'unknown'
-        unknowns.append(sequence.id)
+        unknowns.add(sequence.id)
 
     if unknowns:
+        unknowns = list(unknowns)
         unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
         if len(unknowns) > 3:
             unknowns_str += f' and {len(unknowns) - 3} more'
