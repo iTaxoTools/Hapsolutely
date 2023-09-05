@@ -29,10 +29,11 @@ from itaxotools.taxi_gui.model.sequence import SequenceModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 from itaxotools.taxi_gui.model.tree import TreeModel
 from itaxotools.taxi_gui.tasks.common.model import (
-    FileInfoSubtaskModel, ImportedInputModel, ItemProxyModel)
+    FileInfoSubtaskModel, ImportedInputModel)
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
+from ..common.model import PhasedInputModel, PhasedItemProxyModel
 from . import process, title
 from .types import NetworkAlgorithm
 
@@ -46,8 +47,8 @@ class Model(TaskModel):
     haplo_tree = Property(HaploNode, None)
     haplo_graph = Property(HaploGraph, None)
 
-    input_sequences = Property(ImportedInputModel, ImportedInputModel(SequenceModel))
-    input_species = Property(ImportedInputModel, ImportedInputModel(PartitionModel, 'species'))
+    input_sequences = Property(PhasedInputModel, PhasedInputModel(SequenceModel))
+    input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
     input_tree = Property(ImportedInputModel, ImportedInputModel(TreeModel))
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
@@ -133,7 +134,7 @@ class Model(TaskModel):
         if not index.isValid():
             return
 
-        item = self.input_sequences.model.data(index, ItemProxyModel.ItemRole)
+        item = self.input_sequences.model.data(index, PhasedItemProxyModel.ItemRole)
         if not item:
             self.perform_species = False
             self.perform_genera = False

@@ -24,12 +24,15 @@ from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import (
     InputSequencesSelector, OutputFormatCard, ParameterCard)
 from itaxotools.convphase_gui.task.view import View as _View
+from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.tasks.common.view import ProgressCard
 from itaxotools.taxi_gui.view.cards import Card
 
-from itaxotools.hapsolutely.gui import resources
+from itaxotools.hapsolutely.gui import app, resources
 
 from ..common.view import GraphicTitleCard
+from ..haplostats.model import Model as AnalyzeModel
+from ..hapsolutely.model import Model as VisualizeModel
 from . import long_description, pixmap_medium, title
 
 
@@ -51,6 +54,9 @@ class PhaseResultViewer(Card):
 
         visualize = QtWidgets.QPushButton('Visualize')
         analyze = QtWidgets.QPushButton('Analyze')
+
+        visualize.clicked.connect(self.handle_visualize)
+        analyze.clicked.connect(self.handle_analyze)
 
         self.add_pixmap_to_button(visualize, resources.task_pixmaps_small.nets.resource)
         self.add_pixmap_to_button(analyze, resources.task_pixmaps_small.stats.resource)
@@ -86,6 +92,26 @@ class PhaseResultViewer(Card):
         icon = QtGui.QIcon(pixmap)
         button.setIcon(icon)
         button.setIconSize(pixmap.size())
+
+    def handle_visualize(self):
+        self.propagate_reults_to_model(VisualizeModel)
+
+    def handle_analyze(self):
+        self.propagate_reults_to_model(AnalyzeModel)
+
+    def propagate_reults_to_model(self, klass):
+        model_index = global_app.model.items.find_task(klass)
+        if model_index is None:
+            model_index = global_app.model.items.add_task(klass())
+        item = global_app.model.items.data(
+            model_index, role=global_app.model.items.ItemRole)
+        input_sequences = item.object.input_sequences
+        proxy = input_sequences.model
+        source_index = app.phased_results.index
+        proxy_index = proxy.mapFromSource(source_index)
+        input_sequences.set_index(proxy_index)
+        item.object.clear()
+        global_app.model.items.focus(model_index)
 
 
 class View(_View):
