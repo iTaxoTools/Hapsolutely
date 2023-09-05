@@ -61,6 +61,10 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
             self.extra_rows = 1
             self.endRemoveRows()
 
+    def get_default_index(self):
+        row = self.extra_rows - 1
+        return self.index(row, 0)
+
     def sourceDataChanged(self, topLeft, bottomRight):
         self.dataChanged.emit(self.mapFromSource(topLeft), self.mapFromSource(bottomRight))
 
