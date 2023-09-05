@@ -46,6 +46,7 @@ class Model(TaskModel):
 
     haplo_tree = Property(HaploNode, None)
     haplo_graph = Property(HaploGraph, None)
+    can_lock_distances = Property(bool, False)
 
     input_sequences = Property(PhasedInputModel, PhasedInputModel(SequenceModel))
     input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
@@ -148,9 +149,13 @@ class Model(TaskModel):
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
+
         self.dummy_time = report.result.seconds_taken
         self.haplo_tree = report.result.haplo_tree
         self.haplo_graph = report.result.haplo_graph
+
+        self.can_lock_distances = bool(self.haplo_tree is not None)
+
         self.haplo_ready.emit()
         self.busy = False
         self.done = True

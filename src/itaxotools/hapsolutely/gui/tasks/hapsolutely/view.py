@@ -206,6 +206,7 @@ class HaploView(QtWidgets.QFrame):
         self.zoom_control = zoom_control
         self.settings = settings
         self.divisions = settings.divisions
+        self.toggle_lock_distances = toggle_lock_distances
 
         self.binder = Binder()
 
@@ -450,6 +451,8 @@ class View(TaskView):
             lambda algo: algo == NetworkAlgorithm.Fitchi)
 
         self.binder.bind(object.haplo_ready, self.show_haplo_network)
+
+        self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
