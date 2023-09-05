@@ -20,15 +20,12 @@ from __future__ import annotations
 
 from PySide6 import QtCore
 
-from typing import Type
-
-from itaxotools.common.bindings import Binder, Property
-from itaxotools.common.utility import AttrDict, override
+from itaxotools.common.bindings import Binder
+from itaxotools.common.utility import override
 from itaxotools.taxi_gui import app as global_app
-from itaxotools.taxi_gui.model.common import ItemModel, Object
+from itaxotools.taxi_gui.model.common import ItemModel
 from itaxotools.taxi_gui.model.input_file import InputFileModel
-from itaxotools.taxi_gui.tasks.common.model import DataFileProtocol
-from itaxotools.taxi_gui.types import FileFormat, FileInfo, Notification
+from itaxotools.taxi_gui.tasks.common.model import ImportedInputModel
 
 from itaxotools.hapsolutely.gui import app
 
@@ -147,71 +144,8 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
         return super().flags(index)
 
 
-class PhasedInputModel(Object):
-    notification = QtCore.Signal(Notification)
-    updated = QtCore.Signal()
-
-    model = Property(QtCore.QAbstractItemModel, None)
-    index = Property(QtCore.QModelIndex, None)
-    object = Property(DataFileProtocol, None)
-    format = Property(FileFormat, None)
-
-    def __init__(self, cast_type: Type[DataFileProtocol], *cast_args, **cast_kwargs):
-        super().__init__()
-        self.cast_type = cast_type
-        self.cast_args = cast_args
-        self.cast_kwargs = cast_kwargs
-
+class PhasedInputModel(ImportedInputModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         item_model = global_app.model.items
         self.model = PhasedItemProxyModel(item_model, item_model.files)
-        self.binder = Binder()
-
-    def add_info(self, info: FileInfo):
-        index = self.model.add_file(InputFileModel(info))
-        self.set_index(index)
-
-    def set_index(self, index: QtCore.QModelIndex):
-        if index == self.index:
-            return
-        try:
-            object = self._cast_from_index(index)
-        except Exception:
-            self.notification.emit(Notification.Warn('Unexpected file format.'))
-            self.properties.index.update()
-            self.properties.object.update()
-            self.properties.format.update()
-            return
-
-        self.index = index
-        self._set_object(object)
-
-    def _set_object(self, object: DataFileProtocol):
-        if object == self.object:
-            return
-        self.format = object.info.format if object else None
-        self.binder.unbind_all()
-        if object:
-            for property in object.properties:
-                self.binder.bind(property, self.updated)
-        self.object = object
-        self.updated.emit()
-
-    def _cast_from_index(self, index: QtCore.QModelIndex) -> DataFileProtocol | None:
-        if not index:
-            return
-        item = self.model.data(index, PhasedItemProxyModel.ItemRole)
-        if not item:
-            return None
-        info = item.object.info
-        return self.cast_type.from_file_info(
-            info, *self.cast_args, **self.cast_kwargs)
-
-    def is_valid(self) -> bool:
-        if self.object:
-            return self.object.is_valid()
-        return False
-
-    def as_dict(self) -> AttrDict | None:
-        if self.object:
-            return self.object.as_dict()
-        return None

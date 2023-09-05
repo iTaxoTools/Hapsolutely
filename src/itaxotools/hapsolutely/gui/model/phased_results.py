@@ -18,7 +18,7 @@
 
 from PySide6 import QtCore
 
-from itaxotools.common.bindings import Binder, Property, Instance
+from itaxotools.common.bindings import Binder, Instance, Property
 from itaxotools.taxi_gui.app.model import items
 from itaxotools.taxi_gui.model.common import Object
 from itaxotools.taxi_gui.model.input_file import InputFileModel
