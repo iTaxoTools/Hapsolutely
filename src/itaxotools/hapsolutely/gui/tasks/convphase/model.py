@@ -28,4 +28,4 @@ class Model(_Model):
 
     def __init__(self, *argts, **kwargs):
         super().__init__(*argts, **kwargs)
-        self.binder.bind(self.properties.phased_info, app.phased_results.properties.info)
+        self.binder.bind(self.properties.phased_info, app.phased_results.update_results)

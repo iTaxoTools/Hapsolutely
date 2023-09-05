@@ -41,26 +41,28 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
         self.unselected = '---'
         self.root = None
 
+        self.phased_index = QtCore.QModelIndex()
         self.phased_model = None
         self.extra_rows = 1
 
         self.binder = Binder()
-        self.binder.bind(app.phased_results.properties.model, self.update_phased_results)
+        self.binder.bind(app.phased_results.properties.index, self.update_phased_results)
 
         if model and root:
             self.setSourceModel(model, root)
 
-    def update_phased_results(self, model):
-        if model is None and self.phased_model is not None:
-            self.beginRemoveRows(QtCore.QModelIndex(), 0, 0)
-            self.phased_model = model
-            self.extra_rows = 1
-            self.endRemoveRows()
-        if model is not None and self.phased_model is None:
+    def update_phased_results(self, index: QtCore.QModelIndex):
+        self.phased_model = app.phased_results.model
+        if index.isValid() and not self.phased_index.isValid():
             self.beginInsertRows(QtCore.QModelIndex(), 0, 0)
-            self.phased_model = model
+            self.phased_index = index
             self.extra_rows = 2
             self.endInsertRows()
+        if not index.isValid() and self.phased_index.isValid():
+            self.beginRemoveRows(QtCore.QModelIndex(), 0, 0)
+            self.phased_index = index
+            self.extra_rows = 1
+            self.endRemoveRows()
 
     def sourceDataChanged(self, topLeft, bottomRight):
         self.dataChanged.emit(self.mapFromSource(topLeft), self.mapFromSource(bottomRight))
@@ -79,6 +81,8 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
     @override
     def mapFromSource(self, sourceIndex):
         item = sourceIndex.internalPointer()
+        if sourceIndex == self.phased_index:
+            return self.createIndex(0, 0, item)
         if not item or item.parent != self.root:
             return QtCore.QModelIndex()
         return self.createIndex(item.row + self.extra_rows, 0, item)
@@ -87,10 +91,11 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
     def mapToSource(self, proxyIndex):
         if not proxyIndex.isValid():
             return QtCore.QModelIndex()
-        if proxyIndex.row() == 0:
+        true_row = proxyIndex.row() - self.extra_rows
+        if true_row == -1:
             return QtCore.QModelIndex()
-        if proxyIndex.row() == 1 and self.phased_model is not None:
-            return QtCore.QModelIndex()
+        if true_row == -2:
+            return self.phased_index
         item = proxyIndex.internalPointer()
         source = self.sourceModel()
         return source.createIndex(item.row, 0, item)
@@ -101,9 +106,13 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
             return QtCore.QModelIndex()
         if row < 0 or row > len(self.root.children) + self.extra_rows - 1:
             return QtCore.QModelIndex()
-        if row == 0:
-            return self.createIndex(0, 0)
-        return self.createIndex(row, 0, self.root.children[row - self.extra_rows])
+        true_row = row - self.extra_rows
+        if true_row == -1:
+            return self.createIndex(row, 0)
+        if true_row == -2:
+            item = self.phased_index.internalPointer()
+            return self.createIndex(row, 0, item)
+        return self.createIndex(row, 0, self.root.children[true_row])
 
     @override
     def parent(self, index=QtCore.QModelIndex()) -> QtCore.QModelIndex:
@@ -121,29 +130,19 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
     def data(self, index: QtCore.QModelIndex, role: QtCore.Qt.ItemDataRole):
         if not index.isValid():
             return None
-        if self.phased_model is None:
-            if index.row() == 0:
-                if role == QtCore.Qt.DisplayRole:
-                    return self.unselected
-                return None
-        if self.phased_model is not None:
-            if index.row() == 0:
-                if role == QtCore.Qt.DisplayRole:
-                    return self.phased_model.name
-                return None
-            if index.row() == 1:
-                if role == QtCore.Qt.DisplayRole:
-                    return self.unselected
-                return None
+        true_row = index.row() - self.extra_rows
+        if true_row == -1:
+            if role == QtCore.Qt.DisplayRole:
+                return self.unselected
+            return None
         return super().data(index, role)
 
     @override
     def flags(self, index: QtCore.QModelIndex):
         if not index.isValid():
             return QtCore.Qt.NoItemFlags
-        if index.row() == 0:
-            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-        if index.row() == 1 and self.phased_model is not None:
+        true_row = index.row() - self.extra_rows
+        if true_row == -1 or true_row == -2:
             return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
         return super().flags(index)
 

@@ -18,9 +18,9 @@
 
 from PySide6 import QtCore
 
-from itaxotools.common.bindings import Binder
+from itaxotools.common.bindings import Binder, Property, Instance
 from itaxotools.taxi_gui.app.model import items
-from itaxotools.taxi_gui.model.common import Object, Property
+from itaxotools.taxi_gui.model.common import Object
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.types import FileInfo
 
@@ -29,18 +29,19 @@ class PhasedResultsModel(Object):
 
     info = Property(FileInfo, None)
     model = Property(InputFileModel, None)
-    index = Property(QtCore.QModelIndex, None)
+    index = Property(QtCore.QModelIndex, Instance)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.binder = Binder()
-        self.binder.bind(self.properties.info, self.update_model)
 
-    def update_model(self, info: FileInfo):
+    def update_results(self, info: FileInfo):
         if info is None:
+            self.info = None
             self.model = None
             self.index = None
             return
+        self.info = info
         model = InputFileModel(info)
         model.name = 'Previously phased sequences'
         self.model = model
