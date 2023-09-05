@@ -129,7 +129,6 @@ class View(ScrollTaskView):
 
         self.binder.bind(object.notification, self.showNotification)
         self.binder.bind(object.request_confirmation, self.requestConfirmation)
-        self.binder.bind(object.properties.editable, self.setEditable)
 
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
         self.binder.bind(object.properties.busy, self.cards.title.setBusy)
@@ -155,6 +154,9 @@ class View(ScrollTaskView):
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
+
+        # defined last to override `set_busy` calls
+        self.binder.bind(object.properties.editable, self.setEditable)
 
     def _bind_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)
