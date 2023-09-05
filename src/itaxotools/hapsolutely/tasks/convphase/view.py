@@ -28,11 +28,11 @@ from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.tasks.common.view import ProgressCard
 from itaxotools.taxi_gui.view.cards import Card
 
-from itaxotools.hapsolutely.gui import app, resources
+from itaxotools.hapsolutely import app, resources
 
 from ..common.view import GraphicTitleCard
 from ..haplostats.model import Model as AnalyzeModel
-from ..hapsolutely.model import Model as VisualizeModel
+from ..haplodemo.model import Model as VisualizeModel
 from . import long_description, pixmap_medium, title
 
 

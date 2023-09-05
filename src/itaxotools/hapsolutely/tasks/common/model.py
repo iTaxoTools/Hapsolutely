@@ -27,7 +27,7 @@ from itaxotools.taxi_gui.model.common import ItemModel
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.tasks.common.model import ImportedInputModel
 
-from itaxotools.hapsolutely.gui import app
+from itaxotools.hapsolutely import app
 
 
 class PhasedItemProxyModel(QtCore.QAbstractProxyModel):

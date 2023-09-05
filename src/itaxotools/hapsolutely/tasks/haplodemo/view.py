@@ -40,8 +40,8 @@ from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
     DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
 
-from itaxotools.hapsolutely.gui.fitchi import get_fitchi_divisions
-from itaxotools.hapsolutely.gui.graphs import get_graph_divisions
+from itaxotools.hapsolutely.fitchi import get_fitchi_divisions
+from itaxotools.hapsolutely.graphs import get_graph_divisions
 
 from ..common.view import GraphicTitleCard
 from . import long_description, pixmap_medium, title

@@ -30,7 +30,7 @@ from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
-from itaxotools.hapsolutely.gui.model.phased_sequence import (
+from itaxotools.hapsolutely.model.phased_sequence import (
     PhasedSequenceModel)
 
 from ..common.model import PhasedInputModel, PhasedItemProxyModel

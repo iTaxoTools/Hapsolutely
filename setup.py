@@ -46,7 +46,7 @@ setup(
     },
     entry_points={
         'console_scripts': [
-            'hapsolutely = itaxotools.hapsolutely.gui:run',
+            'hapsolutely = itaxotools.hapsolutely:run',
         ]
     },
     classifiers=[

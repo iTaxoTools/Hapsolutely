@@ -5,7 +5,7 @@
 
 import multiprocessing
 
-from itaxotools.hapsolutely.gui import run
+from itaxotools.hapsolutely import run
 
 if __name__ == '__main__':
     multiprocessing.freeze_support()

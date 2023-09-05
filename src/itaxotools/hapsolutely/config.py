@@ -16,16 +16,24 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from itaxotools.convphase_gui.task.model import Model as _Model
+from .resources import icons, pixmaps
+from .tasks import about, convphase, haplostats, haplodemo
 
-from itaxotools.hapsolutely.gui import app
+title = 'Hapsolutely'
+icon = icons.hapsolutely
+pixmap = pixmaps.hapsolutely
 
-from . import title
+dashboard = 'constrained'
 
+show_open = True
+show_save = True
 
-class Model(_Model):
-    task_name = title
+tasks = [
+    [
+        convphase,
+        haplodemo,
+        haplostats,
+    ],
 
-    def __init__(self, *argts, **kwargs):
-        super().__init__(*argts, **kwargs)
-        self.binder.bind(self.properties.phased_info, app.phased_results.update_results)
+    about,
+]

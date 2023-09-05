@@ -1,5 +1,5 @@
 
-from itaxotools.hapsolutely.gui.resources import (
+from itaxotools.hapsolutely.resources import (
     task_pixmaps_large, task_pixmaps_medium)
 
 title = 'Haplotype statistics'
