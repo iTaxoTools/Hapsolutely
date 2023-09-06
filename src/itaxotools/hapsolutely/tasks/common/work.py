@@ -46,7 +46,7 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
     unknowns = set()
 
     def has_subset(index: str, partition: Partition) -> bool:
-        if not index in partition:
+        if index not in partition:
             return False
         if not partition[index]:
             return False

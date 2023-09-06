@@ -35,6 +35,21 @@ class Size(Enum):
         self.size = size
 
 
+def text_from_path(path) -> str:
+    with open(path, 'r') as file:
+        return file.read()
+
+
+documents = LazyResourceCollection(
+    about = lambda: text_from_path(
+        get_local(__package__, 'documents/about.html')),
+    phase = lambda: text_from_path(
+        get_local(__package__, 'documents/phase.html')),
+    nets = lambda: text_from_path(
+        get_local(__package__, 'documents/nets.html')),
+)
+
+
 icons = LazyResourceCollection(
     hapsolutely = lambda: QtGui.QIcon(
         get_local(__package__, 'logos/hapsolutely.ico')),

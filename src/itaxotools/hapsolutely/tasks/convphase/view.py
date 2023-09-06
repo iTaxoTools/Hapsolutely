@@ -31,8 +31,8 @@ from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.hapsolutely import app, resources
 
 from ..common.view import GraphicTitleCard
-from ..haplostats.model import Model as AnalyzeModel
 from ..haplodemo.model import Model as VisualizeModel
+from ..haplostats.model import Model as AnalyzeModel
 from . import long_description, pixmap_medium, title
 
 

@@ -199,7 +199,7 @@ class GraphicTitleCard(Card):
         text_layout.setSpacing(8)
 
         pixmap_layout = QtWidgets.QVBoxLayout()
-        pixmap_layout.setContentsMargins(0, 0, 0, 0)
+        pixmap_layout.setContentsMargins(0, 8, 0, 4)
         pixmap_layout.addWidget(label_pixmap)
         pixmap_layout.addStretch(1)
 

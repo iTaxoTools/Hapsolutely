@@ -17,7 +17,7 @@
 # -----------------------------------------------------------------------------
 
 from .resources import icons, pixmaps
-from .tasks import about, convphase, haplostats, haplodemo
+from .tasks import about, convphase, haplodemo, haplostats
 
 title = 'Hapsolutely'
 icon = icons.hapsolutely
