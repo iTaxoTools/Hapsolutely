@@ -476,7 +476,7 @@ class View(TaskView):
             'Problems detected with input file: \n\n' +
             '\n'.join('- ' + str(warn) for warn in warns) + '\n\n'
             'The program may fail or produce false results. \n'
-            'Procceed anyway?\n'
+            'Proceed anyway?\n'
         )
         msgBox.setText(text)
 

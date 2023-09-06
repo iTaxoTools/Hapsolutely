@@ -14,5 +14,5 @@ long_description = (
     'Output may still contain ambiguity codes, in which case '
     'you could try configuring the phase parameters and try again. '
     '\n\n'
-    'Input and output can in TSV or FASTA format. '
+    'Input and output can be in TSV or FASTA format. '
 )
