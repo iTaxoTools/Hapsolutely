@@ -29,6 +29,7 @@ from itaxotools.haplodemo.dialogs import (
     NodeSizeDialog, OptionsDialog, PenWidthDialog, ScaleMarksDialog)
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
+from itaxotools.haplodemo.visualizer import Visualizer
 from itaxotools.haplodemo.widgets import (
     ColorDelegate, DivisionView, PaletteSelector, ToggleButton)
 from itaxotools.haplodemo.zoom import ZoomControl
@@ -39,9 +40,6 @@ from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
     DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
-
-from itaxotools.hapsolutely.fitchi import get_fitchi_divisions
-from itaxotools.hapsolutely.graphs import get_graph_divisions
 
 from ..common.view import GraphicTitleCard
 from . import long_description, pixmap_medium, title
@@ -108,6 +106,7 @@ class HaploView(QtWidgets.QFrame):
         settings = Settings()
 
         scene = GraphicsScene(settings)
+        visualizer = Visualizer(scene, settings)
 
         scene.style_labels(settings.node_label_template, settings.edge_label_template)
 
@@ -203,6 +202,7 @@ class HaploView(QtWidgets.QFrame):
 
         self.scene = scene
         self.scene_view = scene_view
+        self.visualizer = visualizer
         self.zoom_control = zoom_control
         self.settings = settings
         self.divisions = settings.divisions
@@ -237,26 +237,18 @@ class HaploView(QtWidgets.QFrame):
         self.zoom_control.setGeometry(gg)
 
     def reset_settings(self):
+        self.settings.reset()
+
+        self.settings.node_sizes.set_all_values(20, 10, 1, 0, 0, 20)
+
         self.settings.rotational_movement = True
         self.settings.recursive_movement = True
 
         self.settings.show_legend = True
         self.settings.show_scale = True
 
-        self.settings.node_sizes.a = 20
-        self.settings.node_sizes.b = 10
-        self.settings.node_sizes.c = 1
-        self.settings.node_sizes.d = 0
-        self.settings.node_sizes.e = 0
-        self.settings.node_sizes.f = 20
-
-        self.settings.pen_width_nodes = 1
-        self.settings.pen_width_edges = 2
-
         self.settings.edge_length = 40
         self.settings.node_label_template = 'WEIGHT'
-
-        self.settings.font = QtGui.QFont('Arial', 14)
 
 
 class NetworkAlgorithmSelector(Card):
@@ -512,36 +504,26 @@ class View(TaskView):
             return
 
         view = self.haplo_view
-        scene = self.haplo_view.scene
-        divisions = self.haplo_view.divisions
+        visualizer = view.visualizer
 
-        scene.clear()
         view.reset_settings()
 
         # print(get_fitchi_string(haplo_tree))
 
-        fitchi_divisions = get_fitchi_divisions(haplo_tree)
-        divisions.set_divisions_from_keys(fitchi_divisions)
-
-        scene.add_nodes_from_tree(haplo_tree)
+        visualizer.visualize_tree(haplo_tree)
 
     def show_haplo_graph(self, haplo_graph: HaploGraph):
         if haplo_graph is None:
             return
 
         view = self.haplo_view
-        scene = self.haplo_view.scene
-        divisions = self.haplo_view.divisions
+        visualizer = view.visualizer
 
-        scene.clear()
         view.reset_settings()
 
         # print(haplo_graph)
 
-        graph_divisions = get_graph_divisions(haplo_graph)
-        divisions.set_divisions_from_keys(graph_divisions)
-
-        scene.add_nodes_from_graph(haplo_graph)
+        visualizer.visualize_graph(haplo_graph)
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)

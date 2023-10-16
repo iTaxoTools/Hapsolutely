@@ -8,7 +8,7 @@ clldutils==3.19.0
 colorama==0.4.6
 colorlog==6.7.0
 contourpy==1.1.0
-convphase==0.0.1
+convphase==0.1.0
 convphase-gui==0.0.1
 cycler==0.11.0
 DNAconvert==0.2.0
@@ -16,7 +16,7 @@ et-xmlfile==1.1.0
 fitchi==0.0.1
 flake8==6.1.0
 fonttools==4.42.0
-haplodemo==0.0.1
+haplodemo==0.0.2
 haplostats==0.0.1
 isort==5.12.0
 itaxotools-common==0.3.0
@@ -35,7 +35,7 @@ pandas==2.0.3
 pefile==2023.2.7
 Pillow==10.0.0
 pip==23.1.2
-popart-networks==0.0.1
+popart-networks==0.1.0
 pycodestyle==2.11.0
 pyflakes==3.1.0
 pyinstaller==5.13.0

@@ -25,15 +25,3 @@ def get_fitchi_string(haplo_tree: HaploNode) -> str:
     haplo_string = StringIO()
     haplo_tree.print(file=haplo_string)
     return haplo_string.getvalue()
-
-
-def _recursive_update_divisions(divisions: set, node: HaploNode):
-    divisions.update(node.pops.keys())
-    for child in node.children:
-        _recursive_update_divisions(divisions, child)
-
-
-def get_fitchi_divisions(haplo_tree: HaploNode) -> list[str]:
-    divisions = set()
-    _recursive_update_divisions(divisions, haplo_tree)
-    return list(sorted(divisions))

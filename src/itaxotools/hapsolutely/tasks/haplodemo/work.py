@@ -33,7 +33,7 @@ from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import UnphasedSequence
 from itaxotools.fitchi import compute_fitchi_tree
 from itaxotools.haplodemo.types import (
-    HaploGraph, HaploGraphEdge, HaploGraphNode, HaploNode)
+    HaploGraph, HaploGraphEdge, HaploGraphNode, HaploTreeNode)
 from itaxotools.popart_networks.types import Network
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
@@ -117,7 +117,7 @@ def validate_sequences_in_tree(sequences: Sequences, tree: Tree) -> list[str]:
     return warns
 
 
-def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, transversions_only: bool) -> HaploNode:
+def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, transversions_only: bool) -> HaploTreeNode:
     sequence_dict = {x.id: x.seq for x in sequences}
     return compute_fitchi_tree(sequence_dict, partition, tree, transversions_only)
 

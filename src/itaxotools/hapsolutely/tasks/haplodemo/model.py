@@ -22,7 +22,7 @@ from datetime import datetime
 from pathlib import Path
 
 from itaxotools.common.bindings import Property
-from itaxotools.haplodemo.types import HaploGraph, HaploNode
+from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.sequence import SequenceModel
@@ -44,7 +44,7 @@ class Model(TaskModel):
     request_confirmation = QtCore.Signal(object, object, object)
     haplo_ready = QtCore.Signal()
 
-    haplo_tree = Property(HaploNode, None)
+    haplo_tree = Property(HaploTreeNode, None)
     haplo_graph = Property(HaploGraph, None)
     can_lock_distances = Property(bool, False)
 

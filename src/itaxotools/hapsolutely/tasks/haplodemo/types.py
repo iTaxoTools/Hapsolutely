@@ -19,11 +19,11 @@
 from enum import Enum
 from typing import NamedTuple
 
-from itaxotools.haplodemo.types import HaploGraph, HaploNode
+from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
 
 
 class Results(NamedTuple):
-    haplo_tree: HaploNode
+    haplo_tree: HaploTreeNode
     haplo_graph: HaploGraph
     seconds_taken: float
 
