@@ -25,13 +25,14 @@ from itaxotools.common.bindings import Property
 from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
-from itaxotools.taxi_gui.model.sequence import SequenceModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 from itaxotools.taxi_gui.model.tree import TreeModel
 from itaxotools.taxi_gui.tasks.common.model import (
     FileInfoSubtaskModel, ImportedInputModel)
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
+
+from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
 
 from ..common.model import PhasedInputModel, PhasedItemProxyModel
 from . import process, title
@@ -48,7 +49,7 @@ class Model(TaskModel):
     haplo_graph = Property(HaploGraph, None)
     can_lock_distances = Property(bool, False)
 
-    input_sequences = Property(PhasedInputModel, PhasedInputModel(SequenceModel))
+    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True))
     input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
     input_tree = Property(ImportedInputModel, ImportedInputModel(TreeModel))
 

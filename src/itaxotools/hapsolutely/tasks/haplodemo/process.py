@@ -58,9 +58,10 @@ def execute(
     from ..common.work import (
         match_partition_to_phased_sequences, scan_sequences)
     from .work import (
-        append_alleles_to_sequence_ids, get_newick_string_from_tree,
-        get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
-        validate_sequences_in_tree)
+        append_alleles_to_sequence_ids, check_is_input_phased,
+        get_newick_string_from_tree, get_tree_from_model, make_haplo_graph,
+        make_haplo_tree, make_tree_nj, prune_alleles_from_haplo_graph,
+        prune_alleles_from_haplo_tree, validate_sequences_in_tree)
 
     haplo_tree = None
     haplo_graph = None
@@ -70,7 +71,9 @@ def execute(
     sequences = sequences_from_model(input_sequences)
     sequence_warns = scan_sequences(sequences)
 
-    sequences = append_alleles_to_sequence_ids(sequences)
+    is_phased = check_is_input_phased(input_sequences, sequences)
+
+    sequences, allele_warns = append_alleles_to_sequence_ids(input_sequences, sequences)
 
     partition = partition_from_model(input_species)
     partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
@@ -81,7 +84,7 @@ def execute(
     else:
         tree_warns = []
 
-    warns = sequence_warns + partition_warns + tree_warns
+    warns = sequence_warns + allele_warns + partition_warns + tree_warns
 
     tm = perf_counter()
 
@@ -98,6 +101,9 @@ def execute(
         else:
             newick_string = get_newick_string_from_tree(tree)
         haplo_tree = make_haplo_tree(sequences, partition, newick_string, transversions_only)
+
+        if is_phased:
+            prune_alleles_from_haplo_tree(haplo_tree)
     else:
         build_method, args = {
             NetworkAlgorithm.MSN: (build_msn, []),
@@ -118,6 +124,9 @@ def execute(
         graph = build_method(popart_sequences, *args)
 
         haplo_graph = make_haplo_graph(graph)
+
+        if is_phased:
+            prune_alleles_from_haplo_graph(haplo_graph)
 
     tf = perf_counter()
 

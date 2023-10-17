@@ -2,67 +2,67 @@
 <root>
 
 	<individuals>
-		<individual id="specimen1a"/>
-		<individual id="specimen1b"/>
-		<individual id="specimen2a"/>
-		<individual id="specimen2b"/>
-		<individual id="specimen3a"/>
-		<individual id="specimen3b"/>
-		<individual id="specimen4a"/>
-		<individual id="specimen4b"/>
-		<individual id="specimen5a"/>
-		<individual id="specimen5b"/>
-		<individual id="specimen6a"/>
-		<individual id="specimen6b"/>
-		<individual id="specimen7a"/>
-		<individual id="specimen7b"/>
+		<individual id="specimen1_a"/>
+		<individual id="specimen1_b"/>
+		<individual id="specimen2_a"/>
+		<individual id="specimen2_b"/>
+		<individual id="specimen3_a"/>
+		<individual id="specimen3_b"/>
+		<individual id="specimen4_a"/>
+		<individual id="specimen4_b"/>
+		<individual id="specimen5_a"/>
+		<individual id="specimen5_b"/>
+		<individual id="specimen6_a"/>
+		<individual id="specimen6_b"/>
+		<individual id="specimen7_a"/>
+		<individual id="specimen7_b"/>
 	</individuals>
 
 	<spartitions>
 		<spartition label="three_species">
 			<subsets>
-				<subset label="verrucosa">
-					<individual ref="specimen1a"/>
-					<individual ref="specimen1b"/>
-					<individual ref="specimen2a"/>
-					<individual ref="specimen2b"/>
-					<individual ref="specimen3a"/>
-					<individual ref="specimen3b"/>
+				<subset label="verrucos_a">
+					<individual ref="specimen1_a"/>
+					<individual ref="specimen1_b"/>
+					<individual ref="specimen2_a"/>
+					<individual ref="specimen2_b"/>
+					<individual ref="specimen3_a"/>
+					<individual ref="specimen3_b"/>
 				</subset>
-				<subset label="mysteriosa">
-					<individual ref="specimen4a"/>
-					<individual ref="specimen4b"/>
-					<individual ref="specimen5a"/>
-					<individual ref="specimen5b"/>
+				<subset label="mysterios_a">
+					<individual ref="specimen4_a"/>
+					<individual ref="specimen4_b"/>
+					<individual ref="specimen5_a"/>
+					<individual ref="specimen5_b"/>
 				</subset>
-				<subset label="enigmatica">
-					<individual ref="specimen6a"/>
-					<individual ref="specimen6b"/>
-					<individual ref="specimen7a"/>
-					<individual ref="specimen7b"/>
+				<subset label="enigmatic_a">
+					<individual ref="specimen6_a"/>
+					<individual ref="specimen6_b"/>
+					<individual ref="specimen7_a"/>
+					<individual ref="specimen7_b"/>
 				</subset>
 			</subsets>
 		</spartition>
 
 		<spartition label="two_species">
 			<subsets>
-				<subset label="verrucosa">
-					<individual ref="specimen1a"/>
-					<individual ref="specimen1b"/>
-					<individual ref="specimen2a"/>
-					<individual ref="specimen2b"/>
-					<individual ref="specimen3a"/>
-					<individual ref="specimen3b"/>
+				<subset label="verrucos_a">
+					<individual ref="specimen1_a"/>
+					<individual ref="specimen1_b"/>
+					<individual ref="specimen2_a"/>
+					<individual ref="specimen2_b"/>
+					<individual ref="specimen3_a"/>
+					<individual ref="specimen3_b"/>
 				</subset>
-				<subset label="mysterigmatica">
-					<individual ref="specimen4a"/>
-					<individual ref="specimen4b"/>
-					<individual ref="specimen5a"/>
-					<individual ref="specimen5b"/>
-					<individual ref="specimen6a"/>
-					<individual ref="specimen6b"/>
-					<individual ref="specimen7a"/>
-					<individual ref="specimen7b"/>
+				<subset label="mysterigmatic_a">
+					<individual ref="specimen4_a"/>
+					<individual ref="specimen4_b"/>
+					<individual ref="specimen5_a"/>
+					<individual ref="specimen5_b"/>
+					<individual ref="specimen6_a"/>
+					<individual ref="specimen6_b"/>
+					<individual ref="specimen7_a"/>
+					<individual ref="specimen7_b"/>
 				</subset>
 			</subsets>
 		</spartition>

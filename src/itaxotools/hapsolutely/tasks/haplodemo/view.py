@@ -35,13 +35,13 @@ from itaxotools.haplodemo.widgets import (
 from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
-    InputSelector, PartitionSelector, SequenceSelector)
+    InputSelector, PartitionSelector)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
     DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
 
-from ..common.view import GraphicTitleCard
+from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
 
@@ -378,7 +378,7 @@ class View(TaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
-        self.cards.input_sequences = SequenceSelector('Input sequences', self)
+        self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
         self.cards.input_tree = InputSelector('Fitchi tree', self)
@@ -511,6 +511,7 @@ class View(TaskView):
         # print(get_fitchi_string(haplo_tree))
 
         visualizer.visualize_tree(haplo_tree)
+        visualizer.visualize_haploweb()
 
     def show_haplo_graph(self, haplo_graph: HaploGraph):
         if haplo_graph is None:
@@ -524,6 +525,7 @@ class View(TaskView):
         # print(haplo_graph)
 
         visualizer.visualize_graph(haplo_graph)
+        visualizer.visualize_haploweb()
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)

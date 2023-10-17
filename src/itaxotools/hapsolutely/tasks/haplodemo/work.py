@@ -35,6 +35,7 @@ from itaxotools.fitchi import compute_fitchi_tree
 from itaxotools.haplodemo.types import (
     HaploGraph, HaploGraphEdge, HaploGraphNode, HaploTreeNode)
 from itaxotools.popart_networks.types import Network
+from itaxotools.taxi2.file_types import FileFormat
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
 from itaxotools.taxi2.trees import Tree, Trees
@@ -130,7 +131,8 @@ def make_haplo_graph(graph: Network) -> HaploGraph:
                 Counter({
                     color.color: color.weight
                     for color in node.colors
-                })
+                }),
+                set(seq.id for seq in node.seqs),
             )
             for i, node in enumerate(graph.vertices)
         ],
@@ -141,17 +143,65 @@ def make_haplo_graph(graph: Network) -> HaploGraph:
     )
 
 
-def _iter_append_alleles_to_sequence_ids(sequences: Sequences) -> iter[Sequence]:
+def _iter_append_alleles_to_sequence_ids(sequences: Sequences, allele_extra: str) -> iter[Sequence]:
     for sequence in sequences:
-        new_id = sequence.id
-        if 'allele' in sequence.extras:
-            new_id += sequence.extras['allele']
         yield Sequence(
-            new_id,
+            sequence.id + '_' + sequence.extras[allele_extra],
             sequence.seq,
             sequence.extras,
         )
 
 
-def append_alleles_to_sequence_ids(sequences: Sequences) -> Sequences:
-    return Sequences(_iter_append_alleles_to_sequence_ids, sequences)
+def append_alleles_to_sequence_ids(input: AttrDict, sequences: Sequences) -> tuple[Sequences, list[str]]:
+    if input.info.format != FileFormat.Tabfile:
+        return (sequences, [])
+
+    if input.allele_column < 0:
+        return (sequences, [])
+
+    allele_header = input.info.headers[input.allele_column]
+    sequences = Sequences(_iter_append_alleles_to_sequence_ids, sequences, allele_header)
+    alleles = {sequence.extras[allele_header] for sequence in sequences}
+    bad_alleles = [allele for allele in alleles if len(allele) > 1]
+
+    warns = []
+    if bad_alleles:
+        bad_alleles_str = ', '.join(repr(id) for id in bad_alleles[:3])
+        if len(bad_alleles) > 3:
+            bad_alleles_str += f' and {len(bad_alleles) - 3} more'
+        warns = [f'Allele identifiers should be one character long: {bad_alleles_str}']
+
+    return (sequences, warns)
+
+
+def prune_alleles_from_haplo_tree(node: HaploTreeNode):
+    node.members = set(m[:-2] for m in node.members)
+    for child in node.children:
+        prune_alleles_from_haplo_tree(child)
+
+
+def prune_alleles_from_haplo_graph(graph: HaploGraph):
+    for node in graph.nodes:
+        node.members = set(m[:-2] for m in node.members)
+
+
+def _get_sequence_pairs(sequences: Sequences):
+    try:
+        sequences = iter(sequences)
+        while True:
+            a = next(sequences)
+            b = next(sequences)
+            yield (a, b)
+    except StopIteration:
+        return
+
+
+def check_is_input_phased(input: AttrDict, sequences: Sequences):
+    if input.info.format == FileFormat.Tabfile:
+        return input.allele_column >= 0
+    if input.info.format == FileFormat.Fasta:
+        for a, b in _get_sequence_pairs(sequences):
+            if a.id[:-2] != b.id[:-2]:
+                return False
+        return True
+    return False

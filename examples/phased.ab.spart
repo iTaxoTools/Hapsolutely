@@ -5,18 +5,18 @@ N_spartitions = 2 : three_species / two_species;
 N_individuals = 14 / 14;
 N_subsets = 3 / 2;
 Individual_assignment =
-specimen1a : 1 / 1
-specimen1b : 1 / 1
-specimen2a : 1 / 1
-specimen2b : 1 / 1
-specimen3a : 1 / 1
-specimen3b : 1 / 1
-specimen4a : 2 / 2
-specimen4b : 2 / 2
-specimen5a : 2 / 2
-specimen5b : 2 / 2
-specimen6a : 3 / 2
-specimen6b : 3 / 2
-specimen7a : 3 / 2
-specimen7b : 3 / 2;
+specimen1_a : 1 / 1
+specimen1_b : 1 / 1
+specimen2_a : 1 / 1
+specimen2_b : 1 / 1
+specimen3_a : 1 / 1
+specimen3_b : 1 / 1
+specimen4_a : 2 / 2
+specimen4_b : 2 / 2
+specimen5_a : 2 / 2
+specimen5_b : 2 / 2
+specimen6_a : 3 / 2
+specimen6_b : 3 / 2
+specimen7_a : 3 / 2
+specimen7_b : 3 / 2;
 end;

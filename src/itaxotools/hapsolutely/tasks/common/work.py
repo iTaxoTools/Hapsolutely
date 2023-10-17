@@ -60,6 +60,9 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
             if has_subset(sequence.id[:-1], partition):
                 matched[sequence.id] = partition[sequence.id[:-1]]
                 continue
+            if has_subset(sequence.id[:-2], partition):
+                matched[sequence.id] = partition[sequence.id[:-2]]
+                continue
         matched[sequence.id] = 'unknown'
         unknowns.add(sequence.id)
 

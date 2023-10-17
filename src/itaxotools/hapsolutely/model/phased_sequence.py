@@ -31,10 +31,12 @@ models = DecoratorDict[FileInfo, Object]()
 
 class PhasedSequenceModel(Object, Generic[FileInfoType]):
     info = Property(FileInfo, None)
+    is_phasing_optional = Property(bool, False)
 
-    def __init__(self, info: FileInfo):
+    def __init__(self, info: FileInfo, is_phasing_optional=False):
         super().__init__()
         self.info = info
+        self.is_phasing_optional = is_phasing_optional
         self.name = f'Phased sequences from {info.path.name}'
 
     def __repr__(self):
@@ -47,10 +49,10 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
         return AttrDict({p.key: p.value for p in self.properties})
 
     @classmethod
-    def from_file_info(cls, info: FileInfoType) -> PhasedSequenceModel[FileInfoType]:
+    def from_file_info(cls, info: FileInfoType, is_phasing_optional=False) -> PhasedSequenceModel[FileInfoType]:
         if not type(info) in models:
             raise Exception(f'No suitable {cls.__name__} for info: {info}')
-        return models[type(info)](info)
+        return models[type(info)](info, is_phasing_optional)
 
 
 @models(FileInfo.Fasta)
@@ -59,8 +61,8 @@ class PhasedFasta(PhasedSequenceModel):
     subset_separator = Property(str, '|')
     parse_organism = Property(bool, False)
 
-    def __init__(self, info: FileInfo.Fasta):
-        super().__init__(info)
+    def __init__(self, info: FileInfo.Fasta, is_phasing_optional=False):
+        super().__init__(info, is_phasing_optional)
         self.has_subsets = info.has_subsets
         self.subset_separator = info.subset_separator
         self.parse_organism = info.has_subsets
@@ -72,8 +74,8 @@ class PhasedTabfile(PhasedSequenceModel):
     sequence_column = Property(int, -1)
     allele_column = Property(int, -1)
 
-    def __init__(self, info: FileInfo.Tabfile):
-        super().__init__(info)
+    def __init__(self, info: FileInfo.Tabfile, is_phasing_optional=False):
+        super().__init__(info, is_phasing_optional)
         self.index_column = self._header_get(info.headers, info.header_individuals)
         self.sequence_column = self._header_get(info.headers, info.header_sequences)
         self.allele_column = self._header_get(info.headers, 'allele')
@@ -90,7 +92,7 @@ class PhasedTabfile(PhasedSequenceModel):
             return False
         if self.sequence_column < 0:
             return False
-        if self.allele_column < 0:
+        if self.allele_column < 0 and not self.is_phasing_optional:
             return False
         if len(set([self.index_column, self.sequence_column, self.allele_column])) < 3:
             return False

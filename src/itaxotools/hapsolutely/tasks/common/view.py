@@ -27,6 +27,10 @@ from itaxotools.taxi_gui.view.widgets import NoWheelComboBox
 
 
 class PhasedSequenceSelector(SequenceSelector):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.is_phasing_optional = False
+
     def draw_config_tabfile(self):
         layout = QtWidgets.QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -141,14 +145,17 @@ class PhasedSequenceSelector(SequenceSelector):
         self.update()
 
     def _bind_tabfile(self, object):
+        self.binder.bind(object.properties.is_phasing_optional, self.set_is_phasing_optional)
         self._populate_headers(object.info.headers)
+
         self.binder.bind(object.properties.index_column, self.controls.tabfile.index_combo.setCurrentIndex)
         self.binder.bind(self.controls.tabfile.index_combo.currentIndexChanged, object.properties.index_column)
         self.binder.bind(object.properties.sequence_column, self.controls.tabfile.sequence_combo.setCurrentIndex)
         self.binder.bind(self.controls.tabfile.sequence_combo.currentIndexChanged, object.properties.sequence_column)
-        self.binder.bind(object.properties.allele_column, self.controls.tabfile.allele_combo.setCurrentIndex)
-        self.binder.bind(self.controls.tabfile.allele_combo.currentIndexChanged, object.properties.allele_column)
+        self.binder.bind(object.properties.allele_column, self.controls.tabfile.allele_combo.setCurrentIndex, lambda x: x if not self.is_phasing_optional else x + 1)
+        self.binder.bind(self.controls.tabfile.allele_combo.currentIndexChanged, object.properties.allele_column, lambda x: x if not self.is_phasing_optional else x - 1)
         self.binder.bind(object.properties.info, self.controls.tabfile.file_size.setText, lambda info: human_readable_size(info.size))
+
         self.controls.config.setCurrentWidget(self.controls.tabfile.widget)
         self.controls.config.setVisible(True)
 
@@ -166,10 +173,17 @@ class PhasedSequenceSelector(SequenceSelector):
         self.controls.tabfile.index_combo.clear()
         self.controls.tabfile.sequence_combo.clear()
         self.controls.tabfile.allele_combo.clear()
+
+        if self.is_phasing_optional:
+            self.controls.tabfile.allele_combo.addItem('---')
+
         for header in headers:
             self.controls.tabfile.index_combo.addItem(header)
             self.controls.tabfile.sequence_combo.addItem(header)
             self.controls.tabfile.allele_combo.addItem(header)
+
+    def set_is_phasing_optional(self, value):
+        self.is_phasing_optional = value
 
 
 class GraphicTitleCard(Card):
