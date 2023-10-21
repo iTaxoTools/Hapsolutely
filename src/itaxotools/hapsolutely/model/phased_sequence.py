@@ -61,13 +61,13 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
 class PhasedFasta(PhasedSequenceModel):
     has_subsets = Property(bool, False)
     subset_separator = Property(str, '|')
-    parse_organism = Property(bool, False)
+    parse_subset = Property(bool, False)
 
     def __init__(self, info: FileInfo.Fasta, is_phasing_optional=False):
         super().__init__(info, is_phasing_optional)
         self.has_subsets = info.has_subsets
         self.subset_separator = info.subset_separator
-        self.parse_organism = info.has_subsets
+        self.parse_subset = info.has_subsets
 
 
 @models(FileInfo.Tabfile)

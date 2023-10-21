@@ -129,8 +129,12 @@ class Model(TaskModel):
 
         info = item.object.info
 
-        if info.format in [FileFormat.Tabfile, FileFormat.Fasta]:
-            self.input_species.set_index(index)
+        if info.format == FileFormat.Tabfile:
+            if any((info.header_species, info.header_genus, info.header_organism)):
+                self.input_species.set_index(index)
+        elif info.format == FileFormat.Fasta:
+            if info.has_subsets:
+                self.input_species.set_index(index)
 
     def update_bulk_mode(self, format):
         if format != FileFormat.Spart:

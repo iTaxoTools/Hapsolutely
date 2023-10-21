@@ -160,8 +160,10 @@ class PhasedSequenceSelector(SequenceSelector):
         self.controls.config.setVisible(True)
 
     def _bind_fasta(self, object):
-        self.binder.bind(object.properties.parse_organism, self.controls.fasta.parse_organism.setChecked)
-        self.binder.bind(self.controls.fasta.parse_organism.toggled, object.properties.parse_organism)
+        self.binder.bind(object.properties.has_subsets, self.controls.fasta.parse_organism.setEnabled)
+        self.binder.bind(object.properties.parse_subset, self.controls.fasta.parse_organism.setChecked)
+        self.binder.bind(self.controls.fasta.parse_organism.toggled, object.properties.parse_subset)
+        self.binder.bind(object.properties.subset_separator, self.controls.fasta.parse_organism.setText, lambda x: f'Parse identifiers as "individual{x or "/"}organism"')
         self.binder.bind(object.properties.info, self.controls.fasta.file_size.setText, lambda info: human_readable_size(info.size))
         self.controls.config.setCurrentWidget(self.controls.fasta.widget)
         self.controls.config.setVisible(True)
