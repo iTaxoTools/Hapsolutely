@@ -43,7 +43,7 @@ class Model(TaskModel):
 
     haplotype_stats = Property(Path, None)
 
-    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel))
+    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True))
     input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
 
     bulk_mode = Property(bool, False)

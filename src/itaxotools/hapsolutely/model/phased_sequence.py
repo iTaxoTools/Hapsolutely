@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from typing import Generic, TypeVar
 
+from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import AttrDict, DecoratorDict
 from itaxotools.taxi_gui.model.common import Object, Property
 from itaxotools.taxi_gui.types import FileInfo
@@ -32,8 +33,9 @@ models = DecoratorDict[FileInfo, Object]()
 class PhasedSequenceModel(Object, Generic[FileInfoType]):
     info = Property(FileInfo, None)
     is_phasing_optional = Property(bool, False)
+    is_phased = Property(bool, True)
 
-    def __init__(self, info: FileInfo, is_phasing_optional=False):
+    def __init__(self, info: FileInfo, is_phasing_optional=True):
         super().__init__()
         self.info = info
         self.is_phasing_optional = is_phasing_optional
@@ -80,6 +82,9 @@ class PhasedTabfile(PhasedSequenceModel):
         self.sequence_column = self._header_get(info.headers, info.header_sequences)
         self.allele_column = self._header_get(info.headers, 'allele')
 
+        self.binder = Binder()
+        self.binder.bind(self.properties.allele_column, self.properties.is_phased, lambda column: column >= 0)
+
     @staticmethod
     def _header_get(headers: list[str], field: str):
         try:
@@ -92,7 +97,7 @@ class PhasedTabfile(PhasedSequenceModel):
             return False
         if self.sequence_column < 0:
             return False
-        if self.allele_column < 0 and not self.is_phasing_optional:
+        if not self.is_phasing_optional and not self.is_phased:
             return False
         if len(set([self.index_column, self.sequence_column, self.allele_column])) < 3:
             return False

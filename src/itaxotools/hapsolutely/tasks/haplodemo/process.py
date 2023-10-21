@@ -30,7 +30,7 @@ def initialize():
     import itaxotools.popart_networks  # noqa
     import itaxotools.taxi_gui.tasks.common.process  # noqa
 
-    from ..common.work import scan_sequences  # noqa
+    from ..common.work import scan_sequence_ambiguity  # noqa
     from . import work  # noqa
 
 
@@ -56,12 +56,13 @@ def execute(
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        match_partition_to_phased_sequences, scan_sequences)
+        check_is_input_phased, match_partition_to_phased_sequences,
+        scan_sequence_ambiguity)
     from .work import (
-        append_alleles_to_sequence_ids, check_is_input_phased,
-        get_newick_string_from_tree, get_tree_from_model, make_haplo_graph,
-        make_haplo_tree, make_tree_nj, prune_alleles_from_haplo_graph,
-        prune_alleles_from_haplo_tree, validate_sequences_in_tree)
+        append_alleles_to_sequence_ids, get_newick_string_from_tree,
+        get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
+        prune_alleles_from_haplo_graph, prune_alleles_from_haplo_tree,
+        validate_sequences_in_tree)
 
     haplo_tree = None
     haplo_graph = None
@@ -69,9 +70,9 @@ def execute(
     ts = perf_counter()
 
     sequences = sequences_from_model(input_sequences)
-    sequence_warns = scan_sequences(sequences)
+    sequence_warns = scan_sequence_ambiguity(sequences)
 
-    is_phased = check_is_input_phased(input_sequences, sequences)
+    is_phased, phased_warns = check_is_input_phased(input_sequences, sequences)
 
     sequences, allele_warns = append_alleles_to_sequence_ids(input_sequences, sequences)
 
@@ -84,7 +85,7 @@ def execute(
     else:
         tree_warns = []
 
-    warns = sequence_warns + allele_warns + partition_warns + tree_warns
+    warns = sequence_warns + phased_warns + allele_warns + partition_warns + tree_warns
 
     tm = perf_counter()
 

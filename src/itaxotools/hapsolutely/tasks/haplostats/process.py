@@ -65,26 +65,31 @@ def execute_single(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi_gui.tasks.common.process import (
-        partition_from_model, sequences_from_model)
+    from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        match_partition_to_phased_sequences, scan_sequences)
-    from .work import write_stats_to_path
+        match_partition_to_phased_sequences, scan_sequence_ambiguity)
+    from .work import (
+        get_sequences_from_phased_model, scan_sequence_alleles,
+        write_stats_to_path)
 
     haplotype_stats = work_dir / 'out'
 
     ts = perf_counter()
 
-    sequences = sequences_from_model(input_sequences)
-    sequence_warns = scan_sequences(sequences)
+    is_phased = input_sequences.is_phased
+
+    sequences = get_sequences_from_phased_model(input_sequences)
+    ambiguity_warns = scan_sequence_ambiguity(sequences)
+
+    allele_warns = scan_sequence_alleles(sequences) if is_phased else []
 
     partition = partition_from_model(input_species)
     partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
 
-    warns = sequence_warns + partition_warns
+    warns = ambiguity_warns + allele_warns + partition_warns
 
     tm = perf_counter()
 
@@ -96,7 +101,7 @@ def execute_single(
     tx = perf_counter()
 
     partition_name = input_species.partition_name
-    write_stats_to_path(sequences, partition, partition_name, haplotype_stats)
+    write_stats_to_path(sequences, is_phased, partition, partition_name, haplotype_stats)
 
     tf = perf_counter()
 
@@ -112,24 +117,27 @@ def execute_bulk(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi_gui.tasks.common.process import (
-        partition_from_model, sequences_from_model)
+    from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        match_partition_to_phased_sequences, scan_sequences)
+        match_partition_to_phased_sequences, scan_sequence_ambiguity)
     from .work import (
-        get_all_possible_partition_models, write_bulk_stats_to_path)
+        get_all_possible_partition_models, get_sequences_from_phased_model,
+        scan_sequence_alleles, write_bulk_stats_to_path)
 
     haplotype_stats = work_dir / 'out'
 
     ts = perf_counter()
 
+    is_phased = input_sequences.is_phased
     names = input_species.info.spartitions
 
-    sequences = sequences_from_model(input_sequences)
-    sequence_warns = scan_sequences(sequences)
+    sequences = get_sequences_from_phased_model(input_sequences)
+    ambiguity_warns = scan_sequence_ambiguity(sequences)
+
+    allele_warns = scan_sequence_alleles(sequences) if is_phased else []
 
     models = get_all_possible_partition_models(input_species)
     partitions = (partition_from_model(model) for model in models)
@@ -139,7 +147,7 @@ def execute_bulk(
 
     partition_warns = list(set(chain(*partition_warns)))
 
-    warns = sequence_warns + partition_warns
+    warns = ambiguity_warns + allele_warns + partition_warns
 
     tm = perf_counter()
 
@@ -150,7 +158,7 @@ def execute_bulk(
 
     tx = perf_counter()
 
-    write_bulk_stats_to_path(sequences, partitions, names, haplotype_stats)
+    write_bulk_stats_to_path(sequences, is_phased, partitions, names, haplotype_stats)
 
     tf = perf_counter()
 

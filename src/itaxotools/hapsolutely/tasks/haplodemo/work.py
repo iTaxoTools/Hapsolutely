@@ -183,25 +183,3 @@ def prune_alleles_from_haplo_tree(node: HaploTreeNode):
 def prune_alleles_from_haplo_graph(graph: HaploGraph):
     for node in graph.nodes:
         node.members = set(m[:-2] for m in node.members)
-
-
-def _get_sequence_pairs(sequences: Sequences):
-    try:
-        sequences = iter(sequences)
-        while True:
-            a = next(sequences)
-            b = next(sequences)
-            yield (a, b)
-    except StopIteration:
-        return
-
-
-def check_is_input_phased(input: AttrDict, sequences: Sequences):
-    if input.info.format == FileFormat.Tabfile:
-        return input.allele_column >= 0
-    if input.info.format == FileFormat.Fasta:
-        for a, b in _get_sequence_pairs(sequences):
-            if a.id[:-2] != b.id[:-2]:
-                return False
-        return True
-    return False

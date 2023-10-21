@@ -18,11 +18,13 @@
 
 from __future__ import annotations
 
+from itaxotools.common.utility import AttrDict
+from itaxotools.taxi2.file_types import FileFormat
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequences
 
 
-def scan_sequences(sequences: Sequences) -> list[str]:
+def scan_sequence_ambiguity(sequences: Sequences) -> list[str]:
     ambiguity = set()
     for sequence in sequences:
         for character in sequence.seq:
@@ -34,9 +36,9 @@ def scan_sequences(sequences: Sequences) -> list[str]:
     return []
 
 
-def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences) -> tuple[Partition, list[str]]:
+def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences, allele_header='allele') -> tuple[Partition, list[str]]:
     """
-    It is possible that the allele markers (a/b) are suffixed to the
+    It is possible that the allele markers are suffixed to the
     individuals name in the partition but not the sequences, or vice versa.
     Detect such mismatches and return a partition suitable for the sequences.
     If some individuals could not be matched, return a warning.
@@ -53,16 +55,28 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
         return True
 
     for sequence in sequences:
+
         if has_subset(sequence.id, partition):
             matched[sequence.id] = partition[sequence.id]
             continue
-        if sequence.id[-1] in 'ab':
-            if has_subset(sequence.id[:-1], partition):
-                matched[sequence.id] = partition[sequence.id[:-1]]
+
+        if has_subset(sequence.id[:-1], partition):
+            matched[sequence.id] = partition[sequence.id[:-1]]
+            continue
+
+        segments = sequence.id.split('_')[:-1]
+        stripped_id = '_'.join(segments)
+        if has_subset(stripped_id, partition):
+            matched[sequence.id] = partition[stripped_id]
+            continue
+
+        if allele_header in sequence.extras:
+            allele = sequence.extras[allele_header]
+            suffixed_id = sequence.id + '_' + allele
+            if has_subset(suffixed_id, partition):
+                matched[sequence.id] = partition[suffixed_id]
                 continue
-            if has_subset(sequence.id[:-2], partition):
-                matched[sequence.id] = partition[sequence.id[:-2]]
-                continue
+
         matched[sequence.id] = 'unknown'
         unknowns.add(sequence.id)
 
@@ -71,8 +85,41 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
         unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
         if len(unknowns) > 3:
             unknowns_str += f' and {len(unknowns) - 3} more'
-        warns = [f'Could not match individuals to partition: {unknowns_str}']
+        s = 's' if len(unknowns) > 1 else ''
+        warns = [f'Could not match individual{s} to partition: {unknowns_str}']
     else:
         warns = []
 
     return matched, warns
+
+
+def _get_sequence_pairs(sequences: Sequences):
+    try:
+        sequences = iter(sequences)
+        while True:
+            a = next(sequences)
+            b = next(sequences)
+            yield (a, b)
+    except StopIteration:
+        return
+
+
+def _get_phased_fasta_warns(sequences: Sequences) -> list[str]:
+    for sequence in sequences:
+        if not sequence.id[-2] == '_':
+            return [f'Sequence identifier(s) not ending with allele: {repr(sequence.id)} instead of {repr(sequence.id + "_a")}']
+
+    for a, b in _get_sequence_pairs(sequences):
+        if a.id[:-2] != b.id[:-2]:
+            return [f'Mismatched pair identifiers for phased input: {repr(a.id)}, {repr(b.id)}']
+
+    return []
+
+
+def check_is_input_phased(input: AttrDict, sequences: Sequences) -> tuple[bool, list[str]]:
+    if input.info.format == FileFormat.Fasta:
+        if input.is_phased:
+            warns = _get_phased_fasta_warns(sequences)
+            return (True, warns)
+        return (False, [])
+    return (input.is_phased, [])

@@ -16,6 +16,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
+from __future__ import annotations
+
 from pathlib import Path
 from typing import NamedTuple
 
@@ -28,5 +30,4 @@ class Results(NamedTuple):
 class Entry(NamedTuple):
     id: str
     subset: str
-    seq_a: str
-    seq_b: str
+    seqs: list[str]
