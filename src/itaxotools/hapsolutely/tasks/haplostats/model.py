@@ -32,7 +32,8 @@ from itaxotools.taxi_gui.utility import human_readable_seconds
 
 from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
 
-from ..common.model import PhasedInputModel, PhasedItemProxyModel
+from ..common.model import (
+    PhasedFileInfoSubtaskModel, PhasedInputModel, PhasedItemProxyModel)
 from . import process, title
 
 
@@ -54,10 +55,10 @@ class Model(TaskModel):
         self.can_save = True
 
         self.subtask_init = SubtaskModel(self, bind_busy=False)
-        self.subtask_sequences = FileInfoSubtaskModel(self)
+        self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
         self.subtask_species = FileInfoSubtaskModel(self)
 
-        self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_info)
+        self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_phased_info)
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)
 
         self.binder.bind(self.input_sequences.notification, self.notification)

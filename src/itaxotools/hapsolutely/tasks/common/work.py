@@ -18,10 +18,47 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from itaxotools.common.utility import AttrDict
 from itaxotools.taxi2.file_types import FileFormat
+from itaxotools.taxi2.files import get_info
+from itaxotools.taxi2.handlers import FileHandler
 from itaxotools.taxi2.partitions import Partition
-from itaxotools.taxi2.sequences import Sequences
+from itaxotools.taxi2.sequences import SequenceHandler, Sequences
+
+from .types import PhasedFileInfo
+
+
+def _guess_if_sequence_ids_include_alleles(sequences: Sequences) -> bool:
+    for sequence in sequences:
+        *segments, allele = sequence.id.split('_')
+        if len(segments) < 1:
+            return False
+        if len(allele) > 1:
+            return False
+    return True
+
+
+def get_phased_file_info(path: Path) -> PhasedFileInfo:
+    info = get_info(path)
+    is_phased = False
+
+    if info.format == FileFormat.Tabfile:
+        headers = FileHandler.Tabfile(path, has_headers=True).headers
+        is_phased = bool('allele' in headers)
+
+    elif info.format == FileFormat.Fasta:
+        sequences = Sequences.fromPath(
+            info.path,
+            SequenceHandler.Fasta,
+            parse_organism=info.has_subsets,
+            organism_separator=info.subset_separator,
+            organism_tag='organism',
+        )
+        is_phased = _guess_if_sequence_ids_include_alleles(sequences)
+
+    return PhasedFileInfo(info, is_phased)
 
 
 def scan_sequence_ambiguity(sequences: Sequences) -> list[str]:

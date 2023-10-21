@@ -35,10 +35,11 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
     is_phasing_optional = Property(bool, False)
     is_phased = Property(bool, True)
 
-    def __init__(self, info: FileInfo, is_phasing_optional=True):
+    def __init__(self, info: FileInfo, is_phased=True, is_phasing_optional=True):
         super().__init__()
         self.info = info
         self.is_phasing_optional = is_phasing_optional
+        self.is_phased = is_phased
         self.name = f'Phased sequences from {info.path.name}'
 
     def __repr__(self):
@@ -63,8 +64,8 @@ class PhasedFasta(PhasedSequenceModel):
     subset_separator = Property(str, '|')
     parse_subset = Property(bool, False)
 
-    def __init__(self, info: FileInfo.Fasta, is_phasing_optional=False):
-        super().__init__(info, is_phasing_optional)
+    def __init__(self, info: FileInfo.Fasta, *args, **kwargs):
+        super().__init__(info, *args, **kwargs)
         self.has_subsets = info.has_subsets
         self.subset_separator = info.subset_separator
         self.parse_subset = info.has_subsets
@@ -76,8 +77,8 @@ class PhasedTabfile(PhasedSequenceModel):
     sequence_column = Property(int, -1)
     allele_column = Property(int, -1)
 
-    def __init__(self, info: FileInfo.Tabfile, is_phasing_optional=False):
-        super().__init__(info, is_phasing_optional)
+    def __init__(self, info: FileInfo.Tabfile, *args, **kwargs):
+        super().__init__(info, *args, **kwargs)
         self.index_column = self._header_get(info.headers, info.header_individuals)
         self.sequence_column = self._header_get(info.headers, info.header_sequences)
         self.allele_column = self._header_get(info.headers, 'allele')

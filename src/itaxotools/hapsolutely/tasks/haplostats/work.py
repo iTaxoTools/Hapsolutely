@@ -164,6 +164,9 @@ def _check_fasta_allele_definitions(sequences: Sequences):
         *segments, allele = sequence.id.split('_')
         new_id = '_'.join(segments)
 
+        if not new_id:
+            raise Exception(f'Could not parse allele for identifier: {repr(sequence.id)}')
+
         if new_id == previous_id:
             if allele in cached_alleles:
                 raise Exception(f'Duplicate allele entry for individual {repr(new_id)} and allele {repr(allele)}')

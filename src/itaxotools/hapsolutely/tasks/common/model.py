@@ -20,14 +20,21 @@ from __future__ import annotations
 
 from PySide6 import QtCore
 
+from pathlib import Path
+
 from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import override
 from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.model.common import ItemModel
 from itaxotools.taxi_gui.model.input_file import InputFileModel
+from itaxotools.taxi_gui.model.tasks import SubtaskModel
 from itaxotools.taxi_gui.tasks.common.model import ImportedInputModel
+from itaxotools.taxi_gui.threading import ReportDone
+from itaxotools.taxi_gui.types import FileInfo
 
 from itaxotools.hapsolutely import app
+
+from .work import get_phased_file_info
 
 
 class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
@@ -153,3 +160,21 @@ class PhasedInputModel(ImportedInputModel):
         super().__init__(*args, **kwargs)
         item_model = global_app.model.items
         self.model = PhasedItemProxyModel(item_model, item_model.files)
+
+    def add_phased_info(self, info: FileInfo, is_phased: bool):
+        index = self.model.add_file(InputFileModel(info))
+        self.set_index(index)
+        self.object.is_phased = is_phased
+
+
+class PhasedFileInfoSubtaskModel(SubtaskModel):
+    task_name = 'PhasedFileInfoSubtask'
+
+    done = QtCore.Signal(FileInfo, bool)
+
+    def start(self, path: Path):
+        super().start(get_phased_file_info, path)
+
+    def onDone(self, report: ReportDone):
+        self.done.emit(report.result.info, report.result.is_phased)
+        self.busy = False
