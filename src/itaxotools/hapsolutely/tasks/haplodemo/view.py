@@ -159,6 +159,8 @@ class HaploView(QtWidgets.QFrame):
         toggle_legend = ToggleButton('Show legend')
         toggle_scale = ToggleButton('Show scale')
         toggle_scene_rotation = ToggleButton('Rotate scene')
+        toggle_field_groups = ToggleButton('Show groups')
+        toggle_field_isolated = ToggleButton('Show isolated')
 
         dialogs = QtWidgets.QVBoxLayout()
         dialogs.addWidget(mass_resize_nodes)
@@ -170,10 +172,23 @@ class HaploView(QtWidgets.QFrame):
         dialogs.addWidget(select_colors)
         dialogs.addWidget(select_font)
 
+        field_toggles = QtWidgets.QWidget()
+        field_toggles_layout = QtWidgets.QVBoxLayout(field_toggles)
+        field_toggles_layout.setContentsMargins(0, 0, 0, 0)
+        field_toggles_layout.addSpacing(4)
+        field_toggles_layout.addWidget(HLineSeparator(1))
+        field_toggles_layout.addSpacing(4)
+        field_toggles_layout.addWidget(toggle_field_groups)
+        field_toggles_layout.addWidget(toggle_field_isolated)
+
         toggles = QtWidgets.QVBoxLayout()
         toggles.addWidget(toggle_scene_rotation)
         toggles.addWidget(toggle_lock_distances)
         toggles.addWidget(toggle_lock_labels)
+        toggles.addWidget(field_toggles)
+        toggles.addSpacing(4)
+        toggles.addWidget(HLineSeparator(1))
+        toggles.addSpacing(4)
         toggles.addWidget(toggle_legend)
         toggles.addWidget(toggle_scale)
 
@@ -207,6 +222,7 @@ class HaploView(QtWidgets.QFrame):
         self.settings = settings
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
+        self.field_toggles = field_toggles
 
         self.binder = Binder()
 
@@ -217,6 +233,12 @@ class HaploView(QtWidgets.QFrame):
 
         self.binder.bind(settings.properties.label_movement, toggle_lock_labels.setChecked, lambda x: not x)
         self.binder.bind(toggle_lock_labels.toggled, settings.properties.label_movement, lambda x: not x)
+
+        self.binder.bind(settings.fields.properties.show_groups, toggle_field_groups.setChecked)
+        self.binder.bind(toggle_field_groups.toggled, settings.fields.properties.show_groups)
+
+        self.binder.bind(settings.fields.properties.show_isolated, toggle_field_isolated.setChecked)
+        self.binder.bind(toggle_field_isolated.toggled, settings.fields.properties.show_isolated)
 
         self.binder.bind(settings.properties.show_legend, toggle_legend.setChecked)
         self.binder.bind(toggle_legend.toggled, settings.properties.show_legend)
@@ -260,7 +282,7 @@ class NetworkAlgorithmSelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        label = QtWidgets.QLabel('Network algorithm')
+        label = QtWidgets.QLabel('Network algorithm:')
         label.setStyleSheet("""font-size: 16px;""")
 
         description = QtWidgets.QLabel(
@@ -301,7 +323,7 @@ class TransversionsOnlySelector(Card):
         title = QtWidgets.QCheckBox('  Transversions only:')
         title.setStyleSheet("""font-size: 16px;""")
         title.toggled.connect(self.toggled)
-        title.setMinimumWidth(140)
+        title.setMinimumWidth(180)
 
         description = QtWidgets.QLabel('Ignore transitions and show transversions only (default: off).')
         description.setStyleSheet("""padding-top: 2px;""")
@@ -350,6 +372,50 @@ class EpsilonSelector(Card):
         self.controls.epsilon = control
 
 
+class HaplowebSelector(Card):
+    toggled = QtCore.Signal(bool)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+        title = QtWidgets.QCheckBox('  Draw haploweb:')
+        title.setStyleSheet("""font-size: 16px;""")
+        title.toggled.connect(self.toggled)
+        title.setMinimumWidth(180)
+
+        description = QtWidgets.QLabel('Connect haplotypes found co-occurring in heterozygous individuals.')
+        description.setStyleSheet("""padding-top: 2px;""")
+        description.setWordWrap(True)
+
+        warning = QtWidgets.QLabel('Sequences must be phased into alleles.')
+        warning.setStyleSheet("""padding-top: 2px; padding-bottom: 4px;""")
+        warning.setWordWrap(True)
+        warning.setVisible(False)
+
+        spacer = QtWidgets.QSpacerItem(120, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+
+        layout = QtWidgets.QGridLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+
+        layout.addWidget(title, 0, 0)
+
+        layout.setColumnMinimumWidth(1, 16)
+
+        layout.addWidget(description, 0, 2)
+        layout.addWidget(warning, 1, 2)
+        layout.setColumnStretch(2, 1)
+
+        layout.addItem(spacer, 0, 3)
+        self.addLayout(layout)
+
+        self.controls.title = title
+        self.controls.warning = warning
+
+    def setChecked(self, checked: bool):
+        self.controls.title.setChecked(checked)
+
+
 class View(TaskView):
 
     def __init__(self, parent=None, max_width=920):
@@ -380,6 +446,7 @@ class View(TaskView):
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.draw_haploweb = HaplowebSelector(self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
         self.cards.input_tree = InputSelector('Fitchi tree', self)
         self.cards.transversions_only = TransversionsOnlySelector(self)
@@ -442,9 +509,14 @@ class View(TaskView):
             self.cards.transversions_only.roll_animation.setAnimatedVisible,
             lambda algo: algo == NetworkAlgorithm.Fitchi)
 
+        self.binder.bind(self.cards.draw_haploweb.toggled, object.properties.draw_haploweb)
+        self.binder.bind(object.properties.draw_haploweb, self.cards.draw_haploweb.setChecked)
+        self.binder.bind(object.properties.input_is_phased, self.cards.draw_haploweb.roll_animation.setAnimatedVisible)
+
         self.binder.bind(object.haplo_ready, self.show_haplo_network)
 
         self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
+        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.field_toggles.setVisible)
 
         self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -511,7 +583,9 @@ class View(TaskView):
         # print(get_fitchi_string(haplo_tree))
 
         visualizer.visualize_tree(haplo_tree)
-        visualizer.visualize_haploweb()
+
+        if self._should_draw_haploweb():
+            visualizer.visualize_haploweb()
 
     def show_haplo_graph(self, haplo_graph: HaploGraph):
         if haplo_graph is None:
@@ -525,7 +599,14 @@ class View(TaskView):
         # print(haplo_graph)
 
         visualizer.visualize_graph(haplo_graph)
-        visualizer.visualize_haploweb()
+
+        if self._should_draw_haploweb():
+            visualizer.visualize_haploweb()
+
+    def _should_draw_haploweb(self) -> bool:
+        if not self.object:
+            return False
+        return self.object.input_is_phased and self.object.draw_haploweb
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)

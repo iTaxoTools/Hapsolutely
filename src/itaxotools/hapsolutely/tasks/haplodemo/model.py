@@ -59,6 +59,9 @@ class Model(TaskModel):
     transversions_only = Property(bool, False)
     epsilon = Property(int, 0)
 
+    input_is_phased = Property(bool, False)
+    draw_haploweb = Property(bool, True)
+
     def __init__(self, name=None):
         super().__init__(name)
         self.can_open = True
@@ -80,6 +83,7 @@ class Model(TaskModel):
         self.binder.bind(self.input_tree.notification, self.notification)
 
         self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+        self.binder.bind(self.input_sequences.updated, self.update_input_is_phased)
 
         self.binder.bind(self.query, self.on_query)
 
@@ -151,6 +155,12 @@ class Model(TaskModel):
         elif info.format == FileFormat.Fasta:
             if info.has_subsets:
                 self.input_species.set_index(index)
+
+    def update_input_is_phased(self):
+        if not self.input_sequences.object:
+            self.input_is_phased = False
+            return
+        self.input_is_phased = self.input_sequences.object.is_phased
 
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)

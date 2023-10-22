@@ -11,7 +11,8 @@ pixmap_medium = task_pixmaps_medium.nets
 long_description = (
     'Generate and visualize haplotype networks from sequence data. '
     'Nodes are colorized by partition subset. '
-    'Configure the graph style and node positioning interactively. '
+    'Optionally draw a haploweb if input sequences are phased into alleles. '
+    'After generation, configure the graph style and node positions interactively. '
     '\n\n'
     'Input can be in TSV, FASTA or SPART/XML format. '
     'Input trees for Fitchi must be in Newick format. '
