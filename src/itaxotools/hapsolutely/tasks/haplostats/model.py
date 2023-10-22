@@ -26,7 +26,6 @@ from itaxotools.common.bindings import Property
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
-from itaxotools.taxi_gui.tasks.common.model import FileInfoSubtaskModel
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
@@ -56,7 +55,7 @@ class Model(TaskModel):
 
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
-        self.subtask_species = FileInfoSubtaskModel(self)
+        self.subtask_species = PhasedFileInfoSubtaskModel(self)
 
         self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_phased_info)
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)

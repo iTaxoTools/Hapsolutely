@@ -28,9 +28,10 @@ from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.model.common import ItemModel
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel
-from itaxotools.taxi_gui.tasks.common.model import ImportedInputModel
+from itaxotools.taxi_gui.tasks.common.model import (
+    DataFileProtocol, ImportedInputModel)
 from itaxotools.taxi_gui.threading import ReportDone
-from itaxotools.taxi_gui.types import FileInfo
+from itaxotools.taxi_gui.types import FileInfo, Notification
 
 from itaxotools.hapsolutely import app
 
@@ -160,21 +161,51 @@ class PhasedInputModel(ImportedInputModel):
         super().__init__(*args, **kwargs)
         item_model = global_app.model.items
         self.model = PhasedItemProxyModel(item_model, item_model.files)
+        self.phased_table = app.is_path_phased
 
-    def add_phased_info(self, info: FileInfo, is_phased: bool):
+    def add_phased_info(self, info: FileInfo):
         index = self.model.add_file(InputFileModel(info))
-        self.set_index(index)
-        self.object.is_phased = is_phased
+        self.set_index_phased(index)
+
+    def set_index_phased(self, index: QtCore.QModelIndex):
+        if index == self.index:
+            return
+        try:
+            object = self._cast_from_index_phased(index)
+        except Exception as e:
+            # raise e
+            self.notification.emit(Notification.Warn('Unexpected file format.'))
+            self.properties.index.update()
+            self.properties.object.update()
+            self.properties.format.update()
+            return
+
+        self._set_object(object)
+        self.index = index
+
+    def _cast_from_index_phased(self, index: QtCore.QModelIndex) -> DataFileProtocol | None:
+        if not index:
+            return
+        item = self.model.data(index, PhasedItemProxyModel.ItemRole)
+        if not item:
+            return None
+        info = item.object.info
+        is_phased = self.phased_table[info.path]
+        return self.cast_type.from_file_info(
+            info, *self.cast_args, is_phased=is_phased, **self.cast_kwargs)
 
 
 class PhasedFileInfoSubtaskModel(SubtaskModel):
     task_name = 'PhasedFileInfoSubtask'
 
-    done = QtCore.Signal(FileInfo, bool)
+    done = QtCore.Signal(FileInfo)
 
     def start(self, path: Path):
         super().start(get_phased_file_info, path)
 
     def onDone(self, report: ReportDone):
-        self.done.emit(report.result.info, report.result.is_phased)
+        info = report.result.info
+        is_phased = report.result.is_phased
+        app.is_path_phased[info.path] = is_phased
+        self.done.emit(info)
         self.busy = False

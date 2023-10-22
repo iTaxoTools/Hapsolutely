@@ -152,11 +152,18 @@ class View(ScrollTaskView):
 
         self.binder.bind(self.cards.results.view, self.view_results)
 
-        self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
+        self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
 
         # defined last to override `set_busy` calls
         self.binder.bind(object.properties.editable, self.setEditable)
+
+    def _bind_phased_input_selector(self, card, object, subtask):
+        self.binder.bind(card.addInputFile, subtask.start)
+        self.binder.bind(card.indexChanged, object.set_index_phased)
+        self.binder.bind(object.properties.model, card.set_model)
+        self.binder.bind(object.properties.index, card.set_index)
+        self.binder.bind(object.properties.object, card.bind_object)
 
     def _bind_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)

@@ -24,6 +24,8 @@ from itaxotools.taxi_gui.model.common import Object
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.types import FileInfo
 
+from itaxotools.hapsolutely import app
+
 
 class PhasedResultsModel(Object):
 
@@ -41,6 +43,9 @@ class PhasedResultsModel(Object):
             self.model = None
             self.index = None
             return
+
+        app.is_path_phased[info.path] = True
+
         self.info = info
         model = InputFileModel(info)
         model.name = 'Previously phased sequences'

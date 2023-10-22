@@ -52,10 +52,10 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
         return AttrDict({p.key: p.value for p in self.properties})
 
     @classmethod
-    def from_file_info(cls, info: FileInfoType, is_phasing_optional=False) -> PhasedSequenceModel[FileInfoType]:
+    def from_file_info(cls, info: FileInfoType, is_phased=True, is_phasing_optional=True) -> PhasedSequenceModel[FileInfoType]:
         if not type(info) in models:
             raise Exception(f'No suitable {cls.__name__} for info: {info}')
-        return models[type(info)](info, is_phasing_optional)
+        return models[type(info)](info, is_phased, is_phasing_optional)
 
 
 @models(FileInfo.Fasta)

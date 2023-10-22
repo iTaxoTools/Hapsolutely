@@ -518,9 +518,16 @@ class View(TaskView):
         self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
         self.binder.bind(object.properties.draw_haploweb, self.haplo_view.field_toggles.setVisible)
 
-        self._bind_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
+        self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
         self._bind_input_selector(self.cards.input_tree, object.input_tree, object.subtask_tree)
+
+    def _bind_phased_input_selector(self, card, object, subtask):
+        self.binder.bind(card.addInputFile, subtask.start)
+        self.binder.bind(card.indexChanged, object.set_index_phased)
+        self.binder.bind(object.properties.model, card.set_model)
+        self.binder.bind(object.properties.index, card.set_index)
+        self.binder.bind(object.properties.object, card.bind_object)
 
     def _bind_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)

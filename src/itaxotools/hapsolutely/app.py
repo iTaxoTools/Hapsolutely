@@ -16,6 +16,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
+from pathlib import Path
+
 from .model.phased_results import PhasedResultsModel
 
 phased_results = PhasedResultsModel()
+
+is_path_phased: dict[Path, bool] = {}
