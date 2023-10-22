@@ -39,6 +39,9 @@ from itaxotools.taxi2.file_types import FileFormat
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import Sequence, Sequences
 from itaxotools.taxi2.trees import Tree, Trees
+from itaxotools.taxi_gui.tasks.common.process import partition_from_model
+
+from ..common.work import get_all_possible_partition_models
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -183,3 +186,12 @@ def prune_alleles_from_haplo_tree(node: HaploTreeNode):
 def prune_alleles_from_haplo_graph(graph: HaploGraph):
     for node in graph.nodes:
         node.members = set(m[:-2] for m in node.members)
+
+
+def retrieve_spartitions(input: AttrDict) -> tuple[dict[str, dict[str, str]], str | None]:
+    if input.info.format != FileFormat.Spart:
+        return {}, None
+    models = get_all_possible_partition_models(input)
+    spartitions = {model.spartition: partition_from_model(model) for model in models}
+    spartitions = {name: dict(partition) for name, partition in spartitions.items()}
+    return spartitions, input.spartition

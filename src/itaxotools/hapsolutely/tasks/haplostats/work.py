@@ -148,14 +148,6 @@ def write_bulk_stats_to_path(sequences: Sequences, phased: bool, partitions: ite
 
             write_stats_to_file(phased, name, stats, file)
 
-
-def get_all_possible_partition_models(input: AttrDict) -> iter[AttrDict]:
-    for partition in input.info.spartitions:
-        model = AttrDict(input)
-        model.spartition = partition
-        yield model
-
-
 def _check_fasta_allele_definitions(sequences: Sequences):
     previous_id = None
     cached_alleles = set()

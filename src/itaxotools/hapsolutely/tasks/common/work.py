@@ -160,3 +160,10 @@ def check_is_input_phased(input: AttrDict, sequences: Sequences) -> tuple[bool, 
             return (True, warns)
         return (False, [])
     return (input.is_phased, [])
+
+
+def get_all_possible_partition_models(input: AttrDict) -> iter[AttrDict]:
+    for partition in input.info.spartitions:
+        model = AttrDict(input)
+        model.spartition = partition
+        yield model

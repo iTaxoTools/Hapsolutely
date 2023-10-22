@@ -25,6 +25,8 @@ from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
 class Results(NamedTuple):
     haplo_tree: HaploTreeNode
     haplo_graph: HaploGraph
+    spartitions: dict[str, dict[str, str]]
+    spartition: str | None
     seconds_taken: float
 
 

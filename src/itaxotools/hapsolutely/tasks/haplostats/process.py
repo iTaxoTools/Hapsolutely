@@ -122,10 +122,11 @@ def execute_bulk(
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        match_partition_to_phased_sequences, scan_sequence_ambiguity)
+        get_all_possible_partition_models, match_partition_to_phased_sequences,
+        scan_sequence_ambiguity)
     from .work import (
-        get_all_possible_partition_models, get_sequences_from_phased_model,
-        scan_sequence_alleles, write_bulk_stats_to_path)
+        get_sequences_from_phased_model, scan_sequence_alleles,
+        write_bulk_stats_to_path)
 
     haplotype_stats = work_dir / 'out'
 

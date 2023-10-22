@@ -31,7 +31,9 @@ from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.haplodemo.visualizer import Visualizer
 from itaxotools.haplodemo.widgets import (
-    ColorDelegate, DivisionView, PaletteSelector, ToggleButton)
+    ColorDelegate, DivisionView, PaletteSelector)
+from itaxotools.haplodemo.widgets import PartitionSelector as PartitionComboBox
+from itaxotools.haplodemo.widgets import ToggleButton
 from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
@@ -112,6 +114,8 @@ class HaploView(QtWidgets.QFrame):
 
         scene_view = GraphicsView(scene, opengl)
 
+        partition_selector = PartitionComboBox(settings.partitions)
+
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
         self.edge_length_dialog = EdgeLengthDialog(self, scene, settings)
@@ -162,6 +166,14 @@ class HaploView(QtWidgets.QFrame):
         toggle_field_groups = ToggleButton('Show groups')
         toggle_field_isolated = ToggleButton('Show isolated')
 
+        partition_widget = QtWidgets.QWidget()
+        partitions_layout = QtWidgets.QVBoxLayout(partition_widget)
+        partitions_layout.setContentsMargins(0, 0, 0, 0)
+        partitions_layout.addWidget(partition_selector)
+        partitions_layout.addSpacing(4)
+        partitions_layout.addWidget(HLineSeparator(1))
+        partitions_layout.addSpacing(4)
+
         dialogs = QtWidgets.QVBoxLayout()
         dialogs.addWidget(mass_resize_nodes)
         dialogs.addWidget(mass_resize_edges)
@@ -194,6 +206,7 @@ class HaploView(QtWidgets.QFrame):
 
         sidebar_layout = QtWidgets.QVBoxLayout()
         sidebar_layout.setContentsMargins(8, 16, 8, 16)
+        sidebar_layout.addWidget(partition_widget)
         sidebar_layout.addLayout(dialogs)
         sidebar_layout.addSpacing(4)
         sidebar_layout.addWidget(HLineSeparator(1))
@@ -224,7 +237,14 @@ class HaploView(QtWidgets.QFrame):
         self.toggle_lock_distances = toggle_lock_distances
         self.field_toggles = field_toggles
 
+        self.partition_widget = partition_widget
+        self.partition_selector = partition_selector
+
         self.binder = Binder()
+
+        self.binder.bind(settings.partitions.partitionsChanged, partition_widget.setVisible, lambda partitions: len(partitions) > 0)
+        self.binder.bind(partition_selector.modelIndexChanged, settings.properties.partition_index)
+        self.binder.bind(settings.properties.partition_index, partition_selector.setModelIndex)
 
         self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
         self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
@@ -257,6 +277,12 @@ class HaploView(QtWidgets.QFrame):
             gg.bottomRight().y() - self.zoom_control.height() - 16,
         ))
         self.zoom_control.setGeometry(gg)
+
+    def set_spartitions(self, spartitions: dict[str, dict[str, str]], spartition: str):
+        self.visualizer.set_partitions(spartitions.items())
+        self.visualizer.set_partition(spartitions[spartition])
+        index = list(spartitions.keys()).index(spartition)
+        self.partition_selector.setCurrentIndex(index)
 
     def reset_settings(self):
         self.settings.reset()
@@ -594,6 +620,8 @@ class View(TaskView):
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
 
+        self._visualize_spartitions()
+
     def show_haplo_graph(self, haplo_graph: HaploGraph):
         if haplo_graph is None:
             return
@@ -610,10 +638,18 @@ class View(TaskView):
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
 
+        self._visualize_spartitions()
+
     def _should_draw_haploweb(self) -> bool:
         if not self.object:
             return False
         return self.object.input_is_phased and self.object.draw_haploweb
+
+    def _visualize_spartitions(self):
+        spartitions = self.object.spartitions
+        spartition = self.object.spartition
+        if spartitions and spartition:
+            self.haplo_view.set_spartitions(spartitions, spartition)
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)

@@ -13,6 +13,7 @@ long_description = (
     'Nodes are colorized by partition subset. '
     'Optionally draw a haploweb if input sequences are phased into alleles. '
     'After generation, configure the graph style and node positions interactively. '
+    'If species are given in SPART/XML, you may dynamically select the visualized partition. '
     '\n\n'
     'Input can be in TSV, FASTA or SPART/XML format. '
     'Input trees for Fitchi must be in Newick format. '

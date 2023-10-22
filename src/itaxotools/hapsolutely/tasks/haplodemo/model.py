@@ -47,6 +47,9 @@ class Model(TaskModel):
 
     haplo_tree = Property(HaploTreeNode, None)
     haplo_graph = Property(HaploGraph, None)
+    spartitions = Property(dict, None)
+    spartition = Property(str, None)
+
     can_lock_distances = Property(bool, False)
 
     input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True))
@@ -165,9 +168,10 @@ class Model(TaskModel):
         time_taken = human_readable_seconds(report.result.seconds_taken)
         self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
 
-        self.dummy_time = report.result.seconds_taken
         self.haplo_tree = report.result.haplo_tree
         self.haplo_graph = report.result.haplo_graph
+        self.spartitions = report.result.spartitions
+        self.spartition = report.result.spartition
 
         self.can_lock_distances = bool(self.haplo_tree is not None)
 
@@ -177,7 +181,9 @@ class Model(TaskModel):
 
     def clear(self):
         self.haplo_tree = None
-        self.dummy_time = None
+        self.haplo_graph = None
+        self.spartitions = None
+        self.spartition = None
         self.done = False
 
     def open(self, path: Path):
