@@ -161,6 +161,7 @@ class HaploView(QtWidgets.QFrame):
         toggle_legend = ToggleButton('Show legend')
         toggle_scale = ToggleButton('Show scale')
         toggle_scene_rotation = ToggleButton('Rotate scene')
+        toggle_snapping = ToggleButton('Enable snapping')
         toggle_field_groups = ToggleButton('Show groups')
         toggle_field_isolated = ToggleButton('Show isolated')
 
@@ -193,6 +194,7 @@ class HaploView(QtWidgets.QFrame):
 
         toggles = QtWidgets.QVBoxLayout()
         toggles.addWidget(toggle_scene_rotation)
+        toggles.addWidget(toggle_snapping)
         toggles.addWidget(toggle_lock_distances)
         toggles.addWidget(toggle_lock_labels)
         toggles.addWidget(field_toggles)
@@ -266,6 +268,9 @@ class HaploView(QtWidgets.QFrame):
 
         self.binder.bind(settings.properties.rotate_scene, toggle_scene_rotation.setChecked)
         self.binder.bind(toggle_scene_rotation.toggled, settings.properties.rotate_scene)
+
+        self.binder.bind(settings.properties.snapping_movement, toggle_snapping.setChecked)
+        self.binder.bind(toggle_snapping.toggled, settings.properties.snapping_movement)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)
