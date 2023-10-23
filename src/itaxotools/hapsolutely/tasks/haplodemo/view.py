@@ -110,8 +110,6 @@ class HaploView(QtWidgets.QFrame):
         scene = GraphicsScene(settings)
         visualizer = Visualizer(scene, settings)
 
-        scene.style_labels(settings.node_label_template, settings.edge_label_template)
-
         scene_view = GraphicsView(scene, opengl)
 
         partition_selector = PartitionComboBox(settings.partitions)
