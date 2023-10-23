@@ -287,7 +287,7 @@ class HaploView(QtWidgets.QFrame):
     def reset_settings(self):
         self.settings.reset()
 
-        self.settings.node_sizes.set_all_values(20, 10, 1, 0, 0, 20)
+        self.settings.node_sizes.set_all_values(20, 0, 0, 20, 10)
 
         self.settings.rotational_movement = True
         self.settings.recursive_movement = True
