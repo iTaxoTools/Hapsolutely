@@ -148,6 +148,7 @@ def write_bulk_stats_to_path(sequences: Sequences, phased: bool, partitions: ite
 
             write_stats_to_file(phased, name, stats, file)
 
+
 def _check_fasta_allele_definitions(sequences: Sequences):
     previous_id = None
     cached_alleles = set()

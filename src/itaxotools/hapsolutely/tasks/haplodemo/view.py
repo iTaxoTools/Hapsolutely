@@ -21,7 +21,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from pathlib import Path
 
 from itaxotools.common.bindings import Binder
-from itaxotools.common.utility import AttrDict
+from itaxotools.common.utility import AttrDict, override
 from itaxotools.common.widgets import HLineSeparator
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
@@ -29,9 +29,9 @@ from itaxotools.haplodemo.dialogs import (
     NodeSizeDialog, OptionsDialog, PenWidthDialog, ScaleMarksDialog)
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
+from itaxotools.haplodemo.views import ColorDelegate, DivisionView, MemberView
 from itaxotools.haplodemo.visualizer import Visualizer
-from itaxotools.haplodemo.widgets import (
-    ColorDelegate, DivisionView, PaletteSelector)
+from itaxotools.haplodemo.widgets import PaletteSelector
 from itaxotools.haplodemo.widgets import PartitionSelector as PartitionComboBox
 from itaxotools.haplodemo.widgets import ToggleButton
 from itaxotools.haplodemo.zoom import ZoomControl
@@ -111,6 +111,8 @@ class HaploView(QtWidgets.QFrame):
         visualizer = Visualizer(scene, settings)
 
         scene_view = GraphicsView(scene, opengl)
+        scene_view.setMinimumHeight(400)
+        scene_view.setMinimumWidth(400)
 
         partition_selector = PartitionComboBox(settings.partitions)
 
@@ -164,6 +166,9 @@ class HaploView(QtWidgets.QFrame):
         toggle_snapping = ToggleButton('Enable snapping')
         toggle_field_groups = ToggleButton('Show groups')
         toggle_field_isolated = ToggleButton('Show isolated')
+
+        member_view = MemberView(settings.members)
+        member_view.setIndentation(14)
 
         partition_widget = QtWidgets.QWidget()
         partitions_layout = QtWidgets.QVBoxLayout(partition_widget)
@@ -219,11 +224,19 @@ class HaploView(QtWidgets.QFrame):
         sidebar.setLayout(sidebar_layout)
         sidebar.setFixedWidth(192)
 
+        splitter = QtWidgets.QSplitter()
+        splitter.addWidget(scene_view)
+        splitter.addWidget(member_view)
+        splitter.setStretchFactor(0, 3)
+        splitter.setStretchFactor(1, 0)
+        splitter.setCollapsible(0, False)
+        splitter.setCollapsible(1, True)
+
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
         layout.addWidget(sidebar)
-        layout.addWidget(scene_view, 1)
+        layout.addWidget(splitter, 1)
         self.setLayout(layout)
 
         zoom_control = ZoomControl(scene_view, self)
@@ -236,6 +249,8 @@ class HaploView(QtWidgets.QFrame):
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
         self.field_toggles = field_toggles
+        self.member_view = member_view
+        self.splitter = splitter
 
         self.partition_widget = partition_widget
         self.partition_selector = partition_selector
@@ -245,6 +260,9 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(settings.partitions.partitionsChanged, partition_widget.setVisible, lambda partitions: len(partitions) > 0)
         self.binder.bind(partition_selector.modelIndexChanged, settings.properties.partition_index)
         self.binder.bind(settings.properties.partition_index, partition_selector.setModelIndex)
+
+        self.binder.bind(visualizer.nodeIndexSelected, member_view.select)
+        self.binder.bind(member_view.nodeSelected, visualizer.select_node_by_name)
 
         self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
         self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
@@ -272,6 +290,7 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(settings.properties.snapping_movement, toggle_snapping.setChecked)
         self.binder.bind(toggle_snapping.toggled, settings.properties.snapping_movement)
 
+    @override
     def resizeEvent(self, event):
         super().resizeEvent(event)
         gg = self.scene_view.geometry()
@@ -280,6 +299,9 @@ class HaploView(QtWidgets.QFrame):
             gg.bottomRight().y() - self.zoom_control.height() - 16,
         ))
         self.zoom_control.setGeometry(gg)
+
+    def update_splitter_sizes(self):
+        self.splitter.setSizes([1, self.member_view.sizeHint().width()])
 
     def set_spartitions(self, spartitions: dict[str, dict[str, str]], spartition: str):
         self.visualizer.set_partitions(spartitions.items())
@@ -617,6 +639,7 @@ class View(TaskView):
         # print(get_fitchi_string(haplo_tree))
 
         visualizer.visualize_tree(haplo_tree)
+        view.update_splitter_sizes()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
@@ -635,6 +658,7 @@ class View(TaskView):
         # print(haplo_graph)
 
         visualizer.visualize_graph(haplo_graph)
+        view.update_splitter_sizes()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
