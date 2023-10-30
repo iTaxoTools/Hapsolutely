@@ -294,6 +294,7 @@ class HaploView(QtWidgets.QFrame):
         self.field_toggles = field_toggles
         self.member_view = member_panel.controls.view
         self.splitter = splitter
+        self.sidebar = sidebar
 
         self.partition_widget = partition_widget
         self.partition_selector = partition_selector
@@ -336,11 +337,16 @@ class HaploView(QtWidgets.QFrame):
     @override
     def resizeEvent(self, event):
         super().resizeEvent(event)
-        gg = self.scene_view.geometry()
-        gg.setTopLeft(QtCore.QPoint(
-            gg.bottomRight().x() - self.zoom_control.width() - 16,
-            gg.bottomRight().y() - self.zoom_control.height() - 16,
-        ))
+        self.update_zoom_control_geometry()
+
+    def update_zoom_control_geometry(self):
+        gg = self.geometry()
+        gg = QtCore.QRect(
+            gg.bottomLeft().x() + self.sidebar.width() + 24,
+            gg.bottomLeft().y() - self.zoom_control.height() - 24,
+            self.sidebar.width(),
+            self.sidebar.height(),
+        )
         self.zoom_control.setGeometry(gg)
 
     def update_splitter_sizes(self):
@@ -683,6 +689,7 @@ class View(TaskView):
 
         visualizer.visualize_tree(haplo_tree)
         view.update_splitter_sizes()
+        view.update_zoom_control_geometry()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
@@ -702,6 +709,7 @@ class View(TaskView):
 
         visualizer.visualize_graph(haplo_graph)
         view.update_splitter_sizes()
+        view.update_zoom_control_geometry()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
