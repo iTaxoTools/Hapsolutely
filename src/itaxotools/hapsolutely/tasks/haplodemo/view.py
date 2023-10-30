@@ -43,6 +43,8 @@ from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
     DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
 
+from itaxotools.hapsolutely.yamlify import yamlify
+
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
@@ -125,7 +127,7 @@ class MemberPanel(QtWidgets.QFrame):
         label_layout.addWidget(arrow)
         label_layout.addWidget(label, 1)
 
-        export = QtWidgets.QPushButton('Export all')
+        export = QtWidgets.QPushButton('Export members')
 
         export_layout = QtWidgets.QVBoxLayout()
         export_layout.setContentsMargins(8, 8, 8, 8)
@@ -144,6 +146,8 @@ class MemberPanel(QtWidgets.QFrame):
 
 
 class HaploView(QtWidgets.QFrame):
+    exportMembers = QtCore.Signal()
+
     def __init__(self):
         super().__init__()
         self.draw()
@@ -341,6 +345,7 @@ class HaploView(QtWidgets.QFrame):
 
         self.binder.bind(toggle_members_panel.toggled, self.handle_members_panel_toggled)
         self.binder.bind(splitter.splitterMoved, self.handle_members_splitter_moved)
+        self.binder.bind(member_panel.controls.export.clicked, self.exportMembers)
         toggle_members_panel.setChecked(True)
 
     @override
@@ -635,6 +640,7 @@ class View(TaskView):
 
         self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
         self.binder.bind(object.properties.draw_haploweb, self.haplo_view.field_toggles.setVisible)
+        self.binder.bind(self.haplo_view.exportMembers, self.save_members)
 
         self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
@@ -757,8 +763,23 @@ class View(TaskView):
             'PDF Files (*.pdf)': scene_view.export_pdf,
         }
         filename, format = QtWidgets.QFileDialog.getSaveFileName(
-            self.window(), f'{app.config.title} - Export Network',
+            self.window(), f'{app.config.title} - Export network',
             dir=str(path), filter=';;'.join(filters.keys()))
         if not filename:
             return None
         filters[format](filename)
+
+    def save_members(self):
+        path = Path(self.object.input_sequences.object.info.path)
+        path = path.with_name(f'{path.stem}.members')
+        filename, format = QtWidgets.QFileDialog.getSaveFileName(
+            self.window(), f'{app.config.title} - Export node members',
+            dir=str(path), filter='YAML Files (*.yaml)')
+        if not filename:
+            return None
+
+        member_dict = self.haplo_view.visualizer.members
+        members = {node: list(members) for node, members in member_dict.items()}
+
+        with open(filename, 'w') as file:
+            print(yamlify(members), file=file)
