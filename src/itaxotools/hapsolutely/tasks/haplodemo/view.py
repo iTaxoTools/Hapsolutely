@@ -202,14 +202,17 @@ class HaploView(QtWidgets.QFrame):
         select_font = QtWidgets.QPushButton('Set font')
         select_font.clicked.connect(self.font_dialog.exec)
 
+        toggle_scene_rotation = ToggleButton('Rotate scene')
+        toggle_members_panel = ToggleButton('Show members')
+        toggle_snapping = ToggleButton('Enable snapping')
         toggle_lock_distances = ToggleButton('Lock distances')
         toggle_lock_labels = ToggleButton('Lock labels')
-        toggle_legend = ToggleButton('Show legend')
-        toggle_scale = ToggleButton('Show scale')
-        toggle_scene_rotation = ToggleButton('Rotate scene')
-        toggle_snapping = ToggleButton('Enable snapping')
+
         toggle_field_groups = ToggleButton('Show groups')
         toggle_field_isolated = ToggleButton('Show isolated')
+
+        toggle_legend = ToggleButton('Show legend')
+        toggle_scale = ToggleButton('Show scale')
 
         member_panel = MemberPanel(settings)
 
@@ -242,6 +245,7 @@ class HaploView(QtWidgets.QFrame):
 
         toggles = QtWidgets.QVBoxLayout()
         toggles.addWidget(toggle_scene_rotation)
+        toggles.addWidget(toggle_members_panel)
         toggles.addWidget(toggle_snapping)
         toggles.addWidget(toggle_lock_distances)
         toggles.addWidget(toggle_lock_labels)
@@ -291,6 +295,7 @@ class HaploView(QtWidgets.QFrame):
         self.settings = settings
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
+        self.toggle_members_panel = toggle_members_panel
         self.field_toggles = field_toggles
         self.member_view = member_panel.controls.view
         self.splitter = splitter
@@ -334,10 +339,25 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(settings.properties.snapping_movement, toggle_snapping.setChecked)
         self.binder.bind(toggle_snapping.toggled, settings.properties.snapping_movement)
 
+        self.binder.bind(toggle_members_panel.toggled, self.handle_members_panel_toggled)
+        self.binder.bind(splitter.splitterMoved, self.handle_members_splitter_moved)
+        toggle_members_panel.setChecked(True)
+
     @override
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.update_zoom_control_geometry()
+
+    def handle_members_panel_toggled(self, pressed):
+        _, panel_size = self.splitter.sizes()
+        if pressed and panel_size == 0:
+            self.update_splitter_sizes()
+        elif not pressed and panel_size > 0:
+            self.splitter.setSizes([1, 0])
+
+    def handle_members_splitter_moved(self, pos, index):
+        _, panel_size = self.splitter.sizes()
+        self.toggle_members_panel.setChecked(bool(panel_size > 0))
 
     def update_zoom_control_geometry(self):
         gg = self.geometry()
