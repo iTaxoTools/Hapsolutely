@@ -16,7 +16,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from pathlib import Path
 
@@ -77,6 +77,10 @@ class StatsResultViewer(Card):
 
         check = QtWidgets.QLabel('\u2714')
         check.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
+        font = check.font()
+        font.setStyleStrategy(QtGui.QFont.PreferAntialias)
+        font.setHintingPreference(QtGui.QFont.PreferNoHinting)
+        check.setFont(font)
 
         view = QtWidgets.QPushButton('Preview')
         view.clicked.connect(self.handleView)

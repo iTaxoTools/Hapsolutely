@@ -51,6 +51,10 @@ class PhaseResultViewer(Card):
 
         check = QtWidgets.QLabel('\u2714')
         check.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
+        font = check.font()
+        font.setStyleStrategy(QtGui.QFont.PreferAntialias)
+        font.setHintingPreference(QtGui.QFont.PreferNoHinting)
+        check.setFont(font)
 
         visualize = QtWidgets.QPushButton('Visualize')
         analyze = QtWidgets.QPushButton('Analyze')

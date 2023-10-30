@@ -99,6 +99,50 @@ class ColorDialog(OptionsDialog):
         self.setLayout(layout)
 
 
+class MemberPanel(QtWidgets.QFrame):
+    def __init__(self, settings: Settings):
+        super().__init__()
+        self.setStyleSheet('MemberPanel {background: Palette(Window);}')
+
+        view = MemberView(settings.members)
+        view.setIndentation(17)
+
+        label = QtWidgets.QLabel('Node members')
+        label.setStyleSheet('QLabel {background: Palette(Shadow); color: Palette(Light); padding-top: 5px; padding-bottom: 5px; padding-left: 0px;}')
+        font = label.font()
+        font.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
+        label.setFont(font)
+
+        arrow = QtWidgets.QLabel('\u276F')
+        arrow.setStyleSheet('QLabel {background: Palette(Shadow); color: Palette(Light); padding-left: 4px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;}')
+        font = arrow.font()
+        font.setBold(True)
+        font.setStyleStrategy(QtGui.QFont.PreferAntialias)
+        font.setHintingPreference(QtGui.QFont.PreferNoHinting)
+        arrow.setFont(font)
+
+        label_layout = QtWidgets.QHBoxLayout()
+        label_layout.addWidget(arrow)
+        label_layout.addWidget(label, 1)
+
+        export = QtWidgets.QPushButton('Export all')
+
+        export_layout = QtWidgets.QVBoxLayout()
+        export_layout.setContentsMargins(8, 8, 8, 8)
+        export_layout.addWidget(export)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(0)
+        layout.addLayout(label_layout)
+        layout.addWidget(view)
+        layout.addLayout(export_layout)
+
+        self.controls = AttrDict()
+        self.controls.view = view
+        self.controls.export = export
+
+
 class HaploView(QtWidgets.QFrame):
     def __init__(self):
         super().__init__()
@@ -167,8 +211,7 @@ class HaploView(QtWidgets.QFrame):
         toggle_field_groups = ToggleButton('Show groups')
         toggle_field_isolated = ToggleButton('Show isolated')
 
-        member_view = MemberView(settings.members)
-        member_view.setIndentation(14)
+        member_panel = MemberPanel(settings)
 
         partition_widget = QtWidgets.QWidget()
         partitions_layout = QtWidgets.QVBoxLayout(partition_widget)
@@ -226,7 +269,7 @@ class HaploView(QtWidgets.QFrame):
 
         splitter = QtWidgets.QSplitter()
         splitter.addWidget(scene_view)
-        splitter.addWidget(member_view)
+        splitter.addWidget(member_panel)
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 0)
         splitter.setCollapsible(0, False)
@@ -249,7 +292,7 @@ class HaploView(QtWidgets.QFrame):
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
         self.field_toggles = field_toggles
-        self.member_view = member_view
+        self.member_view = member_panel.controls.view
         self.splitter = splitter
 
         self.partition_widget = partition_widget
@@ -261,8 +304,8 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(partition_selector.modelIndexChanged, settings.properties.partition_index)
         self.binder.bind(settings.properties.partition_index, partition_selector.setModelIndex)
 
-        self.binder.bind(visualizer.nodeIndexSelected, member_view.select)
-        self.binder.bind(member_view.nodeSelected, visualizer.select_node_by_name)
+        self.binder.bind(visualizer.nodeIndexSelected, member_panel.controls.view.select)
+        self.binder.bind(member_panel.controls.view.nodeSelected, visualizer.select_node_by_name)
 
         self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
         self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
