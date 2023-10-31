@@ -27,6 +27,7 @@ from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
     EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
     NodeSizeDialog, OptionsDialog, PenWidthDialog, ScaleMarksDialog)
+from itaxotools.haplodemo.history import UndoStack
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
 from itaxotools.haplodemo.views import ColorDelegate, DivisionView, MemberView
@@ -164,6 +165,25 @@ class HaploView(QtWidgets.QFrame):
 
         partition_selector = PartitionComboBox(settings.partitions)
 
+        history_stack = UndoStack()
+        self.actions = AttrDict()
+        self.actions.undo = history_stack.createUndoAction(self, '&Undo')
+        self.actions.undo.setShortcut(QtGui.QKeySequence.Undo)
+        self.actions.redo = history_stack.createRedoAction(self, '&Redo')
+        self.actions.redo.setShortcut(QtGui.QKeySequence.Redo)
+        for action in self.actions:
+            self.addAction(action)
+
+        undo_button = QtWidgets.QPushButton('Undo')
+        undo_button.clicked.connect(history_stack.undo)
+        history_stack.canUndoChanged.connect(undo_button.setEnabled)
+        undo_button.setEnabled(history_stack.canUndo())
+
+        redo_button = QtWidgets.QPushButton('Redo')
+        redo_button.clicked.connect(history_stack.redo)
+        history_stack.canRedoChanged.connect(redo_button.setEnabled)
+        redo_button.setEnabled(history_stack.canRedo())
+
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
         self.edge_length_dialog = EdgeLengthDialog(self, scene, settings)
@@ -263,6 +283,11 @@ class HaploView(QtWidgets.QFrame):
         sidebar_layout = QtWidgets.QVBoxLayout()
         sidebar_layout.setContentsMargins(8, 16, 8, 16)
         sidebar_layout.addWidget(partition_widget)
+        sidebar_layout.addWidget(undo_button)
+        sidebar_layout.addWidget(redo_button)
+        sidebar_layout.addSpacing(4)
+        sidebar_layout.addWidget(HLineSeparator(1))
+        sidebar_layout.addSpacing(4)
         sidebar_layout.addLayout(dialogs)
         sidebar_layout.addSpacing(4)
         sidebar_layout.addWidget(HLineSeparator(1))
@@ -347,6 +372,17 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(splitter.splitterMoved, self.handle_members_splitter_moved)
         self.binder.bind(member_panel.controls.export.clicked, self.exportMembers)
         toggle_members_panel.setChecked(True)
+
+        self.binder.bind(self.node_size_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.label_format_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.scale_style_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.pen_style_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.font_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.edge_length_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(self.edge_style_dialog.commandPosted, self.scene.commandPosted)
+
+        self.binder.bind(scene.commandPosted, history_stack.push)
+        self.binder.bind(scene.cleared, history_stack.clear)
 
     @override
     def resizeEvent(self, event):
