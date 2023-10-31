@@ -232,8 +232,8 @@ class HaploView(QtWidgets.QFrame):
         toggle_lock_distances = ToggleButton('Lock distances')
         toggle_lock_labels = ToggleButton('Lock labels')
 
-        toggle_field_groups = ToggleButton('Show groups')
-        toggle_field_isolated = ToggleButton('Show isolated')
+        toggle_field_groups = ToggleButton('Show FORs')
+        toggle_field_isolated = ToggleButton('Show singleton FORs')
 
         toggle_legend = ToggleButton('Show legend')
         toggle_scale = ToggleButton('Show scale')
