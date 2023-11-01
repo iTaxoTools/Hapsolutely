@@ -127,10 +127,12 @@ def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, trans
 
 
 def make_haplo_graph(graph: Network) -> HaploGraph:
+    digits = len(str(len(graph.vertices))) + 1
+    formatter = lambda index: 'Node' + str(index).rjust(digits, '0')
     return HaploGraph(
         [
             HaploGraphNode(
-                f'node_{i}',
+                formatter(i + 1),
                 Counter({
                     color.color: color.weight
                     for color in node.colors
