@@ -66,6 +66,7 @@ def execute_single(
 ) -> tuple[Path, float]:
 
     from itaxotools.taxi_gui.tasks.common.process import partition_from_model
+    from itaxotools.taxi2.partitions import Partition
 
     from itaxotools import abort, get_feedback
 
@@ -80,14 +81,19 @@ def execute_single(
     ts = perf_counter()
 
     is_phased = input_sequences.is_phased
+    is_partitioned = input_species is not None
 
     sequences = get_sequences_from_phased_model(input_sequences)
     ambiguity_warns = scan_sequence_ambiguity(sequences)
 
     allele_warns = scan_sequence_alleles(sequences) if is_phased else []
 
-    partition = partition_from_model(input_species)
-    partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
+    if is_partitioned:
+        partition = partition_from_model(input_species)
+        partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
+    else:
+        partition = Partition({sequence.id: 'unknown' for sequence in sequences})
+        partition_warns = []
 
     warns = ambiguity_warns + allele_warns + partition_warns
 
@@ -100,8 +106,8 @@ def execute_single(
 
     tx = perf_counter()
 
-    partition_name = input_species.partition_name
-    write_stats_to_path(sequences, is_phased, partition, partition_name, haplotype_stats)
+    partition_name = input_species.partition_name if is_partitioned else 'unknown'
+    write_stats_to_path(sequences, is_phased, is_partitioned, partition, partition_name, haplotype_stats)
 
     tf = perf_counter()
 

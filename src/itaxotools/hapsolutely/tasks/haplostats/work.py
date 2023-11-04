@@ -65,7 +65,7 @@ def write_all_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     print(yamlify(data, 'FORs shared between subsets'), file=file)
 
 
-def write_basic_stats_to_file(name: str, stats: HaploStats, file: TextIO):
+def write_partition_stats_to_file(name: str, stats: HaploStats, file: TextIO):
 
     print(file=file)
     partition = dump({'Partition': name})
@@ -85,9 +85,46 @@ def write_basic_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     print(yamlify(data, 'Haplotypes shared between subsets'), file=file)
 
 
-def write_stats_to_file(phased: bool, name: str, stats: HaploStats, file: TextIO):
-    if phased:
-        return write_all_stats_to_file(name, stats, file)
+def write_phasing_stats_to_file(name: str, stats: HaploStats, file: TextIO):
+
+    print(file=file)
+    partition = dump({'Partition': name})
+    print(partition, file=file)
+
+    data = stats.get_dataset_sizes()
+    del data['subsets']
+    print(yamlify(data, 'Dataset size'), file=file)
+
+    data = stats.get_haplotypes()
+    print(yamlify(data, 'Haplotype sequences'), file=file)
+
+    data = stats.get_fields_of_recombination()
+    print(yamlify(data, 'Fields of recombination'), file=file)
+
+
+def write_basic_stats_to_file(name: str, stats: HaploStats, file: TextIO):
+
+    print(file=file)
+    partition = dump({'Partition': name})
+    print(partition, file=file)
+
+    data = stats.get_dataset_sizes()
+    del data['FORs']
+    del data['subsets']
+    print(yamlify(data, 'Dataset size'), file=file)
+
+    data = stats.get_haplotypes()
+    print(yamlify(data, 'Haplotype sequences'), file=file)
+
+
+def write_stats_to_file(phased: bool, partitioned: bool, name: str, stats: HaploStats, file: TextIO):
+    match phased, partitioned:
+        case True, True:
+            return write_all_stats_to_file(name, stats, file)
+        case False, True:
+            return write_partition_stats_to_file(name, stats, file)
+        case True, False:
+            return write_phasing_stats_to_file(name, stats, file)
     return write_basic_stats_to_file(name, stats, file)
 
 
@@ -113,14 +150,14 @@ def bundle_entries(sequences: Sequences, partition: Partition) -> iter[Entry]:
     yield Entry(cached_id, cached_subset, cached_seqs)
 
 
-def write_stats_to_path(sequences: Sequences, phased: bool, partition: Partition, name: str, path: Path):
+def write_stats_to_path(sequences: Sequences, phased: bool, partitioned: bool, partition: Partition, name: str, path: Path):
 
     stats = HaploStats()
     for entry in bundle_entries(sequences, partition):
         stats.add(entry.subset, entry.seqs)
 
     with open(path, 'w') as file:
-        write_stats_to_file(phased, name, stats, file)
+        write_stats_to_file(phased, partitioned, name, stats, file)
 
 
 def write_bulk_stats_to_path(sequences: Sequences, phased: bool, partitions: iter[Partition], names: list[str], path: Path):
@@ -134,7 +171,7 @@ def write_bulk_stats_to_path(sequences: Sequences, phased: bool, partitions: ite
             for entry in bundle_entries(sequences, partition):
                 stats.add(entry.subset, entry.seqs)
 
-            write_stats_to_file(phased, name, stats, file)
+            write_stats_to_file(phased, True, name, stats, file)
 
 
 def _check_fasta_allele_definitions(sequences: Sequences):
