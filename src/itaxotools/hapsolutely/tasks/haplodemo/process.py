@@ -62,7 +62,7 @@ def execute(
         append_alleles_to_sequence_ids, get_newick_string_from_tree,
         get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
         prune_alleles_from_haplo_graph, prune_alleles_from_haplo_tree,
-        retrieve_spartitions, validate_sequences_in_tree)
+        retrieve_spartitions, validate_sequences_in_tree, prune_alleles_from_spartitions)
 
     haplo_tree = None
     haplo_graph = None
@@ -129,7 +129,10 @@ def execute(
         if is_phased:
             prune_alleles_from_haplo_graph(haplo_graph)
 
-    spartitions, spartition = retrieve_spartitions(input_species)
+    spartitions, spartition = retrieve_spartitions(input_species, sequences)
+
+    if is_phased:
+        spartitions = prune_alleles_from_spartitions(spartitions)
 
     tf = perf_counter()
 

@@ -41,7 +41,7 @@ from itaxotools.taxi2.sequences import Sequence, Sequences
 from itaxotools.taxi2.trees import Tree, Trees
 from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
-from ..common.work import get_all_possible_partition_models
+from ..common.work import get_all_possible_partition_models, match_partition_to_phased_sequences
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -190,10 +190,20 @@ def prune_alleles_from_haplo_graph(graph: HaploGraph):
         node.members = set(m[:-2] for m in node.members)
 
 
-def retrieve_spartitions(input: AttrDict) -> tuple[dict[str, dict[str, str]], str | None]:
+def prune_alleles_from_spartitions(spartitions: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+    return {
+        name: {id[:-2]: subset for id, subset in spartition.items()}
+        for name, spartition in spartitions.items()
+    }
+
+
+def retrieve_spartitions(input: AttrDict, sequences: Sequences) -> tuple[dict[str, dict[str, str]], str | None]:
     if input.info.format != FileFormat.Spart:
         return {}, None
     models = get_all_possible_partition_models(input)
     spartitions = {model.spartition: partition_from_model(model) for model in models}
+    spartitions = {
+        name: match_partition_to_phased_sequences(partition, sequences)[0]
+        for name, partition in spartitions.items()}
     spartitions = {name: dict(partition) for name, partition in spartitions.items()}
     return spartitions, input.spartition
