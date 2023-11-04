@@ -164,4 +164,4 @@ class Model(TaskModel):
     @property
     def suggested_results(self):
         path = self.input_sequences.object.info.path
-        return path.parent / f'{path.stem}.stats.yaml'
+        return path.parent / f'{path.stem}_stats.yaml'

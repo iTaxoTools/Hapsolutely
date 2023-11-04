@@ -65,7 +65,7 @@ def scan_sequence_ambiguity(sequences: Sequences) -> list[str]:
     ambiguity = set()
     for sequence in sequences:
         for character in sequence.seq:
-            if character not in 'ACGT':
+            if character.upper() not in 'ACGT':
                 ambiguity.add(character)
     if ambiguity:
         codes = ''.join(c for c in ambiguity)

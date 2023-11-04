@@ -791,7 +791,7 @@ class View(TaskView):
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f'{path.stem}.network')
+        path = path.with_name(f'{path.stem}_network')
         scene_view = self.haplo_view.scene_view
         filters = {
             'PNG Files (*.png)': scene_view.export_png,
@@ -807,7 +807,7 @@ class View(TaskView):
 
     def save_members(self):
         path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f'{path.stem}.members')
+        path = path.with_name(f'{path.stem}_members')
         filename, format = QtWidgets.QFileDialog.getSaveFileName(
             self.window(), f'{app.config.title} - Export node members',
             dir=str(path), filter='YAML Files (*.yaml)')
