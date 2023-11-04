@@ -26,6 +26,7 @@ from itaxotools.taxi2.files import get_info
 from itaxotools.taxi2.handlers import FileHandler
 from itaxotools.taxi2.partitions import Partition
 from itaxotools.taxi2.sequences import SequenceHandler, Sequences
+from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
 from .types import PhasedFileInfo
 
@@ -128,6 +129,14 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
         warns = []
 
     return matched, warns
+
+
+def get_matched_partition_from_optional_model(input_species: AttrDict | None, sequences: Sequences) -> tuple[Partition, list[str]]:
+    if input_species is None:
+        partition = Partition({sequence.id: 'unknown' for sequence in sequences})
+        return partition, []
+    partition = partition_from_model(input_species)
+    return match_partition_to_phased_sequences(partition, sequences)
 
 
 def _get_sequence_pairs(sequences: Sequences):

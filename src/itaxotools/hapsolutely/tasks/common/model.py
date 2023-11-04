@@ -172,8 +172,7 @@ class PhasedInputModel(ImportedInputModel):
             return
         try:
             object = self._cast_from_index_phased(index)
-        except Exception as e:
-            # raise e
+        except Exception:
             self.notification.emit(Notification.Warn('Unexpected file format.'))
             self.properties.index.update()
             self.properties.object.update()

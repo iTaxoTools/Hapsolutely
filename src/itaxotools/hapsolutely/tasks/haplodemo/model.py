@@ -103,8 +103,9 @@ class Model(TaskModel):
             return False
         if not self.input_sequences.is_valid():
             return False
-        if not self.input_species.is_valid():
-            return False
+        if self.input_species.object:
+            if not self.input_species.is_valid():
+                return False
         return True
 
     def start(self):

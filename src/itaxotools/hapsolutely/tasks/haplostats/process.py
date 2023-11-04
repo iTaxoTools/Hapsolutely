@@ -65,13 +65,10 @@ def execute_single(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi_gui.tasks.common.process import partition_from_model
-    from itaxotools.taxi2.partitions import Partition
-
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        match_partition_to_phased_sequences, scan_sequence_ambiguity)
+        get_matched_partition_from_optional_model, scan_sequence_ambiguity)
     from .work import (
         get_sequences_from_phased_model, scan_sequence_alleles,
         write_stats_to_path)
@@ -88,12 +85,7 @@ def execute_single(
 
     allele_warns = scan_sequence_alleles(sequences) if is_phased else []
 
-    if is_partitioned:
-        partition = partition_from_model(input_species)
-        partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
-    else:
-        partition = Partition({sequence.id: 'unknown' for sequence in sequences})
-        partition_warns = []
+    partition, partition_warns = get_matched_partition_from_optional_model(input_species, sequences)
 
     warns = ambiguity_warns + allele_warns + partition_warns
 

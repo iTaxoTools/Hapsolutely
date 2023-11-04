@@ -413,6 +413,15 @@ class HaploView(QtWidgets.QFrame):
     def update_splitter_sizes(self):
         self.splitter.setSizes([1, self.member_view.sizeHint().width()])
 
+    def update_legend_visible(self):
+        if self.settings.partitions.rowCount():
+            self.settings.show_legend = True
+            return
+        if self.settings.divisions.rowCount() > 1:
+            self.settings.show_legend = True
+            return
+        self.settings.show_legend = False
+
     def set_spartitions(self, spartitions: dict[str, dict[str, str]], spartition: str):
         self.visualizer.set_partitions(spartitions.items())
         self.visualizer.set_partition(spartitions[spartition])
@@ -750,13 +759,15 @@ class View(TaskView):
         # print(get_fitchi_string(haplo_tree))
 
         visualizer.visualize_tree(haplo_tree)
-        view.update_splitter_sizes()
-        view.update_zoom_control_geometry()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
 
         self._visualize_spartitions()
+
+        view.update_splitter_sizes()
+        view.update_zoom_control_geometry()
+        view.update_legend_visible()
 
     def show_haplo_graph(self, haplo_graph: HaploGraph):
         if haplo_graph is None:
@@ -770,13 +781,15 @@ class View(TaskView):
         # print(haplo_graph)
 
         visualizer.visualize_graph(haplo_graph)
-        view.update_splitter_sizes()
-        view.update_zoom_control_geometry()
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
 
         self._visualize_spartitions()
+
+        view.update_splitter_sizes()
+        view.update_zoom_control_geometry()
+        view.update_legend_visible()
 
     def _should_draw_haploweb(self) -> bool:
         if not self.object:

@@ -50,19 +50,19 @@ def execute(
 
     from itaxotools.popart_networks import (
         Sequence, build_mjn, build_msn, build_tcs, build_tsw)
-    from itaxotools.taxi_gui.tasks.common.process import (
-        partition_from_model, sequences_from_model)
+    from itaxotools.taxi_gui.tasks.common.process import sequences_from_model
 
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
-        check_is_input_phased, match_partition_to_phased_sequences,
+        check_is_input_phased, get_matched_partition_from_optional_model,
         scan_sequence_ambiguity)
     from .work import (
         append_alleles_to_sequence_ids, get_newick_string_from_tree,
         get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
         prune_alleles_from_haplo_graph, prune_alleles_from_haplo_tree,
-        retrieve_spartitions, validate_sequences_in_tree, prune_alleles_from_spartitions)
+        prune_alleles_from_spartitions, retrieve_spartitions,
+        validate_sequences_in_tree)
 
     haplo_tree = None
     haplo_graph = None
@@ -76,8 +76,7 @@ def execute(
 
     sequences, allele_warns = append_alleles_to_sequence_ids(input_sequences, sequences)
 
-    partition = partition_from_model(input_species)
-    partition, partition_warns = match_partition_to_phased_sequences(partition, sequences)
+    partition, partition_warns = get_matched_partition_from_optional_model(input_species, sequences)
 
     if network_algorithm == NetworkAlgorithm.Fitchi and input_tree is not None:
         tree = get_tree_from_model(input_tree)

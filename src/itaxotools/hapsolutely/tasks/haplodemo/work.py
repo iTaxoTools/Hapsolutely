@@ -41,7 +41,8 @@ from itaxotools.taxi2.sequences import Sequence, Sequences
 from itaxotools.taxi2.trees import Tree, Trees
 from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
-from ..common.work import get_all_possible_partition_models, match_partition_to_phased_sequences
+from ..common.work import (
+    get_all_possible_partition_models, match_partition_to_phased_sequences)
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -128,7 +129,10 @@ def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, trans
 
 def make_haplo_graph(graph: Network) -> HaploGraph:
     digits = len(str(len(graph.vertices))) + 1
-    formatter = lambda index: 'Node' + str(index).rjust(digits, '0')
+
+    def formatter(index: int) -> str:
+        return 'Node' + str(index).zfill(digits)
+
     return HaploGraph(
         [
             HaploGraphNode(
@@ -197,7 +201,9 @@ def prune_alleles_from_spartitions(spartitions: dict[str, dict[str, str]]) -> di
     }
 
 
-def retrieve_spartitions(input: AttrDict, sequences: Sequences) -> tuple[dict[str, dict[str, str]], str | None]:
+def retrieve_spartitions(input: AttrDict | None, sequences: Sequences) -> tuple[dict[str, dict[str, str]], str | None]:
+    if input is None:
+        return {}, None
     if input.info.format != FileFormat.Spart:
         return {}, None
     models = get_all_possible_partition_models(input)
