@@ -22,7 +22,7 @@ from pathlib import Path
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import (
-    InputSequencesSelector, OutputFormatCard, ParameterCard)
+    InputSequencesSelector, OutputFormatCard, ParameterCard, WarningViewer)
 from itaxotools.convphase_gui.task.view import View as _View
 from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.tasks.common.view import ProgressCard
@@ -56,6 +56,13 @@ class PhaseResultViewer(Card):
         font.setHintingPreference(QtGui.QFont.PreferNoHinting)
         check.setFont(font)
 
+        cross = QtWidgets.QLabel('\u2718')
+        cross.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
+        font = cross.font()
+        font.setStyleStrategy(QtGui.QFont.PreferAntialias)
+        font.setHintingPreference(QtGui.QFont.PreferNoHinting)
+        cross.setFont(font)
+
         visualize = QtWidgets.QPushButton('Visualize')
         analyze = QtWidgets.QPushButton('Analyze')
 
@@ -73,6 +80,7 @@ class PhaseResultViewer(Card):
         layout.addWidget(label)
         layout.addSpacing(12)
         layout.addWidget(check)
+        layout.addWidget(cross)
         layout.addStretch(1)
         layout.addWidget(visualize)
         layout.addSpacing(16)
@@ -84,6 +92,8 @@ class PhaseResultViewer(Card):
         self.controls.view = view
         self.controls.visualize = visualize
         self.controls.analyze = analyze
+        self.controls.check = check
+        self.controls.cross = cross
 
     def setPath(self, path):
         self.path = path
@@ -124,6 +134,7 @@ class View(_View):
         self.cards = AttrDict()
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
         self.cards.results = PhaseResultViewer('Phased sequences', self)
+        self.cards.warnings = WarningViewer(self)
         self.cards.progress_matrix = ProgressCard(self)
         self.cards.progress_mcmc = ProgressCard(self)
         self.cards.input_sequences = InputSequencesSelector('Input sequences', self)
