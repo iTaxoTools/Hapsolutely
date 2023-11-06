@@ -56,6 +56,18 @@ icons = LazyResourceCollection(
 
     arrow = lambda: VectorIcon(
         get_common('icons/svg/arrow-right.svg'), skin.colormap, Size.Small.size),
+    undo = lambda: VectorIcon(
+        get_local(__package__, 'icons/undo.svg'), skin.colormap, Size.Small.size),
+    redo = lambda: VectorIcon(
+        get_local(__package__, 'icons/redo.svg'), skin.colormap, Size.Small.size),
+    rotate = lambda: VectorIcon(
+        get_local(__package__, 'icons/rotate.svg'), skin.colormap, Size.Small.size),
+    snap = lambda: VectorIcon(
+        get_local(__package__, 'icons/snap.svg'), skin.colormap, Size.Small.size),
+    lock_labels = lambda: VectorIcon(
+        get_local(__package__, 'icons/lock_labels.svg'), skin.colormap, Size.Small.size),
+    lock_distances = lambda: VectorIcon(
+        get_local(__package__, 'icons/lock_distances.svg'), skin.colormap, Size.Small.size),
 
 )
 

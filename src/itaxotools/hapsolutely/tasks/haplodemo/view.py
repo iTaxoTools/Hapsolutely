@@ -42,6 +42,7 @@ from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
     DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
 
+from itaxotools.hapsolutely.resources import icons
 from itaxotools.hapsolutely.yamlify import yamlify
 
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
@@ -171,25 +172,36 @@ class HaploView(QtWidgets.QFrame):
         self.actions = AttrDict()
         self.actions.undo = history_stack.createUndoAction(self, 'Undo')
         self.actions.undo.setShortcut(QtGui.QKeySequence.Undo)
+        self.actions.undo.setIcon(icons.undo.resource)
         self.actions.redo = history_stack.createRedoAction(self, 'Redo')
         self.actions.redo.setShortcut(QtGui.QKeySequence.Redo)
+        self.actions.redo.setIcon(icons.redo.resource)
         for action in self.actions:
             self.addAction(action)
 
         undo_button = SidePushButton('Undo')
+        undo_button.setIcon(icons.undo.resource)
         undo_button.clicked.connect(history_stack.undo)
         history_stack.canUndoChanged.connect(undo_button.setEnabled)
         undo_button.setEnabled(history_stack.canUndo())
 
         redo_button = SidePushButton('Redo')
+        redo_button.setIcon(icons.redo.resource)
         redo_button.clicked.connect(history_stack.redo)
         history_stack.canRedoChanged.connect(redo_button.setEnabled)
         redo_button.setEnabled(history_stack.canRedo())
 
         toggle_scene_rotation = SideToggleButton('Rotate scene')
+        toggle_scene_rotation.setIcon(icons.rotate.resource)
+
         toggle_snapping = SideToggleButton('Node snapping')
+        toggle_snapping.setIcon(icons.snap.resource)
+
         toggle_lock_distances = SideToggleButton('Lock distances')
+        toggle_lock_distances.setIcon(icons.lock_distances.resource)
+
         toggle_lock_labels = SideToggleButton('Lock labels')
+        toggle_lock_labels.setIcon(icons.lock_labels.resource)
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
@@ -211,6 +223,7 @@ class HaploView(QtWidgets.QFrame):
 
         select_colors = SidePushButton('Color scheme')
         select_colors.clicked.connect(self.color_dialog.show)
+        select_colors.setIcon(icons.undo.resource)
 
         mass_resize_nodes = SidePushButton('Resize nodes')
         mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
