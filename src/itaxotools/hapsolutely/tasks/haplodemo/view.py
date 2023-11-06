@@ -21,7 +21,7 @@ from PySide6 import QtCore, QtGui, QtWidgets
 from pathlib import Path
 
 from itaxotools.common.bindings import Binder
-from itaxotools.common.utility import AttrDict, override
+from itaxotools.common.utility import AttrDict
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
     EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
@@ -33,7 +33,6 @@ from itaxotools.haplodemo.views import ColorDelegate, DivisionView, MemberView
 from itaxotools.haplodemo.visualizer import Visualizer
 from itaxotools.haplodemo.widgets import PaletteSelector
 from itaxotools.haplodemo.widgets import PartitionSelector as PartitionComboBox
-from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
     InputSelector, PartitionSelector, ProgressCard)
@@ -49,7 +48,8 @@ from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
 from .widgets import (
-    CategoryFrame, SidebarArea, SidePushButton, SideToggleButton)
+    CategoryFrame, SidebarArea, SidePushButton, SideToggleButton,
+    SideZoomControl)
 
 
 class ColorDialog(OptionsDialog):
@@ -192,8 +192,7 @@ class HaploView(QtWidgets.QFrame):
         history_stack.canRedoChanged.connect(redo_button.setEnabled)
         redo_button.setEnabled(history_stack.canRedo())
 
-        toggle_scene_rotation = SideToggleButton('Rotate scene')
-        toggle_scene_rotation.setIcon(icons.rotate.resource)
+        zoom_control = SideZoomControl()
 
         toggle_snapping = SideToggleButton('Node snapping')
         toggle_snapping.setIcon(icons.snap.resource)
@@ -203,6 +202,9 @@ class HaploView(QtWidgets.QFrame):
 
         toggle_lock_labels = SideToggleButton('Lock labels')
         toggle_lock_labels.setIcon(icons.lock_labels.resource)
+
+        toggle_scene_rotation = SideToggleButton('Rotate scene')
+        toggle_scene_rotation.setIcon(icons.rotate.resource)
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
@@ -276,10 +278,11 @@ class HaploView(QtWidgets.QFrame):
         edit_frame.addWidget(undo_button)
         edit_frame.addWidget(redo_button)
         edit_frame.addSpacing(8)
-        edit_frame.addWidget(toggle_scene_rotation)
+        edit_frame.addWidget(zoom_control)
         edit_frame.addWidget(toggle_snapping)
         edit_frame.addWidget(toggle_lock_distances)
         edit_frame.addWidget(toggle_lock_labels)
+        edit_frame.addWidget(toggle_scene_rotation)
 
         appearance_frame = CategoryFrame('Appearance')
         appearance_frame.addWidget(select_colors)
@@ -330,12 +333,9 @@ class HaploView(QtWidgets.QFrame):
         layout.addWidget(splitter, 1)
         self.setLayout(layout)
 
-        zoom_control = ZoomControl(scene_view, self)
-
         self.scene = scene
         self.scene_view = scene_view
         self.visualizer = visualizer
-        self.zoom_control = zoom_control
         self.settings = settings
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
@@ -357,6 +357,11 @@ class HaploView(QtWidgets.QFrame):
 
         self.binder.bind(visualizer.nodeIndexSelected, member_panel.controls.view.select)
         self.binder.bind(member_panel.controls.view.nodeSelected, visualizer.select_node_by_name)
+
+        scene_view.scaled.connect(zoom_control.edit.getScale)
+        zoom_control.edit.scale.connect(scene_view.setScale)
+        zoom_control.zoom_out.clicked.connect(scene_view.zoomOut)
+        zoom_control.zoom_in.clicked.connect(scene_view.zoomIn)
 
         self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
         self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
@@ -400,11 +405,6 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(scene.commandPosted, history_stack.push)
         self.binder.bind(scene.cleared, history_stack.clear)
 
-    @override
-    def resizeEvent(self, event):
-        super().resizeEvent(event)
-        self.update_zoom_control_geometry()
-
     def handle_members_panel_toggled(self, pressed):
         _, panel_size = self.splitter.sizes()
         if pressed and panel_size == 0:
@@ -415,16 +415,6 @@ class HaploView(QtWidgets.QFrame):
     def handle_members_splitter_moved(self, pos, index):
         _, panel_size = self.splitter.sizes()
         self.toggle_members_panel.setChecked(bool(panel_size > 0))
-
-    def update_zoom_control_geometry(self):
-        gg = self.geometry()
-        gg = QtCore.QRect(
-            gg.bottomLeft().x() + self.sidebar.width() + 24,
-            gg.bottomLeft().y() - self.zoom_control.height() - 24,
-            self.sidebar.width(),
-            self.sidebar.height(),
-        )
-        self.zoom_control.setGeometry(gg)
 
     def update_splitter_sizes(self):
         self.splitter.setSizes([1, self.member_view.sizeHint().width()])
@@ -793,7 +783,6 @@ class View(TaskView):
         self._visualize_spartitions()
 
         view.update_splitter_sizes()
-        view.update_zoom_control_geometry()
         view.update_legend_visible()
 
     def show_haplo_graph(self, haplo_graph: HaploGraph):
@@ -815,7 +804,6 @@ class View(TaskView):
         self._visualize_spartitions()
 
         view.update_splitter_sizes()
-        view.update_zoom_control_geometry()
         view.update_legend_visible()
 
     def _should_draw_haploweb(self) -> bool:

@@ -19,6 +19,7 @@
 from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.widgets import HLineSeparator
+from itaxotools.haplodemo.zoom import ZoomEdit
 
 from itaxotools.hapsolutely.resources import icons
 
@@ -92,6 +93,68 @@ class SidePushButton(QtWidgets.QPushButton):
         self.setFixedHeight(24)
 
 
+class SideZoomButton(QtWidgets.QPushButton):
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent)
+        self.setStyleSheet("""
+            background: Palette(Light);
+            color: Palette(Shadow);
+            font-weight: bold;
+            text-align: center;
+            padding-left: 0px;
+            padding-top: 0px;
+            padding-right: 0px;
+            padding-bottom: 2px;
+            margin: 0px;
+        """)
+        self.setFixedWidth(22)
+
+
+class SideZoomControl(QtWidgets.QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setFixedHeight(24)
+        self.setStyleSheet("text-align: left; padding-left: 4px;")
+        self.icon = icons.zoom.resource
+
+        self.edit = ZoomEdit()
+        self.percent = QtWidgets.QLabel('%')
+        self.zoom_out = SideZoomButton('-')
+        self.zoom_in = SideZoomButton('+')
+
+        self.edit.setStyleSheet("background: transparent; border: none; padding-bottom: 2px;")
+        self.percent.setStyleSheet("background: transparent; border: none; padding: 0px;")
+
+        self.edit.setMinimumSize(0, 0)
+        self.percent.setFixedWidth(20)
+
+        layout = QtWidgets.QHBoxLayout(self)
+        layout.setContentsMargins(20, 5, 7, 5)
+        layout.setSpacing(4)
+        layout.addStretch(1)
+        layout.addWidget(self.edit, 1)
+        layout.addWidget(self.percent)
+        layout.addWidget(self.zoom_out)
+        layout.addWidget(self.zoom_in)
+
+    def paintEvent(self, event):
+        painter = QtGui.QPainter(self)
+        option = self.get_button_option()
+        self.style().drawControl(QtWidgets.QStyle.CE_PushButton, option, painter, self)
+        painter.end()
+
+    def get_button_option(self):
+        option = QtWidgets.QStyleOptionButton()
+        option.initFrom(self)
+        option.state = QtWidgets.QStyle.State_Active | QtWidgets.QStyle.State_Enabled
+        option.rect = self.rect()
+        option.icon = self.icon
+        option.iconSize = QtCore.QSize(16, 16)
+        option.palette = self.palette()
+        option.text = 'Zoom: '
+        return option
+
+
 class SideToggleButton(QtWidgets.QPushButton):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -112,8 +175,8 @@ class SideToggleButton(QtWidgets.QPushButton):
         outline = palette.color(QtGui.QPalette.Text)
         painter.setPen(QtGui.QPen(outline, 1.0))
 
-        rect = self.rect().adjusted(0, 6, -6, -6)
-        rect.setLeft(rect.right() - 20)
+        rect = self.rect().adjusted(0, 5, -6, -5)
+        rect.setLeft(rect.right() - 24)
 
         if self.isChecked():
             self.paint_checked(painter, palette, rect)

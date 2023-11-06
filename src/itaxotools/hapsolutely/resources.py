@@ -58,6 +58,8 @@ icons = LazyResourceCollection(
         get_common('icons/svg/arrow-right.svg'), skin.colormap, Size.Small.size),
     export = lambda: VectorIcon(
         get_local(__package__, 'icons/export.svg'), skin.colormap, Size.Small.size),
+    zoom = lambda: VectorIcon(
+        get_local(__package__, 'icons/zoom.svg'), skin.colormap, Size.Small.size),
 
     undo = lambda: VectorIcon(
         get_local(__package__, 'icons/undo.svg'), skin.colormap, Size.Small.size),
