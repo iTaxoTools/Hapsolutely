@@ -62,6 +62,7 @@ class Model(TaskModel):
     epsilon = Property(int, 0)
 
     input_is_phased = Property(bool, False)
+    draw_haploweb_option = Property(bool, True)
     draw_haploweb = Property(bool, True)
 
     def __init__(self, name=None):
@@ -86,6 +87,9 @@ class Model(TaskModel):
 
         self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
         self.binder.bind(self.input_sequences.updated, self.update_input_is_phased)
+
+        self.binder.bind(self.properties.input_is_phased, self.update_draw_haploweb)
+        self.binder.bind(self.properties.draw_haploweb_option, self.update_draw_haploweb)
 
         self.binder.bind(self.query, self.on_query)
 
@@ -164,6 +168,9 @@ class Model(TaskModel):
             self.input_is_phased = False
             return
         self.input_is_phased = self.input_sequences.object.is_phased
+
+    def update_draw_haploweb(self):
+        self.draw_haploweb = self.input_is_phased and self.draw_haploweb_option
 
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)

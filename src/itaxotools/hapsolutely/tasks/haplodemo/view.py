@@ -22,7 +22,6 @@ from pathlib import Path
 
 from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import AttrDict, override
-from itaxotools.common.widgets import HLineSeparator
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
     EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
@@ -49,6 +48,7 @@ from itaxotools.hapsolutely.yamlify import yamlify
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
+from .widgets import CategoryFrame
 
 
 class ColorDialog(OptionsDialog):
@@ -163,13 +163,15 @@ class HaploView(QtWidgets.QFrame):
         scene_view.setMinimumHeight(400)
         scene_view.setMinimumWidth(400)
 
+        member_panel = MemberPanel(settings)
+
         partition_selector = PartitionComboBox(settings.partitions)
 
         history_stack = UndoStack()
         self.actions = AttrDict()
-        self.actions.undo = history_stack.createUndoAction(self, '&Undo')
+        self.actions.undo = history_stack.createUndoAction(self, 'Undo')
         self.actions.undo.setShortcut(QtGui.QKeySequence.Undo)
-        self.actions.redo = history_stack.createRedoAction(self, '&Redo')
+        self.actions.redo = history_stack.createRedoAction(self, 'Redo')
         self.actions.redo.setShortcut(QtGui.QKeySequence.Redo)
         for action in self.actions:
             self.addAction(action)
@@ -183,6 +185,11 @@ class HaploView(QtWidgets.QFrame):
         redo_button.clicked.connect(history_stack.redo)
         history_stack.canRedoChanged.connect(redo_button.setEnabled)
         redo_button.setEnabled(history_stack.canRedo())
+
+        toggle_scene_rotation = ToggleButton('Rotate scene')
+        toggle_snapping = ToggleButton('Node snapping')
+        toggle_lock_distances = ToggleButton('Lock distances')
+        toggle_lock_labels = ToggleButton('Lock labels')
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
@@ -202,97 +209,72 @@ class HaploView(QtWidgets.QFrame):
         self.color_dialog.setWindowTitle(f'{app.config.title} - Subset colors')
         self.font_dialog.setWindowTitle(f'{app.config.title} - Select font')
 
-        mass_resize_nodes = QtWidgets.QPushButton('Set node size')
-        mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
-
-        mass_resize_edges = QtWidgets.QPushButton('Set edge length')
-        mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
-
-        mass_style_edges = QtWidgets.QPushButton('Set edge styles')
-        mass_style_edges.clicked.connect(self.edge_style_dialog.show)
-
-        style_pens = QtWidgets.QPushButton('Set pen width')
-        style_pens.clicked.connect(self.pen_style_dialog.show)
-
-        style_scale = QtWidgets.QPushButton('Set scale marks')
-        style_scale.clicked.connect(self.scale_style_dialog.show)
-
-        mass_format_labels = QtWidgets.QPushButton('Set label format')
-        mass_format_labels.clicked.connect(self.label_format_dialog.show)
-
-        select_colors = QtWidgets.QPushButton('Set subset colors')
+        select_colors = QtWidgets.QPushButton('Color scheme')
         select_colors.clicked.connect(self.color_dialog.show)
 
-        select_font = QtWidgets.QPushButton('Set font')
+        mass_resize_nodes = QtWidgets.QPushButton('Resize nodes')
+        mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
+
+        mass_resize_edges = QtWidgets.QPushButton('Resize edges')
+        mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
+
+        mass_style_edges = QtWidgets.QPushButton('Edge style')
+        mass_style_edges.clicked.connect(self.edge_style_dialog.show)
+
+        style_pens = QtWidgets.QPushButton('Pen width')
+        style_pens.clicked.connect(self.pen_style_dialog.show)
+
+        style_scale = QtWidgets.QPushButton('Scale marks')
+        style_scale.clicked.connect(self.scale_style_dialog.show)
+
+        mass_format_labels = QtWidgets.QPushButton('Text templates')
+        mass_format_labels.clicked.connect(self.label_format_dialog.show)
+
+        select_font = QtWidgets.QPushButton('Text font')
         select_font.clicked.connect(self.font_dialog.exec)
 
-        toggle_scene_rotation = ToggleButton('Rotate scene')
-        toggle_members_panel = ToggleButton('Show members')
-        toggle_snapping = ToggleButton('Enable snapping')
-        toggle_lock_distances = ToggleButton('Lock distances')
-        toggle_lock_labels = ToggleButton('Lock labels')
+        toggle_members_panel = ToggleButton('Members panel')
+        toggle_field_groups = ToggleButton('FORs (haploweb)')
+        toggle_field_isolated = ToggleButton('FOR singletons')
+        toggle_legend = ToggleButton('Legend')
+        toggle_scale = ToggleButton('Scale')
 
-        toggle_field_groups = ToggleButton('Show FORs')
-        toggle_field_isolated = ToggleButton('Show singleton FORs')
+        partition_frame = CategoryFrame('Species partition')
+        partition_frame.addWidget(partition_selector)
 
-        toggle_legend = ToggleButton('Show legend')
-        toggle_scale = ToggleButton('Show scale')
+        edit_frame = CategoryFrame('Edit commands')
+        edit_frame.addWidget(undo_button)
+        edit_frame.addWidget(redo_button)
+        edit_frame.addSpacing(8)
+        edit_frame.addWidget(toggle_scene_rotation)
+        edit_frame.addWidget(toggle_snapping)
+        edit_frame.addWidget(toggle_lock_distances)
+        edit_frame.addWidget(toggle_lock_labels)
 
-        member_panel = MemberPanel(settings)
+        appearance_frame = CategoryFrame('Appearance')
+        appearance_frame.addWidget(select_colors)
+        appearance_frame.addWidget(mass_resize_nodes)
+        appearance_frame.addWidget(mass_resize_edges)
+        appearance_frame.addWidget(mass_style_edges)
+        appearance_frame.addWidget(style_pens)
+        appearance_frame.addWidget(style_scale)
+        appearance_frame.addWidget(mass_format_labels)
+        appearance_frame.addWidget(select_font)
 
-        partition_widget = QtWidgets.QWidget()
-        partitions_layout = QtWidgets.QVBoxLayout(partition_widget)
-        partitions_layout.setContentsMargins(0, 0, 0, 0)
-        partitions_layout.addWidget(partition_selector)
-        partitions_layout.addSpacing(4)
-        partitions_layout.addWidget(HLineSeparator(1))
-        partitions_layout.addSpacing(4)
-
-        dialogs = QtWidgets.QVBoxLayout()
-        dialogs.addWidget(mass_resize_nodes)
-        dialogs.addWidget(mass_resize_edges)
-        dialogs.addWidget(mass_style_edges)
-        dialogs.addWidget(style_pens)
-        dialogs.addWidget(style_scale)
-        dialogs.addWidget(mass_format_labels)
-        dialogs.addWidget(select_colors)
-        dialogs.addWidget(select_font)
-
-        field_toggles = QtWidgets.QWidget()
-        field_toggles_layout = QtWidgets.QVBoxLayout(field_toggles)
-        field_toggles_layout.setContentsMargins(0, 0, 0, 0)
-        field_toggles_layout.addSpacing(4)
-        field_toggles_layout.addWidget(HLineSeparator(1))
-        field_toggles_layout.addSpacing(4)
-        field_toggles_layout.addWidget(toggle_field_groups)
-        field_toggles_layout.addWidget(toggle_field_isolated)
-
-        toggles = QtWidgets.QVBoxLayout()
-        toggles.addWidget(toggle_scene_rotation)
-        toggles.addWidget(toggle_members_panel)
-        toggles.addWidget(toggle_snapping)
-        toggles.addWidget(toggle_lock_distances)
-        toggles.addWidget(toggle_lock_labels)
-        toggles.addWidget(field_toggles)
-        toggles.addSpacing(4)
-        toggles.addWidget(HLineSeparator(1))
-        toggles.addSpacing(4)
-        toggles.addWidget(toggle_legend)
-        toggles.addWidget(toggle_scale)
+        view_frame = CategoryFrame('View')
+        view_frame.addWidget(toggle_members_panel)
+        view_frame.addWidget(toggle_field_groups)
+        view_frame.addWidget(toggle_field_isolated)
+        view_frame.addWidget(toggle_legend)
+        view_frame.addWidget(toggle_scale)
 
         sidebar_layout = QtWidgets.QVBoxLayout()
-        sidebar_layout.setContentsMargins(8, 16, 8, 16)
-        sidebar_layout.addWidget(partition_widget)
-        sidebar_layout.addWidget(undo_button)
-        sidebar_layout.addWidget(redo_button)
-        sidebar_layout.addSpacing(4)
-        sidebar_layout.addWidget(HLineSeparator(1))
-        sidebar_layout.addSpacing(4)
-        sidebar_layout.addLayout(dialogs)
-        sidebar_layout.addSpacing(4)
-        sidebar_layout.addWidget(HLineSeparator(1))
-        sidebar_layout.addSpacing(4)
-        sidebar_layout.addLayout(toggles)
+        sidebar_layout.setContentsMargins(8, 12, 8, 12)
+        sidebar_layout.setSpacing(12)
+        sidebar_layout.addWidget(partition_frame)
+        sidebar_layout.addWidget(edit_frame)
+        sidebar_layout.addWidget(appearance_frame)
+        sidebar_layout.addWidget(view_frame)
         sidebar_layout.addStretch(1)
 
         sidebar = QtWidgets.QFrame()
@@ -325,17 +307,18 @@ class HaploView(QtWidgets.QFrame):
         self.divisions = settings.divisions
         self.toggle_lock_distances = toggle_lock_distances
         self.toggle_members_panel = toggle_members_panel
-        self.field_toggles = field_toggles
+        self.toggle_field_groups = toggle_field_groups
+        self.toggle_field_isolated = toggle_field_isolated
         self.member_view = member_panel.controls.view
         self.splitter = splitter
         self.sidebar = sidebar
 
-        self.partition_widget = partition_widget
+        self.partition_frame = partition_frame
         self.partition_selector = partition_selector
 
         self.binder = Binder()
 
-        self.binder.bind(settings.partitions.partitionsChanged, partition_widget.setVisible, lambda partitions: len(partitions) > 0)
+        self.binder.bind(settings.partitions.partitionsChanged, partition_frame.setVisible, lambda partitions: len(partitions) > 0)
         self.binder.bind(partition_selector.modelIndexChanged, settings.properties.partition_index)
         self.binder.bind(settings.properties.partition_index, partition_selector.setModelIndex)
 
@@ -678,14 +661,15 @@ class View(TaskView):
             self.cards.transversions_only.roll_animation.setAnimatedVisible,
             lambda algo: algo == NetworkAlgorithm.Fitchi)
 
-        self.binder.bind(self.cards.draw_haploweb.toggled, object.properties.draw_haploweb)
-        self.binder.bind(object.properties.draw_haploweb, self.cards.draw_haploweb.setChecked)
+        self.binder.bind(self.cards.draw_haploweb.toggled, object.properties.draw_haploweb_option)
+        self.binder.bind(object.properties.draw_haploweb_option, self.cards.draw_haploweb.setChecked)
         self.binder.bind(object.properties.input_is_phased, self.cards.draw_haploweb.roll_animation.setAnimatedVisible)
 
         self.binder.bind(object.haplo_ready, self.show_haplo_network)
 
         self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
-        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.field_toggles.setVisible)
+        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.toggle_field_groups.setVisible)
+        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.toggle_field_isolated.setVisible)
         self.binder.bind(self.haplo_view.exportMembers, self.save_members)
 
         self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
@@ -804,7 +788,7 @@ class View(TaskView):
     def _should_draw_haploweb(self) -> bool:
         if not self.object:
             return False
-        return self.object.input_is_phased and self.object.draw_haploweb
+        return self.object.draw_haploweb
 
     def _visualize_spartitions(self):
         spartitions = self.object.spartitions
