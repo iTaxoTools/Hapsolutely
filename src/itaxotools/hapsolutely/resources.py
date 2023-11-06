@@ -56,6 +56,7 @@ icons = LazyResourceCollection(
 
     arrow = lambda: VectorIcon(
         get_common('icons/svg/arrow-right.svg'), skin.colormap, Size.Small.size),
+
     undo = lambda: VectorIcon(
         get_local(__package__, 'icons/undo.svg'), skin.colormap, Size.Small.size),
     redo = lambda: VectorIcon(
@@ -68,6 +69,24 @@ icons = LazyResourceCollection(
         get_local(__package__, 'icons/lock_labels.svg'), skin.colormap, Size.Small.size),
     lock_distances = lambda: VectorIcon(
         get_local(__package__, 'icons/lock_distances.svg'), skin.colormap, Size.Small.size),
+
+    scheme = lambda: VectorIcon(
+        get_local(__package__, 'icons/scheme.svg'), skin.colormap, Size.Small.size),
+    resize_node = lambda: VectorIcon(
+        get_local(__package__, 'icons/resize_node.svg'), skin.colormap, Size.Small.size),
+    resize_edge = lambda: VectorIcon(
+        get_local(__package__, 'icons/resize_edge.svg'), skin.colormap, Size.Small.size),
+    edge_style = lambda: VectorIcon(
+        get_local(__package__, 'icons/edge_style.svg'), skin.colormap, Size.Small.size),
+    pen = lambda: VectorIcon(
+        get_local(__package__, 'icons/pen.svg'), skin.colormap, Size.Small.size),
+    scale = lambda: VectorIcon(
+        get_local(__package__, 'icons/scale.svg'), skin.colormap, Size.Small.size),
+    template = lambda: VectorIcon(
+        get_local(__package__, 'icons/template.svg'), skin.colormap, Size.Small.size),
+    font = lambda: VectorIcon(
+        get_local(__package__, 'icons/font.svg'), skin.colormap, Size.Small.size),
+
 
 )
 

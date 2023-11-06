@@ -223,28 +223,35 @@ class HaploView(QtWidgets.QFrame):
 
         select_colors = SidePushButton('Color scheme')
         select_colors.clicked.connect(self.color_dialog.show)
-        select_colors.setIcon(icons.undo.resource)
+        select_colors.setIcon(icons.scheme.resource)
 
         mass_resize_nodes = SidePushButton('Resize nodes')
         mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
+        mass_resize_nodes.setIcon(icons.resize_node.resource)
 
         mass_resize_edges = SidePushButton('Resize edges')
         mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
+        mass_resize_edges.setIcon(icons.resize_edge.resource)
 
         mass_style_edges = SidePushButton('Edge style')
         mass_style_edges.clicked.connect(self.edge_style_dialog.show)
+        mass_style_edges.setIcon(icons.edge_style.resource)
 
         style_pens = SidePushButton('Pen width')
         style_pens.clicked.connect(self.pen_style_dialog.show)
+        style_pens.setIcon(icons.pen.resource)
 
         style_scale = SidePushButton('Scale marks')
         style_scale.clicked.connect(self.scale_style_dialog.show)
+        style_scale.setIcon(icons.scale.resource)
 
         mass_format_labels = SidePushButton('Text templates')
         mass_format_labels.clicked.connect(self.label_format_dialog.show)
+        mass_format_labels.setIcon(icons.template.resource)
 
         select_font = SidePushButton('Text font')
         select_font.clicked.connect(self.font_dialog.exec)
+        select_font.setIcon(icons.font.resource)
 
         toggle_members_panel = SideToggleButton('Members panel')
         toggle_field_groups = SideToggleButton('FORs (haploweb)')
