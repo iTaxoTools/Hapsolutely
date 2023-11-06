@@ -20,6 +20,7 @@ from __future__ import annotations
 
 from collections import Counter
 from pathlib import Path
+from typing import TextIO
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.haplostats import HaploStats

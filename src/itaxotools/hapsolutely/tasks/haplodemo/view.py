@@ -38,7 +38,7 @@ from itaxotools.haplodemo.widgets import ToggleButton
 from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
-    InputSelector, PartitionSelector)
+    InputSelector, PartitionSelector, ProgressCard)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
@@ -612,6 +612,7 @@ class View(TaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
+        self.cards.progress = ProgressCard(self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
         self.cards.draw_haploweb = HaplowebSelector(self)
@@ -645,11 +646,11 @@ class View(TaskView):
 
         self.binder.bind(object.notification, self.showNotification)
         self.binder.bind(object.request_confirmation, self.requestConfirmation)
-        self.binder.bind(object.properties.editable, self.setEditable)
+        self.binder.bind(object.progression, self.cards.progress.showProgress)
         self.binder.bind(object.properties.done, self.setDone)
 
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
-        self.binder.bind(object.properties.busy, self.cards.title.setBusy)
+        self.binder.bind(object.properties.busy, self.cards.progress.setVisible)
 
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
@@ -691,6 +692,9 @@ class View(TaskView):
         self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
         self._bind_input_selector(self.cards.input_tree, object.input_tree, object.subtask_tree)
 
+        # defined last to override `set_busy` calls
+        self.binder.bind(object.properties.editable, self.setEditable)
+
     def _bind_phased_input_selector(self, card, object, subtask):
         self.binder.bind(card.addInputFile, subtask.start)
         self.binder.bind(card.indexChanged, object.set_index_phased)
@@ -731,9 +735,15 @@ class View(TaskView):
         self.stack.setCurrentWidget(widget)
 
     def setEditable(self, editable: bool):
-        for card in self.cards:
-            card.setEnabled(editable)
         self.cards.title.setEnabled(True)
+        self.cards.progress.setEnabled(True)
+        self.cards.input_sequences.setEnabled(editable)
+        self.cards.input_species.setEnabled(editable)
+        self.cards.draw_haploweb.setEnabled(editable)
+        self.cards.network_algorithm.setEnabled(editable)
+        self.cards.input_tree.setEnabled(editable)
+        self.cards.transversions_only.setEnabled(editable)
+        self.cards.epsilon.setEnabled(editable)
         self.haplo_view.setEnabled(not editable)
 
     def show_haplo_network(self):

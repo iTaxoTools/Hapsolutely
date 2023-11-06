@@ -50,7 +50,8 @@ def execute(
 
     from itaxotools.popart_networks import (
         Sequence, build_mjn, build_msn, build_tcs, build_tsw)
-    from itaxotools.taxi_gui.tasks.common.process import sequences_from_model
+    from itaxotools.taxi_gui.tasks.common.process import (
+        progress_handler, sequences_from_model)
 
     from itaxotools import abort, get_feedback
 
@@ -68,6 +69,8 @@ def execute(
     haplo_graph = None
 
     ts = perf_counter()
+
+    progress_handler('Computing network', 0, 0)
 
     sequences = sequences_from_model(input_sequences)
     sequence_warns = scan_sequence_ambiguity(sequences)
@@ -132,6 +135,8 @@ def execute(
 
     if is_phased:
         spartitions = prune_alleles_from_spartitions(spartitions)
+
+    progress_handler('Computing network', 1, 1)
 
     tf = perf_counter()
 

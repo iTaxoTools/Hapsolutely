@@ -23,7 +23,8 @@ from pathlib import Path
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog
 from itaxotools.taxi_gui import app
-from itaxotools.taxi_gui.tasks.common.view import PartitionSelector
+from itaxotools.taxi_gui.tasks.common.view import (
+    PartitionSelector, ProgressCard)
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
@@ -113,6 +114,7 @@ class View(ScrollTaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
+        self.cards.progress = ProgressCard(self)
         self.cards.results = StatsResultViewer('Haplotype statistics', self)
         self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
         self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)
@@ -133,9 +135,10 @@ class View(ScrollTaskView):
 
         self.binder.bind(object.notification, self.showNotification)
         self.binder.bind(object.request_confirmation, self.requestConfirmation)
+        self.binder.bind(object.progression, self.cards.progress.showProgress)
 
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
-        self.binder.bind(object.properties.busy, self.cards.title.setBusy)
+        self.binder.bind(object.properties.busy, self.cards.progress.setVisible)
 
         self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
         self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
@@ -199,6 +202,7 @@ class View(ScrollTaskView):
 
     def setEditable(self, editable: bool):
         self.cards.title.setEnabled(True)
+        self.cards.progress.setEnabled(True)
         self.cards.results.setEnabled(True)
         self.cards.input_sequences.setEnabled(editable)
         self.cards.input_species.setEnabled(editable)

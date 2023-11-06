@@ -65,6 +65,8 @@ def execute_single(
 
 ) -> tuple[Path, float]:
 
+    from itaxotools.taxi_gui.tasks.common.process import progress_handler
+
     from itaxotools import abort, get_feedback
 
     from ..common.work import (
@@ -76,6 +78,8 @@ def execute_single(
     haplotype_stats = work_dir / 'out'
 
     ts = perf_counter()
+
+    progress_handler('Computing statistics', 0, 0)
 
     is_phased = input_sequences.is_phased
     is_partitioned = input_species is not None
@@ -101,6 +105,8 @@ def execute_single(
     partition_name = input_species.partition_name if is_partitioned else 'unknown'
     write_stats_to_path(sequences, is_phased, is_partitioned, partition, partition_name, haplotype_stats)
 
+    progress_handler('Computing statistics', 1, 1)
+
     tf = perf_counter()
 
     return Results(haplotype_stats, tm - ts + tf - tx)
@@ -115,7 +121,8 @@ def execute_bulk(
 
 ) -> tuple[Path, float]:
 
-    from itaxotools.taxi_gui.tasks.common.process import partition_from_model
+    from itaxotools.taxi_gui.tasks.common.process import (
+        partition_from_model, progress_handler)
 
     from itaxotools import abort, get_feedback
 
@@ -129,6 +136,8 @@ def execute_bulk(
     haplotype_stats = work_dir / 'out'
 
     ts = perf_counter()
+
+    progress_handler('Computing statistics', 0, 0)
 
     is_phased = input_sequences.is_phased
     names = input_species.info.spartitions
@@ -158,6 +167,8 @@ def execute_bulk(
     tx = perf_counter()
 
     write_bulk_stats_to_path(sequences, is_phased, partitions, names, haplotype_stats)
+
+    progress_handler('Computing statistics', 1, 1)
 
     tf = perf_counter()
 

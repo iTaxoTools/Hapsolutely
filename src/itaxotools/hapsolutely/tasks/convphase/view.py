@@ -22,8 +22,9 @@ from pathlib import Path
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import (
-    InputSequencesSelector, OutputFormatCard, ParameterCard, WarningViewer)
+    InputSequencesSelector, OutputFormatCard, ParameterCard)
 from itaxotools.convphase_gui.task.view import View as _View
+from itaxotools.convphase_gui.task.view import WarningViewer
 from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.tasks.common.view import ProgressCard
 from itaxotools.taxi_gui.view.cards import Card
