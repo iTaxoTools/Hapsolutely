@@ -16,9 +16,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 # -----------------------------------------------------------------------------
 
-from PySide6 import QtCore, QtWidgets
+from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.widgets import HLineSeparator
+
+from itaxotools.hapsolutely.resources import icons
 
 
 class CategoryFrame(QtWidgets.QWidget):
@@ -80,3 +82,83 @@ class SidebarArea(QtWidgets.QScrollArea):
             self.widget().setFixedWidth(self.target_width)
 
         self.update()
+
+
+class SidePushButton(QtWidgets.QPushButton):
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent)
+        self.setStyleSheet("text-align: left; padding-left: 4px;")
+        self.setIcon(icons.arrow.resource)
+        self.setFixedHeight(24)
+
+
+class SideToggleButton(QtWidgets.QPushButton):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setStyleSheet("text-align: left; padding-left: 4px;")
+        self.clicked.connect(self.handle_clicked)
+        self.setIcon(icons.arrow.resource)
+        self.setFixedHeight(24)
+        self.setCheckable(False)
+        self.checked = False
+
+    def paintEvent(self, event):
+        super().paintEvent(event)
+
+        painter = QtGui.QPainter(self)
+        painter.setRenderHint(QtGui.QPainter.Antialiasing)
+
+        palette = QtGui.QGuiApplication.palette()
+        outline = palette.color(QtGui.QPalette.Text)
+        painter.setPen(QtGui.QPen(outline, 1.0))
+
+        rect = self.rect().adjusted(0, 6, -6, -6)
+        rect.setLeft(rect.right() - 20)
+
+        if self.isChecked():
+            self.paint_checked(painter, palette, rect)
+        else:
+            self.paint_unchecked(painter, palette, rect)
+
+        painter.end()
+
+    def paint_checked(self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect):
+
+        bg_rect = rect.adjusted(2, 2, -2, -2)
+        radius = bg_rect.height() / 2
+        bg_color = palette.color(QtGui.QPalette.Highlight)
+        painter.setBrush(QtGui.QBrush(bg_color))
+        painter.drawRoundedRect(bg_rect, radius, radius)
+
+        fg_rect = rect.adjusted(2, 2, -2, -2)
+        fg_rect.setLeft(fg_rect.right() - fg_rect.height())
+        fg_color = palette.color(QtGui.QPalette.Light)
+        painter.setBrush(QtGui.QBrush(fg_color))
+        painter.drawEllipse(fg_rect)
+
+    def paint_unchecked(self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect):
+        bg_rect = rect.adjusted(2, 2, -2, -2)
+        radius = bg_rect.height() / 2
+        bg_color = palette.color(QtGui.QPalette.Mid)
+        painter.setBrush(QtGui.QBrush(bg_color))
+        painter.drawRoundedRect(bg_rect, radius, radius)
+
+        fg_rect = rect.adjusted(2, 2, -2, -2)
+        fg_rect.setRight(fg_rect.left() + fg_rect.height())
+        fg_color = palette.color(QtGui.QPalette.Light)
+        painter.setBrush(QtGui.QBrush(fg_color))
+        painter.drawEllipse(fg_rect)
+
+    def sizeHint(self):
+        return super().sizeHint() + QtCore.QSize(32, 0)
+
+    def setChecked(self, value):
+        self.checked = value
+        self.update()
+
+    def isChecked(self):
+        return self.checked
+
+    def handle_clicked(self):
+        self.checked = not self.checked
+        self.toggled.emit(self.checked)

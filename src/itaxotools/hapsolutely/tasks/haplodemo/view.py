@@ -33,7 +33,6 @@ from itaxotools.haplodemo.views import ColorDelegate, DivisionView, MemberView
 from itaxotools.haplodemo.visualizer import Visualizer
 from itaxotools.haplodemo.widgets import PaletteSelector
 from itaxotools.haplodemo.widgets import PartitionSelector as PartitionComboBox
-from itaxotools.haplodemo.widgets import ToggleButton
 from itaxotools.haplodemo.zoom import ZoomControl
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
@@ -48,7 +47,8 @@ from itaxotools.hapsolutely.yamlify import yamlify
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
-from .widgets import CategoryFrame, SidebarArea
+from .widgets import (
+    CategoryFrame, SidebarArea, SidePushButton, SideToggleButton)
 
 
 class ColorDialog(OptionsDialog):
@@ -176,20 +176,20 @@ class HaploView(QtWidgets.QFrame):
         for action in self.actions:
             self.addAction(action)
 
-        undo_button = QtWidgets.QPushButton('Undo')
+        undo_button = SidePushButton('Undo')
         undo_button.clicked.connect(history_stack.undo)
         history_stack.canUndoChanged.connect(undo_button.setEnabled)
         undo_button.setEnabled(history_stack.canUndo())
 
-        redo_button = QtWidgets.QPushButton('Redo')
+        redo_button = SidePushButton('Redo')
         redo_button.clicked.connect(history_stack.redo)
         history_stack.canRedoChanged.connect(redo_button.setEnabled)
         redo_button.setEnabled(history_stack.canRedo())
 
-        toggle_scene_rotation = ToggleButton('Rotate scene')
-        toggle_snapping = ToggleButton('Node snapping')
-        toggle_lock_distances = ToggleButton('Lock distances')
-        toggle_lock_labels = ToggleButton('Lock labels')
+        toggle_scene_rotation = SideToggleButton('Rotate scene')
+        toggle_snapping = SideToggleButton('Node snapping')
+        toggle_lock_distances = SideToggleButton('Lock distances')
+        toggle_lock_labels = SideToggleButton('Lock labels')
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
         self.edge_style_dialog = EdgeStyleDialog(self, scene)
@@ -209,35 +209,35 @@ class HaploView(QtWidgets.QFrame):
         self.color_dialog.setWindowTitle(f'{app.config.title} - Subset colors')
         self.font_dialog.setWindowTitle(f'{app.config.title} - Select font')
 
-        select_colors = QtWidgets.QPushButton('Color scheme')
+        select_colors = SidePushButton('Color scheme')
         select_colors.clicked.connect(self.color_dialog.show)
 
-        mass_resize_nodes = QtWidgets.QPushButton('Resize nodes')
+        mass_resize_nodes = SidePushButton('Resize nodes')
         mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
 
-        mass_resize_edges = QtWidgets.QPushButton('Resize edges')
+        mass_resize_edges = SidePushButton('Resize edges')
         mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
 
-        mass_style_edges = QtWidgets.QPushButton('Edge style')
+        mass_style_edges = SidePushButton('Edge style')
         mass_style_edges.clicked.connect(self.edge_style_dialog.show)
 
-        style_pens = QtWidgets.QPushButton('Pen width')
+        style_pens = SidePushButton('Pen width')
         style_pens.clicked.connect(self.pen_style_dialog.show)
 
-        style_scale = QtWidgets.QPushButton('Scale marks')
+        style_scale = SidePushButton('Scale marks')
         style_scale.clicked.connect(self.scale_style_dialog.show)
 
-        mass_format_labels = QtWidgets.QPushButton('Text templates')
+        mass_format_labels = SidePushButton('Text templates')
         mass_format_labels.clicked.connect(self.label_format_dialog.show)
 
-        select_font = QtWidgets.QPushButton('Text font')
+        select_font = SidePushButton('Text font')
         select_font.clicked.connect(self.font_dialog.exec)
 
-        toggle_members_panel = ToggleButton('Members panel')
-        toggle_field_groups = ToggleButton('FORs (haploweb)')
-        toggle_field_isolated = ToggleButton('FOR singletons')
-        toggle_legend = ToggleButton('Legend')
-        toggle_scale = ToggleButton('Scale')
+        toggle_members_panel = SideToggleButton('Members panel')
+        toggle_field_groups = SideToggleButton('FORs (haploweb)')
+        toggle_field_isolated = SideToggleButton('FOR singletons')
+        toggle_legend = SideToggleButton('Legend')
+        toggle_scale = SideToggleButton('Scale')
 
         partition_frame = CategoryFrame('Species partition')
         partition_frame.addWidget(partition_selector)

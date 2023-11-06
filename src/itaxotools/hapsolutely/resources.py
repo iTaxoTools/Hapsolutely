@@ -20,8 +20,8 @@ from PySide6 import QtCore, QtGui
 
 from enum import Enum
 
-from itaxotools.common.resources import get_local
-from itaxotools.common.widgets import VectorPixmap
+from itaxotools.common.resources import get_common, get_local
+from itaxotools.common.widgets import VectorIcon, VectorPixmap
 from itaxotools.taxi_gui.app import skin
 from itaxotools.taxi_gui.app.resources import LazyResourceCollection
 
@@ -53,6 +53,10 @@ documents = LazyResourceCollection(
 icons = LazyResourceCollection(
     hapsolutely = lambda: QtGui.QIcon(
         get_local(__package__, 'logos/hapsolutely.ico')),
+
+    arrow = lambda: VectorIcon(
+        get_common('icons/svg/arrow-right.svg'), skin.colormap, Size.Small.size),
+
 )
 
 
