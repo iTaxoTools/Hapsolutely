@@ -48,7 +48,7 @@ from itaxotools.hapsolutely.yamlify import yamlify
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
-from .widgets import CategoryFrame
+from .widgets import CategoryFrame, SidebarArea
 
 
 class ColorDialog(OptionsDialog):
@@ -242,7 +242,7 @@ class HaploView(QtWidgets.QFrame):
         partition_frame = CategoryFrame('Species partition')
         partition_frame.addWidget(partition_selector)
 
-        edit_frame = CategoryFrame('Edit commands')
+        edit_frame = CategoryFrame('Editing')
         edit_frame.addWidget(undo_button)
         edit_frame.addWidget(redo_button)
         edit_frame.addSpacing(8)
@@ -280,7 +280,10 @@ class HaploView(QtWidgets.QFrame):
         sidebar = QtWidgets.QFrame()
         sidebar.setStyleSheet('QFrame {background: Palette(window);}')
         sidebar.setLayout(sidebar_layout)
-        sidebar.setFixedWidth(192)
+        sidebar.setFixedWidth(208)
+
+        sidebar_area = SidebarArea()
+        sidebar_area.setWidget(sidebar)
 
         splitter = QtWidgets.QSplitter()
         splitter.addWidget(scene_view)
@@ -293,7 +296,7 @@ class HaploView(QtWidgets.QFrame):
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-        layout.addWidget(sidebar)
+        layout.addWidget(sidebar_area)
         layout.addWidget(splitter, 1)
         self.setLayout(layout)
 

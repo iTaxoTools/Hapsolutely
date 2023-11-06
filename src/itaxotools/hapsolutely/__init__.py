@@ -52,7 +52,7 @@ def run():
     args = parser.parse_args()
 
     main = Main()
-    main.widgets.header.toolLogo.setFixedWidth(192)
+    main.widgets.header.toolLogo.setFixedWidth(208)
     main.resize(780, 500)
     main.show()
 
