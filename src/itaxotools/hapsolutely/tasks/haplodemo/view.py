@@ -129,7 +129,8 @@ class MemberPanel(QtWidgets.QFrame):
         label_layout.addWidget(arrow)
         label_layout.addWidget(label, 1)
 
-        export = QtWidgets.QPushButton('Export members')
+        export = SidePushButton('Export members')
+        export.setIcon(icons.export.resource)
 
         export_layout = QtWidgets.QVBoxLayout()
         export_layout.setContentsMargins(8, 8, 8, 8)
@@ -254,10 +255,19 @@ class HaploView(QtWidgets.QFrame):
         select_font.setIcon(icons.font.resource)
 
         toggle_members_panel = SideToggleButton('Members panel')
+        toggle_members_panel.setIcon(icons.panel.resource)
+
         toggle_field_groups = SideToggleButton('FORs (haploweb)')
+        toggle_field_groups.setIcon(icons.haploweb.resource)
+
         toggle_field_isolated = SideToggleButton('FOR singletons')
+        toggle_field_isolated.setIcon(icons.singletons.resource)
+
         toggle_legend = SideToggleButton('Legend')
+        toggle_legend.setIcon(icons.legend.resource)
+
         toggle_scale = SideToggleButton('Scale')
+        toggle_scale.setIcon(icons.scale.resource)
 
         partition_frame = CategoryFrame('Species partition')
         partition_frame.addWidget(partition_selector)

@@ -56,6 +56,8 @@ icons = LazyResourceCollection(
 
     arrow = lambda: VectorIcon(
         get_common('icons/svg/arrow-right.svg'), skin.colormap, Size.Small.size),
+    export = lambda: VectorIcon(
+        get_local(__package__, 'icons/export.svg'), skin.colormap, Size.Small.size),
 
     undo = lambda: VectorIcon(
         get_local(__package__, 'icons/undo.svg'), skin.colormap, Size.Small.size),
@@ -80,13 +82,21 @@ icons = LazyResourceCollection(
         get_local(__package__, 'icons/edge_style.svg'), skin.colormap, Size.Small.size),
     pen = lambda: VectorIcon(
         get_local(__package__, 'icons/pen.svg'), skin.colormap, Size.Small.size),
-    scale = lambda: VectorIcon(
-        get_local(__package__, 'icons/scale.svg'), skin.colormap, Size.Small.size),
     template = lambda: VectorIcon(
         get_local(__package__, 'icons/template.svg'), skin.colormap, Size.Small.size),
     font = lambda: VectorIcon(
         get_local(__package__, 'icons/font.svg'), skin.colormap, Size.Small.size),
 
+    panel = lambda: VectorIcon(
+        get_local(__package__, 'icons/panel.svg'), skin.colormap, Size.Small.size),
+    haploweb = lambda: VectorIcon(
+        get_local(__package__, 'icons/haploweb.svg'), skin.colormap, Size.Small.size),
+    singletons = lambda: VectorIcon(
+        get_local(__package__, 'icons/singletons.svg'), skin.colormap, Size.Small.size),
+    scale = lambda: VectorIcon(
+        get_local(__package__, 'icons/scale.svg'), skin.colormap, Size.Small.size),
+    legend = lambda: VectorIcon(
+        get_local(__package__, 'icons/legend.svg'), skin.colormap, Size.Small.size),
 
 )
 
