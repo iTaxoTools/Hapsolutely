@@ -225,3 +225,4 @@ class SideToggleButton(QtWidgets.QPushButton):
     def handle_clicked(self):
         self.checked = not self.checked
         self.toggled.emit(self.checked)
+        self.update()
