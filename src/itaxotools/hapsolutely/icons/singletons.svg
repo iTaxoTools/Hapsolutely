@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 <svg width="16" height="16" version="1.1" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
- <rect x="2.75" y="2.75" width="10.5" height="10.5" rx="1.75" ry="1.75" fill="none" stroke="#000" stroke-linecap="square" stroke-width="1.5"/>
+ <rect x="3.75" y="3.75" width="8.5" height="8.5" rx="1.4167" ry="1.4167" fill="none" stroke="#000" stroke-linecap="square" stroke-width="1.5"/>
  <circle cx="8" cy="8.25" r=".75" fill="none" stroke="#000" stroke-linecap="square" stroke-width="1.5"/>
 </svg>

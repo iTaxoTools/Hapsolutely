@@ -6,7 +6,7 @@
   <path d="m7.5 9h5"/>
   <path d="m7.5 13h5"/>
  </g>
- <g stroke-width="0">
+ <g stroke-width="0" fill="#000">
   <circle cx="3.75" cy="5" r="1.25"/>
   <circle cx="3.75" cy="9" r="1.25"/>
   <circle cx="3.75" cy="13" r="1.25"/>
