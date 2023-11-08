@@ -11,7 +11,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='hapsolutely',
-    version='0.0.1',
+    version='0.1.0',
     description='Reconstruct haplotypes and produce genealogy graphs from population data',
     long_description=long_description,
     long_description_content_type='text/markdown',

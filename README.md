@@ -3,10 +3,14 @@
 Reconstruct haplotypes and produce genealogy graphs from population data.
 
 - **Phase sequences**: Reconstruct haplotypes from sequence data
-- **Haplotype visualization**: Generate haplotype networks/genealogies and haplowebs
+- **Haplotype visualization**: Generate haplotype networks, genealogies and haplowebs
 - **Haplotype statistics**: Detect fields of recombinations and subset overlap
 
 ![Screenshot](images/screenshot.png)
+
+Hapsolutely is a comprehensive program that integrates [ConvPhase](https://github.com/iTaxoTools/ConvPhaseGui), [haplodemo](https://github.com/iTaxoTools/haplodemo), [popart_networks](https://github.com/iTaxoTools/popart_network) and [haplostats](https://github.com/iTaxoTools/haplostats).
+
+Input files can be in TSV, FASTA or SPART/XML format.
 
 ## Windows and macOS Executables
 
@@ -15,7 +19,7 @@ Download and run the standalone executables without installing Python.</br>
 
 ## Usage
 
-For information on how to use the program, please refer to the [Hapsolutely manual](https://itaxotools.org/Hapsolutely_manual_07Nov2023.pdf).
+Please refer to the [Hapsolutely manual](https://itaxotools.org/Hapsolutely_manual_07Nov2023.pdf) for information on how to use the program.
 
 
 ## Installing from source
