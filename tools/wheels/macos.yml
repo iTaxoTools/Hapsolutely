@@ -2,6 +2,14 @@
   universal2_url: https://files.pythonhosted.org/packages/0b/52/a5c727db5f4f907a53679aa6ed36a8b2bb9c74708674cdc53309f3990979/itaxotools_calculate_distances-0.1.1-cp37-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl
   universal2_sha256: 16e74488c7a36e52a0fd81962ac4db71ce3a784a58375b3ad95d4d2cd39f3fae
 
+- egg: itaxotools-popart-networks
+  universal2_url: https://files.pythonhosted.org/packages/7b/7a/b83bcaa6f30954efb86c247f5354f1baa6b1f5c03391b480858c7fe87d77/itaxotools_popart_networks-0.1.2-cp312-cp312-macosx_10_9_universal2.whl
+  universal2_sha256: ab915d61fd4dfaaecfc438c161c1a78d6288ad0602603a0e19e4659f53f2a8eb
+
+- egg: itaxotools-convphase
+  universal2_url: https://files.pythonhosted.org/packages/ed/40/81de5cd7c87f0f8ac77040cdc74f9e501d58afb388d3eae88d3d8c6d8ff6/itaxotools_convphase-0.1.3-cp312-cp312-macosx_11_0_universal2.whl
+  universal2_sha256: ad704abbfbb53a79c1ba995318ef86ac9263ec8b540bc9bc4639904ee20235f2
+
 - egg: numpy
   arm64_url: https://files.pythonhosted.org/packages/2a/17/1fdc154e75d24d8c20c42b71bae1b5cf752453f0fc3a2504bbb810293dd1/numpy-1.26.2-cp312-cp312-macosx_11_0_arm64.whl
   arm64_sha256: 5d5244aabd6ed7f312268b9247be47343a654ebea52a60f002dc70c769048e75
