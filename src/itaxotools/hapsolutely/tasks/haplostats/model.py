@@ -23,16 +23,18 @@ from pathlib import Path
 from shutil import copyfile
 
 from itaxotools.common.bindings import Property
+from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
-from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
-
 from ..common.model import (
-    PhasedFileInfoSubtaskModel, PhasedInputModel, PhasedItemProxyModel)
+    PhasedFileInfoSubtaskModel,
+    PhasedInputModel,
+    PhasedItemProxyModel,
+)
 from . import process, title
 
 
@@ -43,8 +45,13 @@ class Model(TaskModel):
 
     haplotype_stats = Property(Path, None)
 
-    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True))
-    input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
+    input_sequences = Property(
+        PhasedInputModel,
+        PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True),
+    )
+    input_species = Property(
+        PhasedInputModel, PhasedInputModel(PartitionModel, "species")
+    )
 
     bulk_mode = Property(bool, False)
 
@@ -57,13 +64,17 @@ class Model(TaskModel):
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
         self.subtask_species = PhasedFileInfoSubtaskModel(self)
 
-        self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_phased_info)
+        self.binder.bind(
+            self.subtask_sequences.done, self.input_sequences.add_phased_info
+        )
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)
 
         self.binder.bind(self.input_sequences.notification, self.notification)
         self.binder.bind(self.input_species.notification, self.notification)
 
-        self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+        self.binder.bind(
+            self.input_sequences.properties.index, self.propagate_input_index
+        )
         self.binder.bind(self.input_species.properties.format, self.update_bulk_mode)
 
         self.binder.bind(self.query, self.on_query)
@@ -98,10 +109,8 @@ class Model(TaskModel):
         self.exec(
             process.execute,
             work_dir=work_dir,
-
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
-
             bulk_mode=self.bulk_mode,
         )
 
@@ -143,7 +152,11 @@ class Model(TaskModel):
 
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)
-        self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
+        self.notification.emit(
+            Notification.Info(
+                f"{self.name} completed successfully!\nTime taken: {time_taken}."
+            )
+        )
         self.dummy_time = report.result.seconds_taken
         self.haplotype_stats = report.result.haplotype_stats
         self.busy = False
@@ -160,9 +173,9 @@ class Model(TaskModel):
 
     def save(self, destination: Path):
         copyfile(self.haplotype_stats, destination)
-        self.notification.emit(Notification.Info('Saved file successfully!'))
+        self.notification.emit(Notification.Info("Saved file successfully!"))
 
     @property
     def suggested_results(self):
         path = self.input_sequences.object.info.path
-        return path.parent / f'{path.stem}_stats.yaml'
+        return path.parent / f"{path.stem}_stats.yaml"

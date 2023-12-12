@@ -22,7 +22,7 @@ import yaml
 
 
 def _dict_representer(dumper, data):
-    return dumper.represent_mapping('tag:yaml.org,2002:map', data.items())
+    return dumper.represent_mapping("tag:yaml.org,2002:map", data.items())
 
 
 yaml.add_representer(dict, _dict_representer)

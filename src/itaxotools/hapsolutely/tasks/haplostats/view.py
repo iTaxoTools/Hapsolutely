@@ -23,8 +23,7 @@ from pathlib import Path
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import ResultDialog
 from itaxotools.taxi_gui import app
-from itaxotools.taxi_gui.tasks.common.view import (
-    PartitionSelector, ProgressCard)
+from itaxotools.taxi_gui.tasks.common.view import PartitionSelector, ProgressCard
 from itaxotools.taxi_gui.types import FileFormat
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
@@ -39,12 +38,14 @@ class BulkModeSelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        title = QtWidgets.QCheckBox('  Bulk mode:')
+        title = QtWidgets.QCheckBox("  Bulk mode:")
         title.setStyleSheet("""font-size: 16px;""")
         title.toggled.connect(self.toggled)
         title.setMinimumWidth(140)
 
-        description = QtWidgets.QLabel('Get statistics for each spartition in the SPART file.')
+        description = QtWidgets.QLabel(
+            "Get statistics for each spartition in the SPART file."
+        )
         description.setStyleSheet("""padding-top: 2px;""")
         description.setWordWrap(True)
 
@@ -76,14 +77,14 @@ class StatsResultViewer(Card):
         label = QtWidgets.QLabel(label_text)
         label.setStyleSheet("""font-size: 16px;""")
 
-        check = QtWidgets.QLabel('\u2714')
+        check = QtWidgets.QLabel("\u2714")
         check.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
         font = check.font()
         font.setStyleStrategy(QtGui.QFont.PreferAntialias)
         font.setHintingPreference(QtGui.QFont.PreferNoHinting)
         check.setFont(font)
 
-        view = QtWidgets.QPushButton('Preview')
+        view = QtWidgets.QPushButton("Preview")
         view.clicked.connect(self.handleView)
 
         layout = QtWidgets.QHBoxLayout()
@@ -106,18 +107,21 @@ class StatsResultViewer(Card):
 
 
 class View(ScrollTaskView):
-
     def __init__(self, parent):
         super().__init__(parent)
         self.draw_cards()
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
+        self.cards.title = GraphicTitleCard(
+            title, long_description, pixmap_medium.resource, self
+        )
         self.cards.progress = ProgressCard(self)
-        self.cards.results = StatsResultViewer('Haplotype statistics', self)
-        self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
-        self.cards.input_species = PartitionSelector('Input partition', 'Partition', 'Individuals', self)
+        self.cards.results = StatsResultViewer("Haplotype statistics", self)
+        self.cards.input_sequences = PhasedSequenceSelector("Input sequences", self)
+        self.cards.input_species = PartitionSelector(
+            "Input partition", "Partition", "Individuals", self
+        )
         self.cards.bulk_mode = BulkModeSelector(self)
 
         layout = QtWidgets.QVBoxLayout()
@@ -140,27 +144,42 @@ class View(ScrollTaskView):
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
         self.binder.bind(object.properties.busy, self.cards.progress.setVisible)
 
-        self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
-        self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
+        self.binder.bind(
+            object.subtask_sequences.properties.busy,
+            self.cards.input_sequences.set_busy,
+        )
+        self.binder.bind(
+            object.subtask_species.properties.busy, self.cards.input_species.set_busy
+        )
 
         self.binder.bind(self.cards.bulk_mode.toggled, object.properties.bulk_mode)
         self.binder.bind(object.properties.bulk_mode, self.cards.bulk_mode.setChecked)
         self.binder.bind(
             self.cards.bulk_mode.toggled,
             self.cards.input_species.controls.spart.spartition.setEnabled,
-            lambda bulk: not bulk)
+            lambda bulk: not bulk,
+        )
         self.binder.bind(
             object.input_species.properties.format,
             self.cards.bulk_mode.roll_animation.setAnimatedVisible,
-            lambda format: format == FileFormat.Spart)
+            lambda format: format == FileFormat.Spart,
+        )
 
         self.binder.bind(object.properties.haplotype_stats, self.cards.results.setPath)
-        self.binder.bind(object.properties.haplotype_stats, self.cards.results.setVisible, lambda x: x is not None)
+        self.binder.bind(
+            object.properties.haplotype_stats,
+            self.cards.results.setVisible,
+            lambda x: x is not None,
+        )
 
         self.binder.bind(self.cards.results.view, self.view_results)
 
-        self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
-        self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
+        self._bind_phased_input_selector(
+            self.cards.input_sequences, object.input_sequences, object.subtask_sequences
+        )
+        self._bind_input_selector(
+            self.cards.input_species, object.input_species, object.subtask_species
+        )
 
         # defined last to override `set_busy` calls
         self.binder.bind(object.properties.editable, self.setEditable)
@@ -181,16 +200,19 @@ class View(ScrollTaskView):
 
     def requestConfirmation(self, warns, callback, abort):
         msgBox = QtWidgets.QMessageBox(self.window())
-        msgBox.setWindowTitle(f'{app.config.title} - Warning')
+        msgBox.setWindowTitle(f"{app.config.title} - Warning")
         msgBox.setIcon(QtWidgets.QMessageBox.Warning)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        msgBox.setStandardButtons(
+            QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
+        )
         msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
 
         text = (
-            'Problems detected with input file: \n\n' +
-            '\n'.join('- ' + str(warn) for warn in warns) + '\n\n'
-            'The program may produce false results. \n'
-            'Proceed anyway?\n'
+            "Problems detected with input file: \n\n"
+            + "\n".join("- " + str(warn) for warn in warns)
+            + "\n\n"
+            "The program may produce false results. \n"
+            "Proceed anyway?\n"
         )
         msgBox.setText(text)
 
@@ -214,7 +236,7 @@ class View(ScrollTaskView):
         self.window().msgShow(dialog)
 
     def save_results(self):
-        path = self.getSavePath('Save statistics', str(self.object.suggested_results))
+        path = self.getSavePath("Save statistics", str(self.object.suggested_results))
         if path:
             self.object.save(path)
 

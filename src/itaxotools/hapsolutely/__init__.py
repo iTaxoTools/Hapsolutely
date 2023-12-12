@@ -47,8 +47,8 @@ def run():
     app.set_config(config)
     app.set_skin(skin)
 
-    parser = ArgumentParser(description='Hapsolutely')
-    parser.add_argument('input', nargs='?', type=str, help='Path to input file')
+    parser = ArgumentParser(description="Hapsolutely")
+    parser.add_argument("input", nargs="?", type=str, help="Path to input file")
     args = parser.parse_args()
 
     main = Main()

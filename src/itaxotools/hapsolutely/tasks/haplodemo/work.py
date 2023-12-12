@@ -24,16 +24,20 @@ from io import StringIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo import NewickIO
 from Bio.Phylo.BaseTree import Clade
-from Bio.Phylo.TreeConstruction import (
-    DistanceCalculator, DistanceTreeConstructor)
+from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
+
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase.phase import iter_phase
 from itaxotools.convphase.types import UnphasedSequence
 from itaxotools.fitchi import compute_fitchi_tree
 from itaxotools.haplodemo.types import (
-    HaploGraph, HaploGraphEdge, HaploGraphNode, HaploTreeNode)
+    HaploGraph,
+    HaploGraphEdge,
+    HaploGraphNode,
+    HaploTreeNode,
+)
 from itaxotools.popart_networks.types import Network
 from itaxotools.taxi2.file_types import FileFormat
 from itaxotools.taxi2.partitions import Partition
@@ -42,7 +46,9 @@ from itaxotools.taxi2.trees import Tree, Trees
 from itaxotools.taxi_gui.tasks.common.process import partition_from_model
 
 from ..common.work import (
-    get_all_possible_partition_models, match_partition_to_phased_sequences)
+    get_all_possible_partition_models,
+    match_partition_to_phased_sequences,
+)
 
 
 def phase_sequences(sequences: Sequences) -> Sequences:
@@ -50,40 +56,38 @@ def phase_sequences(sequences: Sequences) -> Sequences:
     phased = iter_phase(unphased)
     results = []
     for x in phased:
-        results.append(Sequence(x.id + 'a', x.data_a))
-        results.append(Sequence(x.id + 'b', x.data_b))
+        results.append(Sequence(x.id + "a", x.data_a))
+        results.append(Sequence(x.id + "b", x.data_b))
     return Sequences(results)
 
 
 def phase_partition(partition: Partition) -> Partition:
     result = Partition()
     for k, v in partition.items():
-        result[k + 'a'] = v
-        result[k + 'b'] = v
+        result[k + "a"] = v
+        result[k + "b"] = v
     return result
 
 
 def _format_clades(clade: Clade) -> Clade:
     if not clade.is_terminal():
-        clade.name = ''
-    clade.branch_length = ''
+        clade.name = ""
+    clade.branch_length = ""
     for branch in clade:
         _format_clades(branch)
 
 
 def _format_newick_for_fitchi(newick_string: str) -> str:
     newick_string = newick_string.strip()
-    newick_string = newick_string.removesuffix(';')
-    newick_string = f'({newick_string})'
+    newick_string = newick_string.removesuffix(";")
+    newick_string = f"({newick_string})"
     return newick_string
 
 
 def make_tree_nj(sequences: Sequences) -> str:
-    align = MultipleSeqAlignment([
-        SeqRecord(Seq(x.seq), id=x.id) for x in sequences
-    ])
-    calculator = DistanceCalculator('identity')
-    constructor = DistanceTreeConstructor(calculator, 'nj')
+    align = MultipleSeqAlignment([SeqRecord(Seq(x.seq), id=x.id) for x in sequences])
+    calculator = DistanceCalculator("identity")
+    constructor = DistanceTreeConstructor(calculator, "nj")
     tree = constructor.build_tree(align)
     _format_clades(tree.root)
     newick_io = StringIO()
@@ -112,17 +116,19 @@ def validate_sequences_in_tree(sequences: Sequences, tree: Tree) -> list[str]:
             unknowns.append(sequence.id)
 
     if unknowns:
-        unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
+        unknowns_str = ", ".join(repr(id) for id in unknowns[:3])
         if len(unknowns) > 3:
-            unknowns_str += f' and {len(unknowns) - 3} more'
-        warns = [f'Could not match individuals to tree: {unknowns_str}']
+            unknowns_str += f" and {len(unknowns) - 3} more"
+        warns = [f"Could not match individuals to tree: {unknowns_str}"]
     else:
         warns = []
 
     return warns
 
 
-def make_haplo_tree(sequences: Sequences, partition: Partition, tree: str, transversions_only: bool) -> HaploTreeNode:
+def make_haplo_tree(
+    sequences: Sequences, partition: Partition, tree: str, transversions_only: bool
+) -> HaploTreeNode:
     sequence_dict = {x.id: x.seq for x in sequences}
     return compute_fitchi_tree(sequence_dict, partition, tree, transversions_only)
 
@@ -131,37 +137,35 @@ def make_haplo_graph(graph: Network) -> HaploGraph:
     digits = len(str(len(graph.vertices))) + 1
 
     def formatter(index: int) -> str:
-        return 'Node' + str(index).zfill(digits)
+        return "Node" + str(index).zfill(digits)
 
     return HaploGraph(
         [
             HaploGraphNode(
                 formatter(i + 1),
-                Counter({
-                    color.color: color.weight
-                    for color in node.colors
-                }),
+                Counter({color.color: color.weight for color in node.colors}),
                 set(seq.id for seq in node.seqs),
             )
             for i, node in enumerate(graph.vertices)
         ],
-        [
-            HaploGraphEdge(edge.u, edge.v, edge.d)
-            for edge in graph.edges
-        ],
+        [HaploGraphEdge(edge.u, edge.v, edge.d) for edge in graph.edges],
     )
 
 
-def _iter_append_alleles_to_sequence_ids(sequences: Sequences, allele_extra: str) -> iter[Sequence]:
+def _iter_append_alleles_to_sequence_ids(
+    sequences: Sequences, allele_extra: str
+) -> iter[Sequence]:
     for sequence in sequences:
         yield Sequence(
-            sequence.id + '_' + sequence.extras[allele_extra],
+            sequence.id + "_" + sequence.extras[allele_extra],
             sequence.seq,
             sequence.extras,
         )
 
 
-def append_alleles_to_sequence_ids(input: AttrDict, sequences: Sequences) -> tuple[Sequences, list[str]]:
+def append_alleles_to_sequence_ids(
+    input: AttrDict, sequences: Sequences
+) -> tuple[Sequences, list[str]]:
     if input.info.format != FileFormat.Tabfile:
         return (sequences, [])
 
@@ -169,16 +173,18 @@ def append_alleles_to_sequence_ids(input: AttrDict, sequences: Sequences) -> tup
         return (sequences, [])
 
     allele_header = input.info.headers[input.allele_column]
-    sequences = Sequences(_iter_append_alleles_to_sequence_ids, sequences, allele_header)
+    sequences = Sequences(
+        _iter_append_alleles_to_sequence_ids, sequences, allele_header
+    )
     alleles = {sequence.extras[allele_header] for sequence in sequences}
     bad_alleles = [allele for allele in alleles if len(allele) > 1]
 
     warns = []
     if bad_alleles:
-        bad_alleles_str = ', '.join(repr(id) for id in bad_alleles[:3])
+        bad_alleles_str = ", ".join(repr(id) for id in bad_alleles[:3])
         if len(bad_alleles) > 3:
-            bad_alleles_str += f' and {len(bad_alleles) - 3} more'
-        warns = [f'Allele identifiers should be one character long: {bad_alleles_str}']
+            bad_alleles_str += f" and {len(bad_alleles) - 3} more"
+        warns = [f"Allele identifiers should be one character long: {bad_alleles_str}"]
 
     return (sequences, warns)
 
@@ -194,14 +200,18 @@ def prune_alleles_from_haplo_graph(graph: HaploGraph):
         node.members = set(m[:-2] for m in node.members)
 
 
-def prune_alleles_from_spartitions(spartitions: dict[str, dict[str, str]]) -> dict[str, dict[str, str]]:
+def prune_alleles_from_spartitions(
+    spartitions: dict[str, dict[str, str]],
+) -> dict[str, dict[str, str]]:
     return {
         name: {id[:-2]: subset for id, subset in spartition.items()}
         for name, spartition in spartitions.items()
     }
 
 
-def retrieve_spartitions(input: AttrDict | None, sequences: Sequences) -> tuple[dict[str, dict[str, str]], str | None]:
+def retrieve_spartitions(
+    input: AttrDict | None, sequences: Sequences
+) -> tuple[dict[str, dict[str, str]], str | None]:
     if input is None:
         return {}, None
     if input.info.format != FileFormat.Spart:
@@ -210,6 +220,7 @@ def retrieve_spartitions(input: AttrDict | None, sequences: Sequences) -> tuple[
     spartitions = {model.spartition: partition_from_model(model) for model in models}
     spartitions = {
         name: match_partition_to_phased_sequences(partition, sequences)[0]
-        for name, partition in spartitions.items()}
+        for name, partition in spartitions.items()
+    }
     spartitions = {name: dict(partition) for name, partition in spartitions.items()}
     return spartitions, input.spartition

@@ -19,11 +19,11 @@
 from .resources import icons, pixmaps
 from .tasks import about, convphase, haplodemo, haplostats
 
-title = 'Hapsolutely'
+title = "Hapsolutely"
 icon = icons.hapsolutely
 pixmap = pixmaps.hapsolutely
 
-dashboard = 'constrained'
+dashboard = "constrained"
 
 show_open = True
 show_save = True
@@ -34,6 +34,5 @@ tasks = [
         haplodemo,
         haplostats,
     ],
-
     about,
 ]

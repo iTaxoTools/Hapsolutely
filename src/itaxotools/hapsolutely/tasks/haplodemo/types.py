@@ -31,11 +31,11 @@ class Results(NamedTuple):
 
 
 class NetworkAlgorithm(Enum):
-    Fitchi = 'Fitchi', 'Haplotype genealogies based on Fitch distances'
-    TCS = 'TCS', 'Templeton, Crandall, and Sing network'
-    TSW = 'TSW', 'Tight span walker (from PopArt)'
-    MSN = 'MSN', 'Minimum spanning network'
-    MJN = 'MJN', 'Median joining network'
+    Fitchi = "Fitchi", "Haplotype genealogies based on Fitch distances"
+    TCS = "TCS", "Templeton, Crandall, and Sing network"
+    TSW = "TSW", "Tight span walker (from PopArt)"
+    MSN = "MSN", "Minimum spanning network"
+    MJN = "MJN", "Median joining network"
 
     def __init__(self, label, description):
         self.label = label

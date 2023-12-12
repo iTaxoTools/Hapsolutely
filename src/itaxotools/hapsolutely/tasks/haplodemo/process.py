@@ -26,7 +26,8 @@ from .types import NetworkAlgorithm, Results
 
 def initialize():
     import itaxotools
-    itaxotools.progress_handler('Initializing...')
+
+    itaxotools.progress_handler("Initializing...")
     import itaxotools.popart_networks  # noqa
     import itaxotools.taxi_gui.tasks.common.process  # noqa
 
@@ -35,42 +36,52 @@ def initialize():
 
 
 def execute(
-
     work_dir: Path,
-
     input_sequences: AttrDict,
     input_species: AttrDict,
     input_tree: AttrDict,
-
     network_algorithm: NetworkAlgorithm,
     transversions_only: bool,
     epsilon: int,
-
 ) -> tuple[Path, float]:
-
-    from itaxotools.popart_networks import (
-        Sequence, build_mjn, build_msn, build_tcs, build_tsw)
-    from itaxotools.taxi_gui.tasks.common.process import (
-        progress_handler, sequences_from_model)
-
     from itaxotools import abort, get_feedback
+    from itaxotools.popart_networks import (
+        Sequence,
+        build_mjn,
+        build_msn,
+        build_tcs,
+        build_tsw,
+    )
+    from itaxotools.taxi_gui.tasks.common.process import (
+        progress_handler,
+        sequences_from_model,
+    )
 
     from ..common.work import (
-        check_is_input_phased, get_matched_partition_from_optional_model,
-        scan_sequence_ambiguity)
+        check_is_input_phased,
+        get_matched_partition_from_optional_model,
+        scan_sequence_ambiguity,
+    )
     from .work import (
-        append_alleles_to_sequence_ids, get_newick_string_from_tree,
-        get_tree_from_model, make_haplo_graph, make_haplo_tree, make_tree_nj,
-        prune_alleles_from_haplo_graph, prune_alleles_from_haplo_tree,
-        prune_alleles_from_spartitions, retrieve_spartitions,
-        validate_sequences_in_tree)
+        append_alleles_to_sequence_ids,
+        get_newick_string_from_tree,
+        get_tree_from_model,
+        make_haplo_graph,
+        make_haplo_tree,
+        make_tree_nj,
+        prune_alleles_from_haplo_graph,
+        prune_alleles_from_haplo_tree,
+        prune_alleles_from_spartitions,
+        retrieve_spartitions,
+        validate_sequences_in_tree,
+    )
 
     haplo_tree = None
     haplo_graph = None
 
     ts = perf_counter()
 
-    progress_handler('Computing network', 0, 0)
+    progress_handler("Computing network", 0, 0)
 
     sequences = sequences_from_model(input_sequences)
     sequence_warns = scan_sequence_ambiguity(sequences)
@@ -79,7 +90,9 @@ def execute(
 
     sequences, allele_warns = append_alleles_to_sequence_ids(input_sequences, sequences)
 
-    partition, partition_warns = get_matched_partition_from_optional_model(input_species, sequences)
+    partition, partition_warns = get_matched_partition_from_optional_model(
+        input_species, sequences
+    )
 
     if network_algorithm == NetworkAlgorithm.Fitchi and input_tree is not None:
         tree = get_tree_from_model(input_tree)
@@ -103,7 +116,9 @@ def execute(
             newick_string = make_tree_nj(sequences)
         else:
             newick_string = get_newick_string_from_tree(tree)
-        haplo_tree = make_haplo_tree(sequences, partition, newick_string, transversions_only)
+        haplo_tree = make_haplo_tree(
+            sequences, partition, newick_string, transversions_only
+        )
 
         if is_phased:
             prune_alleles_from_haplo_tree(haplo_tree)
@@ -116,11 +131,7 @@ def execute(
         }[network_algorithm]
 
         popart_sequences = (
-            Sequence(
-                sequence.id,
-                sequence.seq,
-                partition.get(sequence.id, 'unknown')
-            )
+            Sequence(sequence.id, sequence.seq, partition.get(sequence.id, "unknown"))
             for sequence in sequences
         )
 
@@ -136,7 +147,7 @@ def execute(
     if is_phased:
         spartitions = prune_alleles_from_spartitions(spartitions)
 
-    progress_handler('Computing network', 1, 1)
+    progress_handler("Computing network", 1, 1)
 
     tf = perf_counter()
 

@@ -24,8 +24,15 @@ from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import AttrDict
 from itaxotools.fitchi.types import HaploNode
 from itaxotools.haplodemo.dialogs import (
-    EdgeLengthDialog, EdgeStyleDialog, FontDialog, LabelFormatDialog,
-    NodeSizeDialog, OptionsDialog, PenWidthDialog, ScaleMarksDialog)
+    EdgeLengthDialog,
+    EdgeStyleDialog,
+    FontDialog,
+    LabelFormatDialog,
+    NodeSizeDialog,
+    OptionsDialog,
+    PenWidthDialog,
+    ScaleMarksDialog,
+)
 from itaxotools.haplodemo.history import UndoStack
 from itaxotools.haplodemo.scene import GraphicsScene, GraphicsView, Settings
 from itaxotools.haplodemo.types import HaploGraph
@@ -33,30 +40,40 @@ from itaxotools.haplodemo.views import ColorDelegate, DivisionView, MemberView
 from itaxotools.haplodemo.visualizer import Visualizer
 from itaxotools.haplodemo.widgets import PaletteSelector
 from itaxotools.haplodemo.widgets import PartitionSelector as PartitionComboBox
+from itaxotools.hapsolutely.resources import icons
+from itaxotools.hapsolutely.yamlify import yamlify
 from itaxotools.taxi_gui import app
 from itaxotools.taxi_gui.tasks.common.view import (
-    InputSelector, PartitionSelector, ProgressCard)
+    InputSelector,
+    PartitionSelector,
+    ProgressCard,
+)
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import TaskView
 from itaxotools.taxi_gui.view.widgets import (
-    DisplayFrame, RadioButtonGroup, RichRadioButton, ScrollArea)
-
-from itaxotools.hapsolutely.resources import icons
-from itaxotools.hapsolutely.yamlify import yamlify
+    DisplayFrame,
+    RadioButtonGroup,
+    RichRadioButton,
+    ScrollArea,
+)
 
 from ..common.view import GraphicTitleCard, PhasedSequenceSelector
 from . import long_description, pixmap_medium, title
 from .types import NetworkAlgorithm
 from .widgets import (
-    CategoryFrame, SidebarArea, SidePushButton, SideToggleButton,
-    SideZoomControl)
+    CategoryFrame,
+    SidebarArea,
+    SidePushButton,
+    SideToggleButton,
+    SideZoomControl,
+)
 
 
 class ColorDialog(OptionsDialog):
     def __init__(self, parent, settings):
         super().__init__(parent)
 
-        self.setWindowTitle(f'{app.config.title} - Subset colors')
+        self.setWindowTitle(f"{app.config.title} - Subset colors")
 
         self.settings = settings
         self.binder = Binder()
@@ -67,16 +84,20 @@ class ColorDialog(OptionsDialog):
 
     def draw_contents(self):
         label = QtWidgets.QLabel(
-            'Select a color theme for population subsets. '
-            'Double-click a subset to customize its color.'
+            "Select a color theme for population subsets. "
+            "Double-click a subset to customize its color."
         )
         label.setWordWrap(True)
         palette_selector = PaletteSelector()
         division_view = DivisionView(self.settings.divisions)
 
-        self.binder.bind(palette_selector.currentValueChanged, self.settings.properties.palette)
+        self.binder.bind(
+            palette_selector.currentValueChanged, self.settings.properties.palette
+        )
         self.binder.bind(self.settings.properties.palette, palette_selector.setValue)
-        self.binder.bind(self.settings.properties.palette, ColorDelegate.setCustomColors)
+        self.binder.bind(
+            self.settings.properties.palette, ColorDelegate.setCustomColors
+        )
 
         layout = QtWidgets.QVBoxLayout()
         layout.setSpacing(8)
@@ -87,7 +108,7 @@ class ColorDialog(OptionsDialog):
         return layout
 
     def draw_dialog(self, contents):
-        ok = QtWidgets.QPushButton('OK')
+        ok = QtWidgets.QPushButton("OK")
 
         ok.clicked.connect(self.accept)
         ok.setAutoDefault(True)
@@ -106,19 +127,23 @@ class ColorDialog(OptionsDialog):
 class MemberPanel(QtWidgets.QFrame):
     def __init__(self, settings: Settings):
         super().__init__()
-        self.setStyleSheet('MemberPanel {background: Palette(Window);}')
+        self.setStyleSheet("MemberPanel {background: Palette(Window);}")
 
         view = MemberView(settings.members)
         view.setIndentation(17)
 
-        label = QtWidgets.QLabel('Node members')
-        label.setStyleSheet('QLabel {background: Palette(Shadow); color: Palette(Light); padding-top: 5px; padding-bottom: 5px; padding-left: 0px;}')
+        label = QtWidgets.QLabel("Node members")
+        label.setStyleSheet(
+            "QLabel {background: Palette(Shadow); color: Palette(Light); padding-top: 5px; padding-bottom: 5px; padding-left: 0px;}"
+        )
         font = label.font()
         font.setLetterSpacing(QtGui.QFont.AbsoluteSpacing, 1)
         label.setFont(font)
 
-        arrow = QtWidgets.QLabel('\u276F')
-        arrow.setStyleSheet('QLabel {background: Palette(Shadow); color: Palette(Light); padding-left: 4px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;}')
+        arrow = QtWidgets.QLabel("\u276F")
+        arrow.setStyleSheet(
+            "QLabel {background: Palette(Shadow); color: Palette(Light); padding-left: 4px; padding-top: 5px; padding-bottom: 5px; padding-right: 0px;}"
+        )
         font = arrow.font()
         font.setBold(True)
         font.setStyleStrategy(QtGui.QFont.PreferAntialias)
@@ -129,7 +154,7 @@ class MemberPanel(QtWidgets.QFrame):
         label_layout.addWidget(arrow)
         label_layout.addWidget(label, 1)
 
-        export = SidePushButton('Export members')
+        export = SidePushButton("Export members")
         export.setIcon(icons.export.resource)
 
         export_layout = QtWidgets.QVBoxLayout()
@@ -171,22 +196,22 @@ class HaploView(QtWidgets.QFrame):
 
         history_stack = UndoStack()
         self.actions = AttrDict()
-        self.actions.undo = history_stack.createUndoAction(self, 'Undo')
+        self.actions.undo = history_stack.createUndoAction(self, "Undo")
         self.actions.undo.setShortcut(QtGui.QKeySequence.Undo)
         self.actions.undo.setIcon(icons.undo.resource)
-        self.actions.redo = history_stack.createRedoAction(self, 'Redo')
+        self.actions.redo = history_stack.createRedoAction(self, "Redo")
         self.actions.redo.setShortcut(QtGui.QKeySequence.Redo)
         self.actions.redo.setIcon(icons.redo.resource)
         for action in self.actions:
             self.addAction(action)
 
-        undo_button = SidePushButton('Undo')
+        undo_button = SidePushButton("Undo")
         undo_button.setIcon(icons.undo.resource)
         undo_button.clicked.connect(history_stack.undo)
         history_stack.canUndoChanged.connect(undo_button.setEnabled)
         undo_button.setEnabled(history_stack.canUndo())
 
-        redo_button = SidePushButton('Redo')
+        redo_button = SidePushButton("Redo")
         redo_button.setIcon(icons.redo.resource)
         redo_button.clicked.connect(history_stack.redo)
         history_stack.canRedoChanged.connect(redo_button.setEnabled)
@@ -194,16 +219,16 @@ class HaploView(QtWidgets.QFrame):
 
         zoom_control = SideZoomControl()
 
-        toggle_snapping = SideToggleButton('Node snapping')
+        toggle_snapping = SideToggleButton("Node snapping")
         toggle_snapping.setIcon(icons.snap.resource)
 
-        toggle_lock_distances = SideToggleButton('Lock distances')
+        toggle_lock_distances = SideToggleButton("Lock distances")
         toggle_lock_distances.setIcon(icons.lock_distances.resource)
 
-        toggle_lock_labels = SideToggleButton('Lock labels')
+        toggle_lock_labels = SideToggleButton("Lock labels")
         toggle_lock_labels.setIcon(icons.lock_labels.resource)
 
-        toggle_scene_rotation = SideToggleButton('Rotate scene')
+        toggle_scene_rotation = SideToggleButton("Rotate scene")
         toggle_scene_rotation.setIcon(icons.rotate.resource)
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
@@ -215,66 +240,66 @@ class HaploView(QtWidgets.QFrame):
         self.color_dialog = ColorDialog(self, settings)
         self.font_dialog = FontDialog(self, settings)
 
-        self.node_size_dialog.setWindowTitle(f'{app.config.title} - Node size')
-        self.edge_style_dialog.setWindowTitle(f'{app.config.title} - Edge styles')
-        self.edge_length_dialog.setWindowTitle(f'{app.config.title} - Edge lengths')
-        self.scale_style_dialog.setWindowTitle(f'{app.config.title} - Scale marks')
-        self.pen_style_dialog.setWindowTitle(f'{app.config.title} - Pen width')
-        self.label_format_dialog.setWindowTitle(f'{app.config.title} - Label format')
-        self.color_dialog.setWindowTitle(f'{app.config.title} - Subset colors')
-        self.font_dialog.setWindowTitle(f'{app.config.title} - Select font')
+        self.node_size_dialog.setWindowTitle(f"{app.config.title} - Node size")
+        self.edge_style_dialog.setWindowTitle(f"{app.config.title} - Edge styles")
+        self.edge_length_dialog.setWindowTitle(f"{app.config.title} - Edge lengths")
+        self.scale_style_dialog.setWindowTitle(f"{app.config.title} - Scale marks")
+        self.pen_style_dialog.setWindowTitle(f"{app.config.title} - Pen width")
+        self.label_format_dialog.setWindowTitle(f"{app.config.title} - Label format")
+        self.color_dialog.setWindowTitle(f"{app.config.title} - Subset colors")
+        self.font_dialog.setWindowTitle(f"{app.config.title} - Select font")
 
-        select_colors = SidePushButton('Color scheme')
+        select_colors = SidePushButton("Color scheme")
         select_colors.clicked.connect(self.color_dialog.show)
         select_colors.setIcon(icons.scheme.resource)
 
-        mass_resize_nodes = SidePushButton('Resize nodes')
+        mass_resize_nodes = SidePushButton("Resize nodes")
         mass_resize_nodes.clicked.connect(self.node_size_dialog.show)
         mass_resize_nodes.setIcon(icons.resize_node.resource)
 
-        mass_resize_edges = SidePushButton('Resize edges')
+        mass_resize_edges = SidePushButton("Resize edges")
         mass_resize_edges.clicked.connect(self.edge_length_dialog.show)
         mass_resize_edges.setIcon(icons.resize_edge.resource)
 
-        mass_style_edges = SidePushButton('Edge style')
+        mass_style_edges = SidePushButton("Edge style")
         mass_style_edges.clicked.connect(self.edge_style_dialog.show)
         mass_style_edges.setIcon(icons.edge_style.resource)
 
-        style_pens = SidePushButton('Pen width')
+        style_pens = SidePushButton("Pen width")
         style_pens.clicked.connect(self.pen_style_dialog.show)
         style_pens.setIcon(icons.pen.resource)
 
-        style_scale = SidePushButton('Scale marks')
+        style_scale = SidePushButton("Scale marks")
         style_scale.clicked.connect(self.scale_style_dialog.show)
         style_scale.setIcon(icons.scale.resource)
 
-        mass_format_labels = SidePushButton('Text templates')
+        mass_format_labels = SidePushButton("Text templates")
         mass_format_labels.clicked.connect(self.label_format_dialog.show)
         mass_format_labels.setIcon(icons.template.resource)
 
-        select_font = SidePushButton('Text font')
+        select_font = SidePushButton("Text font")
         select_font.clicked.connect(self.font_dialog.exec)
         select_font.setIcon(icons.font.resource)
 
-        toggle_members_panel = SideToggleButton('Members panel')
+        toggle_members_panel = SideToggleButton("Members panel")
         toggle_members_panel.setIcon(icons.panel.resource)
 
-        toggle_field_groups = SideToggleButton('FORs (haploweb)')
+        toggle_field_groups = SideToggleButton("FORs (haploweb)")
         toggle_field_groups.setIcon(icons.haploweb.resource)
 
-        toggle_field_isolated = SideToggleButton('FOR singletons')
+        toggle_field_isolated = SideToggleButton("FOR singletons")
         toggle_field_isolated.setIcon(icons.singletons.resource)
 
-        toggle_legend = SideToggleButton('Legend')
+        toggle_legend = SideToggleButton("Legend")
         toggle_legend.setIcon(icons.legend.resource)
 
-        toggle_scale = SideToggleButton('Scale')
+        toggle_scale = SideToggleButton("Scale")
         toggle_scale.setIcon(icons.scale.resource)
 
-        partition_frame = CategoryFrame('Species partition')
+        partition_frame = CategoryFrame("Species partition")
         partition_frame.addWidget(partition_selector)
 
-        edit_frame = CategoryFrame('Editing')
+        edit_frame = CategoryFrame("Editing")
         edit_frame.addWidget(undo_button)
         edit_frame.addWidget(redo_button)
         edit_frame.addSpacing(8)
@@ -284,7 +309,7 @@ class HaploView(QtWidgets.QFrame):
         edit_frame.addWidget(toggle_lock_labels)
         edit_frame.addWidget(toggle_scene_rotation)
 
-        appearance_frame = CategoryFrame('Appearance')
+        appearance_frame = CategoryFrame("Appearance")
         appearance_frame.addWidget(select_colors)
         appearance_frame.addWidget(mass_resize_nodes)
         appearance_frame.addWidget(mass_resize_edges)
@@ -294,7 +319,7 @@ class HaploView(QtWidgets.QFrame):
         appearance_frame.addWidget(mass_format_labels)
         appearance_frame.addWidget(select_font)
 
-        view_frame = CategoryFrame('View')
+        view_frame = CategoryFrame("View")
         view_frame.addWidget(toggle_members_panel)
         view_frame.addWidget(toggle_field_groups)
         view_frame.addWidget(toggle_field_isolated)
@@ -311,7 +336,7 @@ class HaploView(QtWidgets.QFrame):
         sidebar_layout.addStretch(1)
 
         sidebar = QtWidgets.QFrame()
-        sidebar.setStyleSheet('QFrame {background: Palette(window);}')
+        sidebar.setStyleSheet("QFrame {background: Palette(window);}")
         sidebar.setLayout(sidebar_layout)
         sidebar.setFixedWidth(208)
 
@@ -351,31 +376,67 @@ class HaploView(QtWidgets.QFrame):
 
         self.binder = Binder()
 
-        self.binder.bind(settings.partitions.partitionsChanged, partition_frame.setVisible, lambda partitions: len(partitions) > 0)
-        self.binder.bind(partition_selector.modelIndexChanged, settings.properties.partition_index)
-        self.binder.bind(settings.properties.partition_index, partition_selector.setModelIndex)
+        self.binder.bind(
+            settings.partitions.partitionsChanged,
+            partition_frame.setVisible,
+            lambda partitions: len(partitions) > 0,
+        )
+        self.binder.bind(
+            partition_selector.modelIndexChanged, settings.properties.partition_index
+        )
+        self.binder.bind(
+            settings.properties.partition_index, partition_selector.setModelIndex
+        )
 
-        self.binder.bind(visualizer.nodeIndexSelected, member_panel.controls.view.select)
-        self.binder.bind(member_panel.controls.view.nodeSelected, visualizer.select_node_by_name)
+        self.binder.bind(
+            visualizer.nodeIndexSelected, member_panel.controls.view.select
+        )
+        self.binder.bind(
+            member_panel.controls.view.nodeSelected, visualizer.select_node_by_name
+        )
 
         scene_view.scaled.connect(zoom_control.edit.getScale)
         zoom_control.edit.scale.connect(scene_view.setScale)
         zoom_control.zoom_out.clicked.connect(scene_view.zoomOut)
         zoom_control.zoom_in.clicked.connect(scene_view.zoomIn)
 
-        self.binder.bind(settings.properties.rotational_movement, toggle_lock_distances.setChecked)
-        self.binder.bind(settings.properties.recursive_movement, toggle_lock_distances.setChecked)
-        self.binder.bind(toggle_lock_distances.toggled, settings.properties.rotational_movement)
-        self.binder.bind(toggle_lock_distances.toggled, settings.properties.recursive_movement)
+        self.binder.bind(
+            settings.properties.rotational_movement, toggle_lock_distances.setChecked
+        )
+        self.binder.bind(
+            settings.properties.recursive_movement, toggle_lock_distances.setChecked
+        )
+        self.binder.bind(
+            toggle_lock_distances.toggled, settings.properties.rotational_movement
+        )
+        self.binder.bind(
+            toggle_lock_distances.toggled, settings.properties.recursive_movement
+        )
 
-        self.binder.bind(settings.properties.label_movement, toggle_lock_labels.setChecked, lambda x: not x)
-        self.binder.bind(toggle_lock_labels.toggled, settings.properties.label_movement, lambda x: not x)
+        self.binder.bind(
+            settings.properties.label_movement,
+            toggle_lock_labels.setChecked,
+            lambda x: not x,
+        )
+        self.binder.bind(
+            toggle_lock_labels.toggled,
+            settings.properties.label_movement,
+            lambda x: not x,
+        )
 
-        self.binder.bind(settings.fields.properties.show_groups, toggle_field_groups.setChecked)
-        self.binder.bind(toggle_field_groups.toggled, settings.fields.properties.show_groups)
+        self.binder.bind(
+            settings.fields.properties.show_groups, toggle_field_groups.setChecked
+        )
+        self.binder.bind(
+            toggle_field_groups.toggled, settings.fields.properties.show_groups
+        )
 
-        self.binder.bind(settings.fields.properties.show_isolated, toggle_field_isolated.setChecked)
-        self.binder.bind(toggle_field_isolated.toggled, settings.fields.properties.show_isolated)
+        self.binder.bind(
+            settings.fields.properties.show_isolated, toggle_field_isolated.setChecked
+        )
+        self.binder.bind(
+            toggle_field_isolated.toggled, settings.fields.properties.show_isolated
+        )
 
         self.binder.bind(settings.properties.show_legend, toggle_legend.setChecked)
         self.binder.bind(toggle_legend.toggled, settings.properties.show_legend)
@@ -383,23 +444,37 @@ class HaploView(QtWidgets.QFrame):
         self.binder.bind(settings.properties.show_scale, toggle_scale.setChecked)
         self.binder.bind(toggle_scale.toggled, settings.properties.show_scale)
 
-        self.binder.bind(settings.properties.rotate_scene, toggle_scene_rotation.setChecked)
-        self.binder.bind(toggle_scene_rotation.toggled, settings.properties.rotate_scene)
+        self.binder.bind(
+            settings.properties.rotate_scene, toggle_scene_rotation.setChecked
+        )
+        self.binder.bind(
+            toggle_scene_rotation.toggled, settings.properties.rotate_scene
+        )
 
-        self.binder.bind(settings.properties.snapping_movement, toggle_snapping.setChecked)
+        self.binder.bind(
+            settings.properties.snapping_movement, toggle_snapping.setChecked
+        )
         self.binder.bind(toggle_snapping.toggled, settings.properties.snapping_movement)
 
-        self.binder.bind(toggle_members_panel.toggled, self.handle_members_panel_toggled)
+        self.binder.bind(
+            toggle_members_panel.toggled, self.handle_members_panel_toggled
+        )
         self.binder.bind(splitter.splitterMoved, self.handle_members_splitter_moved)
         self.binder.bind(member_panel.controls.export.clicked, self.exportMembers)
         toggle_members_panel.setChecked(True)
 
         self.binder.bind(self.node_size_dialog.commandPosted, self.scene.commandPosted)
-        self.binder.bind(self.label_format_dialog.commandPosted, self.scene.commandPosted)
-        self.binder.bind(self.scale_style_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(
+            self.label_format_dialog.commandPosted, self.scene.commandPosted
+        )
+        self.binder.bind(
+            self.scale_style_dialog.commandPosted, self.scene.commandPosted
+        )
         self.binder.bind(self.pen_style_dialog.commandPosted, self.scene.commandPosted)
         self.binder.bind(self.font_dialog.commandPosted, self.scene.commandPosted)
-        self.binder.bind(self.edge_length_dialog.commandPosted, self.scene.commandPosted)
+        self.binder.bind(
+            self.edge_length_dialog.commandPosted, self.scene.commandPosted
+        )
         self.binder.bind(self.edge_style_dialog.commandPosted, self.scene.commandPosted)
 
         self.binder.bind(scene.commandPosted, history_stack.push)
@@ -444,7 +519,7 @@ class HaploView(QtWidgets.QFrame):
         self.settings.show_scale = True
 
         self.settings.edge_length = 40
-        self.settings.node_label_template = 'WEIGHT'
+        self.settings.node_label_template = "WEIGHT"
 
 
 class NetworkAlgorithmSelector(Card):
@@ -456,11 +531,12 @@ class NetworkAlgorithmSelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        label = QtWidgets.QLabel('Network algorithm:')
+        label = QtWidgets.QLabel("Network algorithm:")
         label.setStyleSheet("""font-size: 16px;""")
 
         description = QtWidgets.QLabel(
-            'Select the algorithm that will be used for building the haplotype network.')
+            "Select the algorithm that will be used for building the haplotype network."
+        )
         description.setWordWrap(True)
 
         layout = QtWidgets.QVBoxLayout()
@@ -476,7 +552,7 @@ class NetworkAlgorithmSelector(Card):
         radios = QtWidgets.QVBoxLayout()
         radios.setSpacing(8)
         for algorithm in self.algorithms:
-            button = RichRadioButton(f'{algorithm.label}:', algorithm.description, self)
+            button = RichRadioButton(f"{algorithm.label}:", algorithm.description, self)
             radios.addWidget(button)
             group.add(button, algorithm)
         layout.addLayout(radios)
@@ -494,12 +570,14 @@ class TransversionsOnlySelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        title = QtWidgets.QCheckBox('  Transversions only:')
+        title = QtWidgets.QCheckBox("  Transversions only:")
         title.setStyleSheet("""font-size: 16px;""")
         title.toggled.connect(self.toggled)
         title.setMinimumWidth(180)
 
-        description = QtWidgets.QLabel('Ignore transitions and show transversions only (default: off).')
+        description = QtWidgets.QLabel(
+            "Ignore transitions and show transversions only (default: off)."
+        )
         description.setStyleSheet("""padding-top: 2px;""")
         description.setWordWrap(True)
 
@@ -523,11 +601,13 @@ class EpsilonSelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        title = QtWidgets.QLabel('Epsilon parameter:')
+        title = QtWidgets.QLabel("Epsilon parameter:")
         title.setStyleSheet("""font-size: 16px;""")
         title.setMinimumWidth(140)
 
-        description = QtWidgets.QLabel('Mutation cost weighting in median vector calculation (default: 0).')
+        description = QtWidgets.QLabel(
+            "Mutation cost weighting in median vector calculation (default: 0)."
+        )
         description.setStyleSheet("""padding-top: 2px;""")
         description.setWordWrap(True)
 
@@ -552,21 +632,25 @@ class HaplowebSelector(Card):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        title = QtWidgets.QCheckBox('  Draw haploweb:')
+        title = QtWidgets.QCheckBox("  Draw haploweb:")
         title.setStyleSheet("""font-size: 16px;""")
         title.toggled.connect(self.toggled)
         title.setMinimumWidth(180)
 
-        description = QtWidgets.QLabel('Connect haplotypes found co-occurring in heterozygous individuals.')
+        description = QtWidgets.QLabel(
+            "Connect haplotypes found co-occurring in heterozygous individuals."
+        )
         description.setStyleSheet("""padding-top: 2px;""")
         description.setWordWrap(True)
 
-        warning = QtWidgets.QLabel('Sequences must be phased into alleles.')
+        warning = QtWidgets.QLabel("Sequences must be phased into alleles.")
         warning.setStyleSheet("""padding-top: 2px; padding-bottom: 4px;""")
         warning.setWordWrap(True)
         warning.setVisible(False)
 
-        spacer = QtWidgets.QSpacerItem(120, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(
+            120, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
 
         layout = QtWidgets.QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -591,7 +675,6 @@ class HaplowebSelector(Card):
 
 
 class View(TaskView):
-
     def __init__(self, parent=None, max_width=920):
         super().__init__(parent)
         self.max_width = max_width
@@ -607,7 +690,7 @@ class View(TaskView):
 
         self.frame = DisplayFrame(stretch=999, center_vertical=False)
         self.inner_frame = DisplayFrame(stretch=99, center_vertical=False)
-        self.inner_frame.setStyleSheet('DisplayFrame {background: Palette(mid);}')
+        self.inner_frame.setStyleSheet("DisplayFrame {background: Palette(mid);}")
         self.inner_frame.setMaximumWidth(self.max_width)
         self.inner_frame.setContentsMargins(4, 8, 4, 8)
         self.area.setWidget(self.frame)
@@ -617,13 +700,17 @@ class View(TaskView):
 
     def draw_cards(self):
         self.cards = AttrDict()
-        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
+        self.cards.title = GraphicTitleCard(
+            title, long_description, pixmap_medium.resource, self
+        )
         self.cards.progress = ProgressCard(self)
-        self.cards.input_sequences = PhasedSequenceSelector('Input sequences', self)
-        self.cards.input_species = PartitionSelector('Species partition', 'Species', 'Individuals', self)
+        self.cards.input_sequences = PhasedSequenceSelector("Input sequences", self)
+        self.cards.input_species = PartitionSelector(
+            "Species partition", "Species", "Individuals", self
+        )
         self.cards.draw_haploweb = HaplowebSelector(self)
         self.cards.network_algorithm = NetworkAlgorithmSelector(self)
-        self.cards.input_tree = InputSelector('Fitchi tree', self)
+        self.cards.input_tree = InputSelector("Fitchi tree", self)
         self.cards.transversions_only = TransversionsOnlySelector(self)
         self.cards.epsilon = EpsilonSelector(self)
 
@@ -658,46 +745,90 @@ class View(TaskView):
         self.binder.bind(object.properties.name, self.cards.title.setTitle)
         self.binder.bind(object.properties.busy, self.cards.progress.setVisible)
 
-        self.binder.bind(object.subtask_sequences.properties.busy, self.cards.input_sequences.set_busy)
-        self.binder.bind(object.subtask_species.properties.busy, self.cards.input_species.set_busy)
+        self.binder.bind(
+            object.subtask_sequences.properties.busy,
+            self.cards.input_sequences.set_busy,
+        )
+        self.binder.bind(
+            object.subtask_species.properties.busy, self.cards.input_species.set_busy
+        )
 
-        self.binder.bind(object.properties.network_algorithm, self.cards.network_algorithm.setValue)
-        self.binder.bind(self.cards.network_algorithm.valueChanged, object.properties.network_algorithm)
+        self.binder.bind(
+            object.properties.network_algorithm, self.cards.network_algorithm.setValue
+        )
+        self.binder.bind(
+            self.cards.network_algorithm.valueChanged,
+            object.properties.network_algorithm,
+        )
 
-        self.binder.bind(self.cards.epsilon.controls.epsilon.valueChanged, object.properties.epsilon)
-        self.binder.bind(object.properties.epsilon, self.cards.epsilon.controls.epsilon.setValue)
+        self.binder.bind(
+            self.cards.epsilon.controls.epsilon.valueChanged, object.properties.epsilon
+        )
+        self.binder.bind(
+            object.properties.epsilon, self.cards.epsilon.controls.epsilon.setValue
+        )
         self.binder.bind(
             object.properties.network_algorithm,
             self.cards.epsilon.roll_animation.setAnimatedVisible,
-            lambda algo: algo == NetworkAlgorithm.MJN)
+            lambda algo: algo == NetworkAlgorithm.MJN,
+        )
 
-        self.binder.bind(self.cards.transversions_only.toggled, object.properties.transversions_only)
-        self.binder.bind(object.properties.transversions_only, self.cards.transversions_only.setChecked)
+        self.binder.bind(
+            self.cards.transversions_only.toggled, object.properties.transversions_only
+        )
+        self.binder.bind(
+            object.properties.transversions_only,
+            self.cards.transversions_only.setChecked,
+        )
 
         self.binder.bind(
             object.properties.network_algorithm,
             self.cards.input_tree.roll_animation.setAnimatedVisible,
-            lambda algo: algo == NetworkAlgorithm.Fitchi)
+            lambda algo: algo == NetworkAlgorithm.Fitchi,
+        )
 
         self.binder.bind(
             object.properties.network_algorithm,
             self.cards.transversions_only.roll_animation.setAnimatedVisible,
-            lambda algo: algo == NetworkAlgorithm.Fitchi)
+            lambda algo: algo == NetworkAlgorithm.Fitchi,
+        )
 
-        self.binder.bind(self.cards.draw_haploweb.toggled, object.properties.draw_haploweb_option)
-        self.binder.bind(object.properties.draw_haploweb_option, self.cards.draw_haploweb.setChecked)
-        self.binder.bind(object.properties.input_is_phased, self.cards.draw_haploweb.roll_animation.setAnimatedVisible)
+        self.binder.bind(
+            self.cards.draw_haploweb.toggled, object.properties.draw_haploweb_option
+        )
+        self.binder.bind(
+            object.properties.draw_haploweb_option, self.cards.draw_haploweb.setChecked
+        )
+        self.binder.bind(
+            object.properties.input_is_phased,
+            self.cards.draw_haploweb.roll_animation.setAnimatedVisible,
+        )
 
         self.binder.bind(object.haplo_ready, self.show_haplo_network)
 
-        self.binder.bind(object.properties.can_lock_distances, self.haplo_view.toggle_lock_distances.setVisible)
-        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.toggle_field_groups.setVisible)
-        self.binder.bind(object.properties.draw_haploweb, self.haplo_view.toggle_field_isolated.setVisible)
+        self.binder.bind(
+            object.properties.can_lock_distances,
+            self.haplo_view.toggle_lock_distances.setVisible,
+        )
+        self.binder.bind(
+            object.properties.draw_haploweb,
+            self.haplo_view.toggle_field_groups.setVisible,
+        )
+        self.binder.bind(
+            object.properties.draw_haploweb,
+            self.haplo_view.toggle_field_isolated.setVisible,
+        )
         self.binder.bind(self.haplo_view.exportMembers, self.save_members)
 
-        self._bind_phased_input_selector(self.cards.input_sequences, object.input_sequences, object.subtask_sequences)
-        self._bind_input_selector(self.cards.input_species, object.input_species, object.subtask_species)
-        self._bind_input_selector(self.cards.input_tree, object.input_tree, object.subtask_tree)
+        self._bind_phased_input_selector(
+            self.cards.input_sequences, object.input_sequences, object.subtask_sequences
+        )
+        self._bind_input_selector(
+            self.cards.input_species, object.input_species, object.subtask_species
+        )
+        self._bind_input_selector(
+            self.cards.input_tree, object.input_tree, object.subtask_tree
+        )
 
         # defined last to override `set_busy` calls
         self.binder.bind(object.properties.editable, self.setEditable)
@@ -718,16 +849,19 @@ class View(TaskView):
 
     def requestConfirmation(self, warns, callback, abort):
         msgBox = QtWidgets.QMessageBox(self.window())
-        msgBox.setWindowTitle(f'{app.config.title} - Warning')
+        msgBox.setWindowTitle(f"{app.config.title} - Warning")
         msgBox.setIcon(QtWidgets.QMessageBox.Warning)
-        msgBox.setStandardButtons(QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel)
+        msgBox.setStandardButtons(
+            QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel
+        )
         msgBox.setDefaultButton(QtWidgets.QMessageBox.Cancel)
 
         text = (
-            'Problems detected with input file: \n\n' +
-            '\n'.join('- ' + str(warn) for warn in warns) + '\n\n'
-            'The program may fail or produce false results. \n'
-            'Proceed anyway?\n'
+            "Problems detected with input file: \n\n"
+            + "\n".join("- " + str(warn) for warn in warns)
+            + "\n\n"
+            "The program may fail or produce false results. \n"
+            "Proceed anyway?\n"
         )
         msgBox.setText(text)
 
@@ -819,31 +953,37 @@ class View(TaskView):
 
     def save(self):
         path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f'{path.stem}_network')
+        path = path.with_name(f"{path.stem}_network")
         scene_view = self.haplo_view.scene_view
         filters = {
-            'PNG Files (*.png)': scene_view.export_png,
-            'SVG Files (*.svg)': scene_view.export_svg,
-            'PDF Files (*.pdf)': scene_view.export_pdf,
+            "PNG Files (*.png)": scene_view.export_png,
+            "SVG Files (*.svg)": scene_view.export_svg,
+            "PDF Files (*.pdf)": scene_view.export_pdf,
         }
         filename, format = QtWidgets.QFileDialog.getSaveFileName(
-            self.window(), f'{app.config.title} - Export network',
-            dir=str(path), filter=';;'.join(filters.keys()))
+            self.window(),
+            f"{app.config.title} - Export network",
+            dir=str(path),
+            filter=";;".join(filters.keys()),
+        )
         if not filename:
             return None
         filters[format](filename)
 
     def save_members(self):
         path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f'{path.stem}_members')
+        path = path.with_name(f"{path.stem}_members")
         filename, format = QtWidgets.QFileDialog.getSaveFileName(
-            self.window(), f'{app.config.title} - Export node members',
-            dir=str(path), filter='YAML Files (*.yaml)')
+            self.window(),
+            f"{app.config.title} - Export node members",
+            dir=str(path),
+            filter="YAML Files (*.yaml)",
+        )
         if not filename:
             return None
 
         member_dict = self.haplo_view.visualizer.members
         members = {node: list(members) for node, members in member_dict.items()}
 
-        with open(filename, 'w') as file:
+        with open(filename, "w") as file:
             print(yamlify(members), file=file)

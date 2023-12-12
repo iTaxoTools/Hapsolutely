@@ -19,16 +19,14 @@
 from PySide6 import QtCore
 
 from itaxotools.common.bindings import Binder, Instance, Property
+from itaxotools.hapsolutely import app
 from itaxotools.taxi_gui.app.model import items
 from itaxotools.taxi_gui.model.common import Object
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.types import FileInfo
 
-from itaxotools.hapsolutely import app
-
 
 class PhasedResultsModel(Object):
-
     info = Property(FileInfo, None)
     model = Property(InputFileModel, None)
     index = Property(QtCore.QModelIndex, Instance)
@@ -48,6 +46,6 @@ class PhasedResultsModel(Object):
 
         self.info = info
         model = InputFileModel(info)
-        model.name = 'Previously phased sequences'
+        model.name = "Previously phased sequences"
         self.model = model
         self.index = items.add_sequence(model)

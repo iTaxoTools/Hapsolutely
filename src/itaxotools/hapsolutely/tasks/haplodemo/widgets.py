@@ -20,7 +20,6 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.widgets import HLineSeparator
 from itaxotools.haplodemo.zoom import ZoomEdit
-
 from itaxotools.hapsolutely.resources import icons
 
 
@@ -28,8 +27,8 @@ class CategoryFrame(QtWidgets.QWidget):
     def __init__(self, text, parent=None):
         super().__init__(parent)
 
-        label = QtWidgets.QLabel(text + ' : ')
-        label.setStyleSheet('color: Palette(Dark); padding-left: 2px;')
+        label = QtWidgets.QLabel(text + " : ")
+        label.setStyleSheet("color: Palette(Dark); padding-left: 2px;")
 
         title = QtWidgets.QVBoxLayout()
         title.addWidget(label)
@@ -59,7 +58,9 @@ class SidebarArea(QtWidgets.QScrollArea):
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.extent_metric = self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent) + 1
+        self.extent_metric = (
+            self.style().pixelMetric(QtWidgets.QStyle.PM_ScrollBarExtent) + 1
+        )
         self.target_width = 100
 
     def setWidget(self, widget):
@@ -96,7 +97,8 @@ class SidePushButton(QtWidgets.QPushButton):
 class SideZoomButton(QtWidgets.QPushButton):
     def __init__(self, text, parent=None):
         super().__init__(text, parent)
-        self.setStyleSheet("""
+        self.setStyleSheet(
+            """
             background: Palette(Light);
             color: Palette(Shadow);
             font-weight: bold;
@@ -106,7 +108,8 @@ class SideZoomButton(QtWidgets.QPushButton):
             padding-right: 0px;
             padding-bottom: 2px;
             margin: 0px;
-        """)
+        """
+        )
         self.setFixedWidth(22)
 
 
@@ -118,12 +121,16 @@ class SideZoomControl(QtWidgets.QWidget):
         self.icon = icons.zoom.resource
 
         self.edit = ZoomEdit()
-        self.percent = QtWidgets.QLabel('%')
-        self.zoom_out = SideZoomButton('-')
-        self.zoom_in = SideZoomButton('+')
+        self.percent = QtWidgets.QLabel("%")
+        self.zoom_out = SideZoomButton("-")
+        self.zoom_in = SideZoomButton("+")
 
-        self.edit.setStyleSheet("background: transparent; border: none; padding-bottom: 2px;")
-        self.percent.setStyleSheet("background: transparent; border: none; padding: 0px;")
+        self.edit.setStyleSheet(
+            "background: transparent; border: none; padding-bottom: 2px;"
+        )
+        self.percent.setStyleSheet(
+            "background: transparent; border: none; padding: 0px;"
+        )
 
         self.edit.setMinimumSize(0, 0)
         self.percent.setFixedWidth(20)
@@ -151,7 +158,7 @@ class SideZoomControl(QtWidgets.QWidget):
         option.icon = self.icon
         option.iconSize = QtCore.QSize(16, 16)
         option.palette = self.palette()
-        option.text = 'Zoom: '
+        option.text = "Zoom: "
         return option
 
 
@@ -185,8 +192,9 @@ class SideToggleButton(QtWidgets.QPushButton):
 
         painter.end()
 
-    def paint_checked(self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect):
-
+    def paint_checked(
+        self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect
+    ):
         bg_rect = rect.adjusted(2, 2, -2, -2)
         radius = bg_rect.height() / 2
         bg_color = palette.color(QtGui.QPalette.Highlight)
@@ -199,7 +207,9 @@ class SideToggleButton(QtWidgets.QPushButton):
         painter.setBrush(QtGui.QBrush(fg_color))
         painter.drawEllipse(fg_rect)
 
-    def paint_unchecked(self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect):
+    def paint_unchecked(
+        self, painter: QtGui.QPainter, palette: QtGui.QPalette, rect: QtCore.QRect
+    ):
         bg_rect = rect.adjusted(2, 2, -2, -2)
         radius = bg_rect.height() / 2
         bg_color = palette.color(QtGui.QPalette.Mid)

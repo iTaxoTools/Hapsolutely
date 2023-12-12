@@ -23,6 +23,7 @@ from pathlib import Path
 
 from itaxotools.common.bindings import Property
 from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
+from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
 from itaxotools.taxi_gui.loop import DataQuery
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
@@ -31,10 +32,11 @@ from itaxotools.taxi_gui.tasks.common.model import ImportedInputModel
 from itaxotools.taxi_gui.types import FileFormat, Notification
 from itaxotools.taxi_gui.utility import human_readable_seconds
 
-from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
-
 from ..common.model import (
-    PhasedFileInfoSubtaskModel, PhasedInputModel, PhasedItemProxyModel)
+    PhasedFileInfoSubtaskModel,
+    PhasedInputModel,
+    PhasedItemProxyModel,
+)
 from . import process, title
 from .types import NetworkAlgorithm
 
@@ -52,8 +54,13 @@ class Model(TaskModel):
 
     can_lock_distances = Property(bool, False)
 
-    input_sequences = Property(PhasedInputModel, PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True))
-    input_species = Property(PhasedInputModel, PhasedInputModel(PartitionModel, 'species'))
+    input_sequences = Property(
+        PhasedInputModel,
+        PhasedInputModel(PhasedSequenceModel, is_phasing_optional=True),
+    )
+    input_species = Property(
+        PhasedInputModel, PhasedInputModel(PartitionModel, "species")
+    )
     input_tree = Property(ImportedInputModel, ImportedInputModel(TreeModel))
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
@@ -70,14 +77,18 @@ class Model(TaskModel):
         self.can_open = True
         self.can_save = True
 
-        self.input_tree.model.unselected = 'Generate from input sequences using Neighbour Joining'
+        self.input_tree.model.unselected = (
+            "Generate from input sequences using Neighbour Joining"
+        )
 
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
         self.subtask_species = PhasedFileInfoSubtaskModel(self)
         self.subtask_tree = PhasedFileInfoSubtaskModel(self)
 
-        self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_phased_info)
+        self.binder.bind(
+            self.subtask_sequences.done, self.input_sequences.add_phased_info
+        )
         self.binder.bind(self.subtask_species.done, self.input_species.add_info)
         self.binder.bind(self.subtask_tree.done, self.input_tree.add_info)
 
@@ -85,11 +96,15 @@ class Model(TaskModel):
         self.binder.bind(self.input_species.notification, self.notification)
         self.binder.bind(self.input_tree.notification, self.notification)
 
-        self.binder.bind(self.input_sequences.properties.index, self.propagate_input_index)
+        self.binder.bind(
+            self.input_sequences.properties.index, self.propagate_input_index
+        )
         self.binder.bind(self.input_sequences.updated, self.update_input_is_phased)
 
         self.binder.bind(self.properties.input_is_phased, self.update_draw_haploweb)
-        self.binder.bind(self.properties.draw_haploweb_option, self.update_draw_haploweb)
+        self.binder.bind(
+            self.properties.draw_haploweb_option, self.update_draw_haploweb
+        )
 
         self.binder.bind(self.query, self.on_query)
 
@@ -121,11 +136,9 @@ class Model(TaskModel):
         self.exec(
             process.execute,
             work_dir=work_dir,
-
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
             input_tree=self.input_tree.as_dict(),
-
             network_algorithm=self.network_algorithm,
             transversions_only=self.transversions_only,
             epsilon=self.epsilon,
@@ -174,7 +187,11 @@ class Model(TaskModel):
 
     def onDone(self, report):
         time_taken = human_readable_seconds(report.result.seconds_taken)
-        self.notification.emit(Notification.Info(f'{self.name} completed successfully!\nTime taken: {time_taken}.'))
+        self.notification.emit(
+            Notification.Info(
+                f"{self.name} completed successfully!\nTime taken: {time_taken}."
+            )
+        )
 
         self.haplo_tree = report.result.haplo_tree
         self.haplo_graph = report.result.haplo_graph

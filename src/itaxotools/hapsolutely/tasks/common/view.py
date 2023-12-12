@@ -38,8 +38,8 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setSpacing(8)
         column = 0
 
-        type_label = QtWidgets.QLabel('File format:')
-        size_label = QtWidgets.QLabel('File size:')
+        type_label = QtWidgets.QLabel("File format:")
+        size_label = QtWidgets.QLabel("File size:")
 
         layout.addWidget(type_label, 0, column)
         layout.addWidget(size_label, 1, column)
@@ -48,8 +48,8 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnMinimumWidth(column, 8)
         column += 1
 
-        type_label_value = QtWidgets.QLabel('Tabfile')
-        size_label_value = QtWidgets.QLabel('42 MB')
+        type_label_value = QtWidgets.QLabel("Tabfile")
+        size_label_value = QtWidgets.QLabel("42 MB")
 
         layout.addWidget(type_label_value, 0, column)
         layout.addWidget(size_label_value, 1, column)
@@ -58,9 +58,9 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnMinimumWidth(column, 4)
         column += 1
 
-        index_label = QtWidgets.QLabel('Indices:')
-        sequence_label = QtWidgets.QLabel('Sequences:')
-        allele_label = QtWidgets.QLabel('Alleles:')
+        index_label = QtWidgets.QLabel("Indices:")
+        sequence_label = QtWidgets.QLabel("Sequences:")
+        allele_label = QtWidgets.QLabel("Alleles:")
 
         layout.addWidget(index_label, 0, column)
         layout.addWidget(sequence_label, 1, column)
@@ -83,14 +83,16 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnMinimumWidth(column, 16)
         column += 1
 
-        view = QtWidgets.QPushButton('View')
+        view = QtWidgets.QPushButton("View")
         view.setVisible(False)
 
         layout.addWidget(view, 0, column)
         layout.setColumnMinimumWidth(column, 80)
         column += 1
 
-        spacer = QtWidgets.QSpacerItem(146, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(
+            146, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         layout.addItem(spacer, 0, 0, 2, 3)
 
         widget = QtWidgets.QWidget()
@@ -111,8 +113,8 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setSpacing(8)
         column = 0
 
-        type_label = QtWidgets.QLabel('File format:')
-        size_label = QtWidgets.QLabel('File size:')
+        type_label = QtWidgets.QLabel("File format:")
+        size_label = QtWidgets.QLabel("File size:")
 
         layout.addWidget(type_label, 0, column)
         layout.addWidget(size_label, 1, column)
@@ -121,8 +123,8 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnMinimumWidth(column, 8)
         column += 1
 
-        type_label_value = QtWidgets.QLabel('Tabfile')
-        size_label_value = QtWidgets.QLabel('42 MB')
+        type_label_value = QtWidgets.QLabel("Tabfile")
+        size_label_value = QtWidgets.QLabel("42 MB")
 
         layout.addWidget(type_label_value, 0, column)
         layout.addWidget(size_label_value, 1, column)
@@ -131,10 +133,10 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnMinimumWidth(column, 4)
         column += 1
 
-        parse_alleles = QtWidgets.QCheckBox('Sequences are phased')
-        parse_organism = QtWidgets.QCheckBox('Sequences are partitioned')
+        parse_alleles = QtWidgets.QCheckBox("Sequences are phased")
+        parse_organism = QtWidgets.QCheckBox("Sequences are partitioned")
 
-        parse_pattern_arrow = QtWidgets.QLabel('\u2937')
+        parse_pattern_arrow = QtWidgets.QLabel("\u2937")
         font = parse_pattern_arrow.font()
         font.setPixelSize(14)
         font.setBold(True)
@@ -142,7 +144,9 @@ class PhasedSequenceSelector(SequenceSelector):
         font.setHintingPreference(QtGui.QFont.PreferNoHinting)
         parse_pattern_arrow.setFont(font)
 
-        parse_pattern = QtWidgets.QLabel('Parse identifiers as "individual_allele|taxon"')
+        parse_pattern = QtWidgets.QLabel(
+            'Parse identifiers as "individual_allele|taxon"'
+        )
 
         parse_pattern_all = QtWidgets.QWidget()
         pattern_layout = QtWidgets.QHBoxLayout(parse_pattern_all)
@@ -164,14 +168,16 @@ class PhasedSequenceSelector(SequenceSelector):
         layout.setColumnStretch(column, 1)
         column += 1
 
-        view = QtWidgets.QPushButton('View')
+        view = QtWidgets.QPushButton("View")
         view.setVisible(False)
 
         layout.addWidget(view, 0, column)
         layout.setColumnMinimumWidth(column, 80)
         column += 1
 
-        spacer = QtWidgets.QSpacerItem(146, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(
+            146, 0, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum
+        )
         layout.addItem(spacer, 0, 0, 2, 3)
 
         widget = QtWidgets.QWidget()
@@ -198,16 +204,42 @@ class PhasedSequenceSelector(SequenceSelector):
         self.update()
 
     def _bind_tabfile(self, object):
-        self.binder.bind(object.properties.is_phasing_optional, self.set_is_phasing_optional)
+        self.binder.bind(
+            object.properties.is_phasing_optional, self.set_is_phasing_optional
+        )
         self._populate_headers(object.info.headers)
 
-        self.binder.bind(object.properties.index_column, self.controls.tabfile.index_combo.setCurrentIndex)
-        self.binder.bind(self.controls.tabfile.index_combo.currentIndexChanged, object.properties.index_column)
-        self.binder.bind(object.properties.sequence_column, self.controls.tabfile.sequence_combo.setCurrentIndex)
-        self.binder.bind(self.controls.tabfile.sequence_combo.currentIndexChanged, object.properties.sequence_column)
-        self.binder.bind(object.properties.allele_column, self.controls.tabfile.allele_combo.setCurrentIndex, lambda x: x if not self.is_phasing_optional else x + 1)
-        self.binder.bind(self.controls.tabfile.allele_combo.currentIndexChanged, object.properties.allele_column, lambda x: x if not self.is_phasing_optional else x - 1)
-        self.binder.bind(object.properties.info, self.controls.tabfile.file_size.setText, lambda info: human_readable_size(info.size))
+        self.binder.bind(
+            object.properties.index_column,
+            self.controls.tabfile.index_combo.setCurrentIndex,
+        )
+        self.binder.bind(
+            self.controls.tabfile.index_combo.currentIndexChanged,
+            object.properties.index_column,
+        )
+        self.binder.bind(
+            object.properties.sequence_column,
+            self.controls.tabfile.sequence_combo.setCurrentIndex,
+        )
+        self.binder.bind(
+            self.controls.tabfile.sequence_combo.currentIndexChanged,
+            object.properties.sequence_column,
+        )
+        self.binder.bind(
+            object.properties.allele_column,
+            self.controls.tabfile.allele_combo.setCurrentIndex,
+            lambda x: x if not self.is_phasing_optional else x + 1,
+        )
+        self.binder.bind(
+            self.controls.tabfile.allele_combo.currentIndexChanged,
+            object.properties.allele_column,
+            lambda x: x if not self.is_phasing_optional else x - 1,
+        )
+        self.binder.bind(
+            object.properties.info,
+            self.controls.tabfile.file_size.setText,
+            lambda info: human_readable_size(info.size),
+        )
 
         self.controls.tabfile.file_format.setText(object.info.format.label)
 
@@ -215,15 +247,34 @@ class PhasedSequenceSelector(SequenceSelector):
         self.controls.config.setVisible(True)
 
     def _bind_fasta(self, object):
-        self.binder.bind(object.properties.has_subsets, self.controls.fasta.parse_organism.setEnabled)
-        self.binder.bind(object.properties.parse_subset, self.controls.fasta.parse_organism.setChecked)
-        self.binder.bind(self.controls.fasta.parse_organism.toggled, object.properties.parse_subset)
-        self.binder.bind(object.properties.is_phased, self.controls.fasta.parse_alleles.setChecked)
-        self.binder.bind(self.controls.fasta.parse_alleles.toggled, object.properties.is_phased)
-        self.binder.bind(object.properties.subset_separator, self._update_fasta_parse_pattern)
-        self.binder.bind(object.properties.parse_subset, self._update_fasta_parse_pattern)
+        self.binder.bind(
+            object.properties.has_subsets, self.controls.fasta.parse_organism.setEnabled
+        )
+        self.binder.bind(
+            object.properties.parse_subset,
+            self.controls.fasta.parse_organism.setChecked,
+        )
+        self.binder.bind(
+            self.controls.fasta.parse_organism.toggled, object.properties.parse_subset
+        )
+        self.binder.bind(
+            object.properties.is_phased, self.controls.fasta.parse_alleles.setChecked
+        )
+        self.binder.bind(
+            self.controls.fasta.parse_alleles.toggled, object.properties.is_phased
+        )
+        self.binder.bind(
+            object.properties.subset_separator, self._update_fasta_parse_pattern
+        )
+        self.binder.bind(
+            object.properties.parse_subset, self._update_fasta_parse_pattern
+        )
         self.binder.bind(object.properties.is_phased, self._update_fasta_parse_pattern)
-        self.binder.bind(object.properties.info, self.controls.fasta.file_size.setText, lambda info: human_readable_size(info.size))
+        self.binder.bind(
+            object.properties.info,
+            self.controls.fasta.file_size.setText,
+            lambda info: human_readable_size(info.size),
+        )
 
         self.controls.fasta.file_format.setText(object.info.format.label)
 
@@ -239,7 +290,7 @@ class PhasedSequenceSelector(SequenceSelector):
         self.controls.tabfile.allele_combo.clear()
 
         if self.is_phasing_optional:
-            self.controls.tabfile.allele_combo.addItem('---')
+            self.controls.tabfile.allele_combo.addItem("---")
 
         for header in headers:
             self.controls.tabfile.index_combo.addItem(header)
@@ -250,12 +301,12 @@ class PhasedSequenceSelector(SequenceSelector):
         self.is_phasing_optional = value
 
     def _update_fasta_parse_pattern(self, *args, **kwargs):
-        pattern = 'individual'
+        pattern = "individual"
         if self.object.is_phased:
-            pattern += '_allele'
+            pattern += "_allele"
         if self.object.parse_subset:
-            separator = self.object.subset_separator or '/'
-            pattern += separator + 'organism'
+            separator = self.object.subset_separator or "/"
+            pattern += separator + "organism"
         text = f'Parse identifiers as "{pattern}"'
         self.controls.fasta.parse_pattern.setText(text)
 

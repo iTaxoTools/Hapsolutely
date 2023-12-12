@@ -22,14 +22,16 @@ from pathlib import Path
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.convphase_gui.task.view import (
-    InputSequencesSelector, OutputFormatCard, ParameterCard)
+    InputSequencesSelector,
+    OutputFormatCard,
+    ParameterCard,
+    WarningViewer,
+)
 from itaxotools.convphase_gui.task.view import View as _View
-from itaxotools.convphase_gui.task.view import WarningViewer
+from itaxotools.hapsolutely import app, resources
 from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.tasks.common.view import ProgressCard
 from itaxotools.taxi_gui.view.cards import Card
-
-from itaxotools.hapsolutely import app, resources
 
 from ..common.view import GraphicTitleCard
 from ..haplodemo.model import Model as VisualizeModel
@@ -50,22 +52,22 @@ class PhaseResultViewer(Card):
         label = QtWidgets.QLabel(label_text)
         label.setStyleSheet("""font-size: 16px;""")
 
-        check = QtWidgets.QLabel('\u2714')
+        check = QtWidgets.QLabel("\u2714")
         check.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
         font = check.font()
         font.setStyleStrategy(QtGui.QFont.PreferAntialias)
         font.setHintingPreference(QtGui.QFont.PreferNoHinting)
         check.setFont(font)
 
-        cross = QtWidgets.QLabel('\u2718')
+        cross = QtWidgets.QLabel("\u2718")
         cross.setStyleSheet("""font-size: 16px; color: Palette(Shadow);""")
         font = cross.font()
         font.setStyleStrategy(QtGui.QFont.PreferAntialias)
         font.setHintingPreference(QtGui.QFont.PreferNoHinting)
         cross.setFont(font)
 
-        visualize = QtWidgets.QPushButton('Visualize')
-        analyze = QtWidgets.QPushButton('Analyze')
+        visualize = QtWidgets.QPushButton("Visualize")
+        analyze = QtWidgets.QPushButton("Analyze")
 
         visualize.clicked.connect(self.handle_visualize)
         analyze.clicked.connect(self.handle_analyze)
@@ -73,7 +75,7 @@ class PhaseResultViewer(Card):
         self.add_pixmap_to_button(visualize, resources.task_pixmaps_small.nets.resource)
         self.add_pixmap_to_button(analyze, resources.task_pixmaps_small.stats.resource)
 
-        view = QtWidgets.QPushButton('Preview')
+        view = QtWidgets.QPushButton("Preview")
         view.clicked.connect(self.handleView)
 
         layout = QtWidgets.QHBoxLayout()
@@ -119,7 +121,8 @@ class PhaseResultViewer(Card):
         if model_index is None:
             model_index = global_app.model.items.add_task(klass())
         item = global_app.model.items.data(
-            model_index, role=global_app.model.items.ItemRole)
+            model_index, role=global_app.model.items.ItemRole
+        )
         input_sequences = item.object.input_sequences
         proxy = input_sequences.model
         source_index = app.phased_results.index
@@ -130,15 +133,16 @@ class PhaseResultViewer(Card):
 
 
 class View(_View):
-
     def draw(self):
         self.cards = AttrDict()
-        self.cards.title = GraphicTitleCard(title, long_description, pixmap_medium.resource, self)
-        self.cards.results = PhaseResultViewer('Phased sequences', self)
+        self.cards.title = GraphicTitleCard(
+            title, long_description, pixmap_medium.resource, self
+        )
+        self.cards.results = PhaseResultViewer("Phased sequences", self)
         self.cards.warnings = WarningViewer(self)
         self.cards.progress_matrix = ProgressCard(self)
         self.cards.progress_mcmc = ProgressCard(self)
-        self.cards.input_sequences = InputSequencesSelector('Input sequences', self)
+        self.cards.input_sequences = InputSequencesSelector("Input sequences", self)
         self.cards.output_format = OutputFormatCard(self)
         self.cards.parameters = ParameterCard(self)
 

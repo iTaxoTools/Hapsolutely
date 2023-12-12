@@ -18,9 +18,8 @@
 
 from itaxotools.convphase_gui.task import process
 from itaxotools.convphase_gui.task.model import Model as _Model
-from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
-
 from itaxotools.hapsolutely import app
+from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 
 from ..common.model import PhasedFileInfoSubtaskModel
 from . import title
@@ -39,7 +38,9 @@ class Model(_Model):
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
         self.binder.bind(self.subtask_sequences.done, self.input_sequences.add_info)
 
-        self.binder.bind(self.input_sequences.properties.object, self.output_options.set_input_object)
+        self.binder.bind(
+            self.input_sequences.properties.object, self.output_options.set_input_object
+        )
         self.binder.bind(self.input_sequences.notification, self.notification)
 
         self.binder.bind(self.query, self.on_query)

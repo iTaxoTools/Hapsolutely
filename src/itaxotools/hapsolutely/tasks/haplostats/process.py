@@ -27,21 +27,17 @@ from .types import Results
 
 def initialize():
     import itaxotools
-    itaxotools.progress_handler('Initializing...')
+
+    itaxotools.progress_handler("Initializing...")
     from . import work  # noqa
 
 
 def execute(
-
     work_dir: Path,
-
     input_sequences: AttrDict,
     input_species: AttrDict,
-
     bulk_mode: bool,
-
 ) -> tuple[Path, float]:
-
     if not bulk_mode:
         return execute_single(
             work_dir=work_dir,
@@ -57,29 +53,28 @@ def execute(
 
 
 def execute_single(
-
     work_dir: Path,
-
     input_sequences: AttrDict,
     input_species: AttrDict,
-
 ) -> tuple[Path, float]:
-
+    from itaxotools import abort, get_feedback
     from itaxotools.taxi_gui.tasks.common.process import progress_handler
 
-    from itaxotools import abort, get_feedback
-
     from ..common.work import (
-        get_matched_partition_from_optional_model, scan_sequence_ambiguity)
+        get_matched_partition_from_optional_model,
+        scan_sequence_ambiguity,
+    )
     from .work import (
-        get_sequences_from_phased_model, scan_sequence_alleles,
-        write_stats_to_path)
+        get_sequences_from_phased_model,
+        scan_sequence_alleles,
+        write_stats_to_path,
+    )
 
-    haplotype_stats = work_dir / 'out'
+    haplotype_stats = work_dir / "out"
 
     ts = perf_counter()
 
-    progress_handler('Computing statistics', 0, 0)
+    progress_handler("Computing statistics", 0, 0)
 
     is_phased = input_sequences.is_phased
     is_partitioned = input_species is not None
@@ -89,7 +84,9 @@ def execute_single(
 
     allele_warns = scan_sequence_alleles(sequences) if is_phased else []
 
-    partition, partition_warns = get_matched_partition_from_optional_model(input_species, sequences)
+    partition, partition_warns = get_matched_partition_from_optional_model(
+        input_species, sequences
+    )
 
     warns = ambiguity_warns + allele_warns + partition_warns
 
@@ -102,10 +99,12 @@ def execute_single(
 
     tx = perf_counter()
 
-    partition_name = input_species.partition_name if is_partitioned else 'unknown'
-    write_stats_to_path(sequences, is_phased, is_partitioned, partition, partition_name, haplotype_stats)
+    partition_name = input_species.partition_name if is_partitioned else "unknown"
+    write_stats_to_path(
+        sequences, is_phased, is_partitioned, partition, partition_name, haplotype_stats
+    )
 
-    progress_handler('Computing statistics', 1, 1)
+    progress_handler("Computing statistics", 1, 1)
 
     tf = perf_counter()
 
@@ -113,31 +112,32 @@ def execute_single(
 
 
 def execute_bulk(
-
     work_dir: Path,
-
     input_sequences: AttrDict,
     input_species: AttrDict,
-
 ) -> tuple[Path, float]:
-
-    from itaxotools.taxi_gui.tasks.common.process import (
-        partition_from_model, progress_handler)
-
     from itaxotools import abort, get_feedback
+    from itaxotools.taxi_gui.tasks.common.process import (
+        partition_from_model,
+        progress_handler,
+    )
 
     from ..common.work import (
-        get_all_possible_partition_models, match_partition_to_phased_sequences,
-        scan_sequence_ambiguity)
+        get_all_possible_partition_models,
+        match_partition_to_phased_sequences,
+        scan_sequence_ambiguity,
+    )
     from .work import (
-        get_sequences_from_phased_model, scan_sequence_alleles,
-        write_bulk_stats_to_path)
+        get_sequences_from_phased_model,
+        scan_sequence_alleles,
+        write_bulk_stats_to_path,
+    )
 
-    haplotype_stats = work_dir / 'out'
+    haplotype_stats = work_dir / "out"
 
     ts = perf_counter()
 
-    progress_handler('Computing statistics', 0, 0)
+    progress_handler("Computing statistics", 0, 0)
 
     is_phased = input_sequences.is_phased
     names = input_species.info.spartitions
@@ -149,9 +149,12 @@ def execute_bulk(
 
     models = get_all_possible_partition_models(input_species)
     partitions = (partition_from_model(model) for model in models)
-    partitions, partition_warns = zip(*(
-        match_partition_to_phased_sequences(partition, sequences)
-        for partition in partitions))
+    partitions, partition_warns = zip(
+        *(
+            match_partition_to_phased_sequences(partition, sequences)
+            for partition in partitions
+        )
+    )
 
     partition_warns = list(set(chain(*partition_warns)))
 
@@ -168,7 +171,7 @@ def execute_bulk(
 
     write_bulk_stats_to_path(sequences, is_phased, partitions, names, haplotype_stats)
 
-    progress_handler('Computing statistics', 1, 1)
+    progress_handler("Computing statistics", 1, 1)
 
     tf = perf_counter()
 

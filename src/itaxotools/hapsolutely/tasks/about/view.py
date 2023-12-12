@@ -20,10 +20,9 @@ from PySide6 import QtCore, QtGui, QtWidgets
 
 from itaxotools.common.utility import AttrDict
 from itaxotools.common.widgets import VLineSeparator
+from itaxotools.hapsolutely import resources
 from itaxotools.taxi_gui.view.cards import Card
 from itaxotools.taxi_gui.view.tasks import ScrollTaskView
-
-from itaxotools.hapsolutely import resources
 
 from . import homepage_url, itaxotools_url, pixmap_medium, title
 
@@ -35,8 +34,8 @@ class HtmlLabel(QtWidgets.QLabel):
         self.setTextFormat(QtCore.Qt.RichText)
         self.setOpenExternalLinks(True)
         self.setTextInteractionFlags(
-            QtCore.Qt.TextSelectableByMouse |
-            QtCore.Qt.LinksAccessibleByMouse)
+            QtCore.Qt.TextSelectableByMouse | QtCore.Qt.LinksAccessibleByMouse
+        )
         self.setWordWrap(True)
 
         # fix italics kerning
@@ -60,8 +59,8 @@ class AboutTitleCard(Card):
 
         separator = VLineSeparator(1)
 
-        homepage = QtWidgets.QPushButton('Homepage')
-        itaxotools = QtWidgets.QPushButton('iTaxoTools')
+        homepage = QtWidgets.QPushButton("Homepage")
+        itaxotools = QtWidgets.QPushButton("iTaxoTools")
 
         label_pixmap = QtWidgets.QLabel()
         label_pixmap.setPixmap(pixmap)
@@ -131,7 +130,6 @@ class DocumentCard(Card):
 
 
 class View(ScrollTaskView):
-
     def __init__(self, parent):
         super().__init__(parent)
         self.draw_cards()
@@ -139,18 +137,14 @@ class View(ScrollTaskView):
     def draw_cards(self):
         self.cards = AttrDict()
         self.cards.title = AboutTitleCard(
-            title,
-            resources.documents.about.resource,
-            pixmap_medium.resource,
-            self)
+            title, resources.documents.about.resource, pixmap_medium.resource, self
+        )
         self.cards.phase = DocumentCard(
-            'Sequence phasing',
-            resources.documents.phase.resource,
-            self)
+            "Sequence phasing", resources.documents.phase.resource, self
+        )
         self.cards.nets = DocumentCard(
-            'Network visualization',
-            resources.documents.nets.resource,
-            self)
+            "Network visualization", resources.documents.nets.resource, self
+        )
 
         layout = QtWidgets.QVBoxLayout()
         for card in self.cards:

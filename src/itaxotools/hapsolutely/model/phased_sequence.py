@@ -25,7 +25,7 @@ from itaxotools.common.utility import AttrDict, DecoratorDict
 from itaxotools.taxi_gui.model.common import Object, Property
 from itaxotools.taxi_gui.types import FileInfo
 
-FileInfoType = TypeVar('FileInfoType', bound=FileInfo)
+FileInfoType = TypeVar("FileInfoType", bound=FileInfo)
 
 models = DecoratorDict[FileInfo, Object]()
 
@@ -40,7 +40,7 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
         self.info = info
         self.is_phasing_optional = is_phasing_optional
         self.is_phased = is_phased
-        self.name = f'Phased sequences from {info.path.name}'
+        self.name = f"Phased sequences from {info.path.name}"
 
     def __repr__(self):
         return f'{".".join(self._get_name_chain())}({repr(self.name)})'
@@ -52,16 +52,18 @@ class PhasedSequenceModel(Object, Generic[FileInfoType]):
         return AttrDict({p.key: p.value for p in self.properties})
 
     @classmethod
-    def from_file_info(cls, info: FileInfoType, is_phased=True, is_phasing_optional=True) -> PhasedSequenceModel[FileInfoType]:
-        if not type(info) in models:
-            raise Exception(f'No suitable {cls.__name__} for info: {info}')
+    def from_file_info(
+        cls, info: FileInfoType, is_phased=True, is_phasing_optional=True
+    ) -> PhasedSequenceModel[FileInfoType]:
+        if type(info) not in models:
+            raise Exception(f"No suitable {cls.__name__} for info: {info}")
         return models[type(info)](info, is_phased, is_phasing_optional)
 
 
 @models(FileInfo.Fasta)
 class PhasedFasta(PhasedSequenceModel):
     has_subsets = Property(bool, False)
-    subset_separator = Property(str, '|')
+    subset_separator = Property(str, "|")
     parse_subset = Property(bool, False)
 
     def __init__(self, info: FileInfo.Fasta, *args, **kwargs):
@@ -81,10 +83,14 @@ class PhasedTabfile(PhasedSequenceModel):
         super().__init__(info, *args, **kwargs)
         self.index_column = self._header_get(info.headers, info.header_individuals)
         self.sequence_column = self._header_get(info.headers, info.header_sequences)
-        self.allele_column = self._header_get(info.headers, 'allele')
+        self.allele_column = self._header_get(info.headers, "allele")
 
         self.binder = Binder()
-        self.binder.bind(self.properties.allele_column, self.properties.is_phased, lambda column: column >= 0)
+        self.binder.bind(
+            self.properties.allele_column,
+            self.properties.is_phased,
+            lambda column: column >= 0,
+        )
 
     @staticmethod
     def _header_get(headers: list[str], field: str):

@@ -24,16 +24,14 @@ from pathlib import Path
 
 from itaxotools.common.bindings import Binder
 from itaxotools.common.utility import override
+from itaxotools.hapsolutely import app
 from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.model.common import ItemModel
 from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel
-from itaxotools.taxi_gui.tasks.common.model import (
-    DataFileProtocol, ImportedInputModel)
+from itaxotools.taxi_gui.tasks.common.model import DataFileProtocol, ImportedInputModel
 from itaxotools.taxi_gui.threading import ReportDone
 from itaxotools.taxi_gui.types import FileInfo, Notification
-
-from itaxotools.hapsolutely import app
 
 from .work import get_phased_file_info
 
@@ -43,7 +41,7 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
 
     def __init__(self, model=None, root=None):
         super().__init__()
-        self.unselected = '---'
+        self.unselected = "---"
         self.root = None
 
         self.phased_index = QtCore.QModelIndex()
@@ -51,7 +49,9 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
         self.extra_rows = 1
 
         self.binder = Binder()
-        self.binder.bind(app.phased_results.properties.index, self.update_phased_results)
+        self.binder.bind(
+            app.phased_results.properties.index, self.update_phased_results
+        )
 
         if model and root:
             self.setSourceModel(model, root)
@@ -74,7 +74,9 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
         return self.index(row, 0)
 
     def sourceDataChanged(self, topLeft, bottomRight):
-        self.dataChanged.emit(self.mapFromSource(topLeft), self.mapFromSource(bottomRight))
+        self.dataChanged.emit(
+            self.mapFromSource(topLeft), self.mapFromSource(bottomRight)
+        )
 
     def add_file(self, file: InputFileModel):
         index = self.source.add_file(file, focus=False)
@@ -110,7 +112,9 @@ class PhasedItemProxyModel(QtCore.QAbstractProxyModel):
         return source.createIndex(item.row, 0, item)
 
     @override
-    def index(self, row: int, column: int, parent=QtCore.QModelIndex()) -> QtCore.QModelIndex:
+    def index(
+        self, row: int, column: int, parent=QtCore.QModelIndex()
+    ) -> QtCore.QModelIndex:
         if parent.isValid() or column != 0:
             return QtCore.QModelIndex()
         if row < 0 or row > len(self.root.children) + self.extra_rows - 1:
@@ -173,7 +177,7 @@ class PhasedInputModel(ImportedInputModel):
         try:
             object = self._cast_from_index_phased(index)
         except Exception:
-            self.notification.emit(Notification.Warn('Unexpected file format.'))
+            self.notification.emit(Notification.Warn("Unexpected file format."))
             self.properties.index.update()
             self.properties.object.update()
             self.properties.format.update()
@@ -182,7 +186,9 @@ class PhasedInputModel(ImportedInputModel):
         self._set_object(object)
         self.index = index
 
-    def _cast_from_index_phased(self, index: QtCore.QModelIndex) -> DataFileProtocol | None:
+    def _cast_from_index_phased(
+        self, index: QtCore.QModelIndex
+    ) -> DataFileProtocol | None:
         if not index:
             return
         item = self.model.data(index, PhasedItemProxyModel.ItemRole)
@@ -191,11 +197,12 @@ class PhasedInputModel(ImportedInputModel):
         info = item.object.info
         is_phased = self.phased_table[info.path]
         return self.cast_type.from_file_info(
-            info, *self.cast_args, is_phased=is_phased, **self.cast_kwargs)
+            info, *self.cast_args, is_phased=is_phased, **self.cast_kwargs
+        )
 
 
 class PhasedFileInfoSubtaskModel(SubtaskModel):
-    task_name = 'PhasedFileInfoSubtask'
+    task_name = "PhasedFileInfoSubtask"
 
     done = QtCore.Signal(FileInfo)
 

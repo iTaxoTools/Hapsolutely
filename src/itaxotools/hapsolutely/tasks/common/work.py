@@ -33,7 +33,7 @@ from .types import PhasedFileInfo
 
 def _guess_if_sequence_ids_include_alleles(sequences: Sequences) -> bool:
     for sequence in sequences:
-        *segments, allele = sequence.id.split('_')
+        *segments, allele = sequence.id.split("_")
         if len(segments) < 1:
             return False
         if len(allele) > 1:
@@ -47,7 +47,7 @@ def get_phased_file_info(path: Path) -> PhasedFileInfo:
 
     if info.format == FileFormat.Tabfile:
         headers = FileHandler.Tabfile(path, has_headers=True).headers
-        is_phased = bool('allele' in headers)
+        is_phased = bool("allele" in headers)
 
     elif info.format == FileFormat.Fasta:
         sequences = Sequences.fromPath(
@@ -55,7 +55,7 @@ def get_phased_file_info(path: Path) -> PhasedFileInfo:
             SequenceHandler.Fasta,
             parse_organism=info.has_subsets,
             organism_separator=info.subset_separator,
-            organism_tag='organism',
+            organism_tag="organism",
         )
         is_phased = _guess_if_sequence_ids_include_alleles(sequences)
 
@@ -66,15 +66,17 @@ def scan_sequence_ambiguity(sequences: Sequences) -> list[str]:
     ambiguity = set()
     for sequence in sequences:
         for character in sequence.seq:
-            if character.upper() not in 'ACGT':
+            if character.upper() not in "ACGT":
                 ambiguity.add(character)
     if ambiguity:
-        codes = ''.join(c for c in ambiguity)
-        return [f'Ambiguity codes detected: {repr(codes)}']
+        codes = "".join(c for c in ambiguity)
+        return [f"Ambiguity codes detected: {repr(codes)}"]
     return []
 
 
-def match_partition_to_phased_sequences(partition: Partition, sequences: Sequences, allele_header='allele') -> tuple[Partition, list[str]]:
+def match_partition_to_phased_sequences(
+    partition: Partition, sequences: Sequences, allele_header="allele"
+) -> tuple[Partition, list[str]]:
     """
     It is possible that the allele markers are suffixed to the
     individuals name in the partition but not the sequences, or vice versa.
@@ -93,7 +95,6 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
         return True
 
     for sequence in sequences:
-
         if has_subset(sequence.id, partition):
             matched[sequence.id] = partition[sequence.id]
             continue
@@ -102,38 +103,40 @@ def match_partition_to_phased_sequences(partition: Partition, sequences: Sequenc
             matched[sequence.id] = partition[sequence.id[:-1]]
             continue
 
-        segments = sequence.id.split('_')[:-1]
-        stripped_id = '_'.join(segments)
+        segments = sequence.id.split("_")[:-1]
+        stripped_id = "_".join(segments)
         if has_subset(stripped_id, partition):
             matched[sequence.id] = partition[stripped_id]
             continue
 
         if allele_header in sequence.extras:
             allele = sequence.extras[allele_header]
-            suffixed_id = sequence.id + '_' + allele
+            suffixed_id = sequence.id + "_" + allele
             if has_subset(suffixed_id, partition):
                 matched[sequence.id] = partition[suffixed_id]
                 continue
 
-        matched[sequence.id] = 'unknown'
+        matched[sequence.id] = "unknown"
         unknowns.add(sequence.id)
 
     if unknowns:
         unknowns = list(unknowns)
-        unknowns_str = ', '.join(repr(id) for id in unknowns[:3])
+        unknowns_str = ", ".join(repr(id) for id in unknowns[:3])
         if len(unknowns) > 3:
-            unknowns_str += f' and {len(unknowns) - 3} more'
-        s = 's' if len(unknowns) > 1 else ''
-        warns = [f'Could not match individual{s} to partition: {unknowns_str}']
+            unknowns_str += f" and {len(unknowns) - 3} more"
+        s = "s" if len(unknowns) > 1 else ""
+        warns = [f"Could not match individual{s} to partition: {unknowns_str}"]
     else:
         warns = []
 
     return matched, warns
 
 
-def get_matched_partition_from_optional_model(input_species: AttrDict | None, sequences: Sequences) -> tuple[Partition, list[str]]:
+def get_matched_partition_from_optional_model(
+    input_species: AttrDict | None, sequences: Sequences
+) -> tuple[Partition, list[str]]:
     if input_species is None:
-        partition = Partition({sequence.id: 'unknown' for sequence in sequences})
+        partition = Partition({sequence.id: "unknown" for sequence in sequences})
         return partition, []
     partition = partition_from_model(input_species)
     return match_partition_to_phased_sequences(partition, sequences)
@@ -152,17 +155,23 @@ def _get_sequence_pairs(sequences: Sequences):
 
 def _get_phased_fasta_warns(sequences: Sequences) -> list[str]:
     for sequence in sequences:
-        if not sequence.id[-2] == '_':
-            return [f'Sequence identifier(s) not ending with allele: {repr(sequence.id)} instead of {repr(sequence.id + "_a")}']
+        if not sequence.id[-2] == "_":
+            return [
+                f'Sequence identifier(s) not ending with allele: {repr(sequence.id)} instead of {repr(sequence.id + "_a")}'
+            ]
 
     for a, b in _get_sequence_pairs(sequences):
         if a.id[:-2] != b.id[:-2]:
-            return [f'Mismatched pair identifiers for phased input: {repr(a.id)}, {repr(b.id)}']
+            return [
+                f"Mismatched pair identifiers for phased input: {repr(a.id)}, {repr(b.id)}"
+            ]
 
     return []
 
 
-def check_is_input_phased(input: AttrDict, sequences: Sequences) -> tuple[bool, list[str]]:
+def check_is_input_phased(
+    input: AttrDict, sequences: Sequences
+) -> tuple[bool, list[str]]:
     if input.info.format == FileFormat.Fasta:
         if input.is_phased:
             warns = _get_phased_fasta_warns(sequences)
