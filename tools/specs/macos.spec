@@ -3,7 +3,7 @@
 from os import environ
 
 NAME = environ.get('APP_NAME', None)
-ICON = environ.get('APP_ICON', None)
+ICON = environ.get('APP_ICON_ICNS', None)
 SCRIPT = environ.get('APP_SCRIPT', None)
 IDENTIFIER = environ.get('APP_IDENTIFIER', None)
 ENTITLEMENTS = environ.get('APP_ENTITLEMENTS', None)

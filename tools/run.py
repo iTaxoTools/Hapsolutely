@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Launch the Taxi2 GUI"""
+"""Launch the Hapsolutely GUI"""
 
 import multiprocessing
 

@@ -1,9 +1,17 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+from os import environ
+
+NAME = environ.get('APP_NAME', None)
+FILENAME = environ.get('APP_FILENAME', None)
+ICON = environ.get('APP_ICON_ICO', None)
+SCRIPT = environ.get('APP_SCRIPT', None)
+
+
 block_cipher = None
 
 # Could also use pyinstaller's Entrypoint()
-a = Analysis(['hapsolutely.py'],
+a = Analysis([SCRIPT],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -24,7 +32,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='Hapsolutely',
+          name=FILENAME,
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -32,4 +40,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False,
-          icon='../src/itaxotools/hapsolutely/logos/hapsolutely.ico' )
+          icon=ICON)

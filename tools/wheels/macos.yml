@@ -1,0 +1,57 @@
+- egg: itaxotools-calculate-distances
+  universal2_url: https://files.pythonhosted.org/packages/0b/52/a5c727db5f4f907a53679aa6ed36a8b2bb9c74708674cdc53309f3990979/itaxotools_calculate_distances-0.1.1-cp37-abi3-macosx_10_12_x86_64.macosx_11_0_arm64.macosx_10_12_universal2.whl
+  universal2_sha256: 16e74488c7a36e52a0fd81962ac4db71ce3a784a58375b3ad95d4d2cd39f3fae
+
+- egg: numpy
+  arm64_url: https://files.pythonhosted.org/packages/2a/17/1fdc154e75d24d8c20c42b71bae1b5cf752453f0fc3a2504bbb810293dd1/numpy-1.26.2-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 5d5244aabd6ed7f312268b9247be47343a654ebea52a60f002dc70c769048e75
+  x86_64_url: https://files.pythonhosted.org/packages/b1/97/6694e0855b11be0fd8598d484c09edd876ec738a8741025dee072f026c33/numpy-1.26.2-cp312-cp312-macosx_10_9_x86_64.whl
+  x86_64_sha256: a4cd6ed4a339c21f1d1b0fdf13426cb3b284555c27ac2f156dfdaaa7e16bfab0
+
+- egg: pandas
+  arm64_url: https://files.pythonhosted.org/packages/0b/e0/8d97c7ecd73624f4cd5755578990b3cfbc6bbe350b8e017ede3580173a6f/pandas-2.1.4-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 8a706cfe7955c4ca59af8c7a0517370eafbd98593155b48f10f9811da440248b
+  x86_64_url: https://files.pythonhosted.org/packages/f5/16/64109832ed426d5c3e9f6b791e64a2b78d785823657640afb8f416ed1dc9/pandas-2.1.4-cp312-cp312-macosx_10_9_x86_64.whl
+  x86_64_sha256: 482d5076e1791777e1571f2e2d789e940dedd927325cc3cb6d0800c6304082f6
+
+- egg: PyYAML
+  arm64_url: https://files.pythonhosted.org/packages/84/02/404de95ced348b73dd84f70e15a41843d817ff8c1744516bf78358f2ffd2/PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 40df9b996c2b73138957fe23a16a4f0ba614f4c0efce1e9406a184b6d07fa3a9
+  x86_64_url: https://files.pythonhosted.org/packages/bc/06/1b305bf6aa704343be85444c9d011f626c763abb40c0edc1cad13bfd7f86/PyYAML-6.0.1-cp312-cp312-macosx_10_9_x86_64.whl
+  x86_64_sha256: 855fb52b0dc35af121542a76b9a84f8d1cd886ea97c84703eaa6d88e37a2ad28
+
+- egg: Pillow
+  arm64_url: https://files.pythonhosted.org/packages/3d/6f/6f716f16bcb9bf39f54b9d2d993f535a0ee42cc0fec973c80839b0720ca2/Pillow-10.1.0-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 00f438bb841382b15d7deb9a05cc946ee0f2c352653c7aa659e75e592f6fa17d
+  x86_64_url: https://files.pythonhosted.org/packages/40/80/9df9bb85b3209d62b85064c956a819e9e06279c6accf7e0f6a89ff4d9d6d/Pillow-10.1.0-cp312-cp312-macosx_10_10_x86_64.whl
+  x86_64_sha256: a89b8312d51715b510a4fe9fc13686283f376cfd5abca8cd1c65e4c76e21081b
+
+- egg: matplotlib
+  arm64_url: https://files.pythonhosted.org/packages/9a/b0/dd2b60f2dd90fbc21d1d3129c36a453c322d7995d5e3589f5b3c59ee528d/matplotlib-3.8.2-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 091275d18d942cf1ee9609c830a1bc36610607d8223b1b981c37d5c9fc3e46a4
+  x86_64_url: https://files.pythonhosted.org/packages/e4/1b/864d28d5a72d586ac137f4ca54d5afc8b869720e30d508dbd9adcce4d231/matplotlib-3.8.2-cp312-cp312-macosx_10_12_x86_64.whl
+  x86_64_sha256: 4c318c1e95e2f5926fba326f68177dee364aa791d6df022ceb91b8221bd0a627
+
+- egg: contourpy
+  arm64_url: https://files.pythonhosted.org/packages/f3/9e/8fb3f53144269d3fecdd8786d3a4686eeff55b9b35a3c0772a3f62f71e36/contourpy-1.2.0-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 9e6c93b5b2dbcedad20a2f18ec22cae47da0d705d454308063421a3b290d9ea4
+  x86_64_url: https://files.pythonhosted.org/packages/4f/03/839da46999173226bead08794cbd7b4d37c9e6b02686ca74c93556b43258/contourpy-1.2.0-cp312-cp312-macosx_10_9_x86_64.whl
+  x86_64_sha256: 575bcaf957a25d1194903a10bc9f316c136c19f24e0985a2b9b5608bdf5dbfe0
+
+- egg: psutil
+  arm64_url: https://files.pythonhosted.org/packages/9e/cb/e4b83c27eea66bc255effc967053f6fce7c14906dd9b43a348ead9f0cfea/psutil-5.9.6-cp38-abi3-macosx_11_0_arm64.whl
+  arm64_sha256: daecbcbd29b289aac14ece28eca6a3e60aa361754cf6da3dfb20d4d32b6c7f57
+  x86_64_url: https://files.pythonhosted.org/packages/f8/36/35b12441ba1bc6684c9215191f955415196ca57ca85d88e313bec7f2cf8e/psutil-5.9.6-cp36-abi3-macosx_10_9_x86_64.whl
+  x86_64_sha256: c69596f9fc2f8acd574a12d5f8b7b1ba3765a641ea5d60fb4736bf3c08a8214a
+
+- egg: kiwisolver
+  universal2_url: https://files.pythonhosted.org/packages/f3/7a/debbce859be1a2711eb8437818107137192007b88d17b5cfdb556f457b42/kiwisolver-1.4.5-cp312-cp312-macosx_10_9_universal2.whl
+  universal2_sha256: 32d5cf40c4f7c7b3ca500f8985eb3fb3a7dfc023215e876f207956b5ea26632a
+
+- egg: fonttools
+  universal2_url: https://files.pythonhosted.org/packages/48/a6/59dc64f3fabc9267de712256aa5337edb3aa96e245192f3d16599adaa015/fonttools-4.46.0-cp312-cp312-macosx_10_9_universal2.whl
+  universal2_sha256: 7b460720ce81773da1a3e7cc964c48e1e11942b280619582a897fa0117b56a62
+
+- egg: biopython
+  source_url: https://files.pythonhosted.org/packages/ad/a4/237edd5f5e5b68d9543c79bcd695ef881e6317fbd0eae1b1e53e694f9d54/biopython-1.81.tar.gz
+  source_sha256: 2cf38112b6d8415ad39d6a611988cd11fb5f33eb09346666a87263beba9614e0
