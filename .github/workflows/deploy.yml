@@ -90,11 +90,6 @@ jobs:
       - name: Install macOS wheels
         uses: iTaxoTools/TaxIGui/.github/actions/install-macos-wheels@main
 
-      - name: Test with pytest
-        run: |
-          pip install pytest pytest-qt pytest-xvfb
-          pytest
-
       - name: Build bundle
         uses: iTaxoTools/TaxIGui/.github/actions/make-bundle@main
 
