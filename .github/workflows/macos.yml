@@ -1,0 +1,44 @@
+name: macOS
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  ARTIFACT_BUNDLE: itaxotools-hapsolutely-macos
+
+
+jobs:
+
+  build-bundle:
+    name: Build macOS bundle
+    runs-on: macos-11
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.x
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements-live.txt
+          pip install ".[dev]"
+
+      - name: Install macOS wheels
+        uses: iTaxoTools/TaxIGui/.github/actions/install-macos-wheels@main
+
+      - name: Make bundle
+        uses: iTaxoTools/TaxIGui/.github/actions/make-bundle@main
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.ARTIFACT_BUNDLE }}
+          path: dist/*.zip
