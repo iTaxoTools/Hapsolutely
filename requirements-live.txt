@@ -1,0 +1,8 @@
+git+https://github.com/iTaxoTools/itt-common.git
+git+https://github.com/iTaxoTools/SpartParser.git
+git+https://github.com/iTaxoTools/Fitchi.git
+git+https://github.com/iTaxoTools/TaxI2.git
+git+https://github.com/iTaxoTools/haplostats.git
+git+https://github.com/iTaxoTools/haplodemo.git
+git+https://github.com/iTaxoTools/TaxIGui.git
+git+https://github.com/iTaxoTools/ConvPhaseGui.git
