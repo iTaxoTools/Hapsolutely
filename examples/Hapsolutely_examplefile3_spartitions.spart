@@ -9,7 +9,7 @@ N_subsets = 17 : ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,? / 12 : 5.84e-01,?,7.79e-01,6.
 [6.0 / 4.0 / 3.0 / 3.0 / 1.5 / 4.0 /  6.5 ]
 [WARNING: The sample names below may have been changed to fit SPART specification (only alphanumeric characters and _ )]
 [Subset scores are p-values; see Puillandre et al. 2021 for details of the algorithm]
-Individual_assignment = 
+Individual_assignment =
 Aampobofofo2 : 1 / 1 / 1 / 1 / 1 / 1 / 1
 Aamtsiranana1 : 1 / 1 / 1 / 1 / 1 / 1 / 1
 Aamtsiranana2 : 1 / 1 / 1 / 1 / 1 / 1 / 1
@@ -166,5 +166,5 @@ baeuandasibe1 : 17 / 12 / 8 / 7 / 6 / 4 / 2
 baeuandasibe2 : 17 / 12 / 8 / 7 / 6 / 4 / 2
 baeuandasibe3 : 17 / 12 / 8 / 7 / 6 / 4 / 2;
 end;
-Subset_score_type = p-value / p-value / p-value / p-value / p-value / p-value / p-value ; 
-Spartition_score_type = Asap-Score / Asap-Score / Asap-Score / Asap-Score / Asap-Score / Asap-Score /  Asap-Score ; 
+Subset_score_type = p-value / p-value / p-value / p-value / p-value / p-value / p-value ;
+Spartition_score_type = Asap-Score / Asap-Score / Asap-Score / Asap-Score / Asap-Score / Asap-Score /  Asap-Score ;
