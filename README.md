@@ -1,46 +1,51 @@
 # Hapsolutely
 
+[![PyPI - Version](https://img.shields.io/pypi/v/itaxotools-hapsolutely?color=tomato)](
+    https://pypi.org/project/itaxotools-hapsolutely)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/itaxotools-hapsolutely)](
+    https://pypi.org/project/itaxotools-hapsolutely)
+[![GitHub - Tests](https://img.shields.io/github/actions/workflow/status/iTaxoTools/Hapsolutely/test.yml?label=tests)](
+    https://github.com/iTaxoTools/Hapsolutely/actions/workflows/test.yml)
+[![GitHub - Windows](https://img.shields.io/github/actions/workflow/status/iTaxoTools/Hapsolutely/windows.yml?label=windows)](
+    https://github.com/iTaxoTools/Hapsolutely/actions/workflows/windows.yml)
+[![GitHub - macOS](https://img.shields.io/github/actions/workflow/status/iTaxoTools/Hapsolutely/macos.yml?label=macos)](
+    https://github.com/iTaxoTools/Hapsolutely/actions/workflows/macos.yml)
+
 Reconstruct haplotypes and produce genealogy graphs from population data.
 
 - **Phase sequences**: Reconstruct haplotypes from sequence data
 - **Haplotype visualization**: Generate haplotype networks, genealogies and haplowebs
 - **Haplotype statistics**: Detect fields of recombinations and subset overlap
 
-![Screenshot](images/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/iTaxoTools/Hapsolutely/v0.1.0/images/screenshot.png)
 
 Hapsolutely is a comprehensive program that integrates [ConvPhase](https://github.com/iTaxoTools/ConvPhaseGui), [haplodemo](https://github.com/iTaxoTools/haplodemo), [popart_networks](https://github.com/iTaxoTools/popart_network) and [haplostats](https://github.com/iTaxoTools/haplostats).
 
 Input files can be in TSV, FASTA or SPART/XML format.
 
-## Windows and macOS Executables
+## Executables
 
-Download and run the standalone executables without installing Python.</br>
-[See the latest release here.](https://github.com/iTaxoTools/Hapsolutely/releases/latest)
+Download and run the standalone executables without installing Python.
+
+[![Release](https://img.shields.io/badge/release-0.2.0-red?style=for-the-badge)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.0)
+[![Windows](https://img.shields.io/badge/Windows-blue.svg?style=for-the-badge&logo=windows)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.0/Hapsolutely-0.2.0-windows-x64.exe)
+[![MacOS](https://img.shields.io/badge/macOS-slategray.svg?style=for-the-badge&logo=apple)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.0/Hapsolutely-0.2.0-macos-universal2.dmg)
+
+## Installation
+
+Hapsolutely is available on PyPI. You can install it through `pip`:
+
+```
+pip install itaxotools-hapsolutely
+hapsolutely
+```
 
 ## Usage
 
 Please refer to the [Hapsolutely manual](https://itaxotools.org/Hapsolutely_manual_07Nov2023.pdf) for information on how to use the program.
-
-
-## Installing from source
-
-Clone and install the latest version (requires Python 3.10.2 or later):
-```
-git clone https://github.com/iTaxoTools/Hapsolutely.git
-cd Hapsolutely
-pip install . -f packages.html
-hapsolutely
-```
-
-If you are also compiling *ConvPhase*, you will need all of its [dependencies](https://github.com/iTaxoTools/ConvPhase#dependencies).
-
-### Packaging
-
-It is recommended to use PyInstaller from within a virtual environment:
-```
-pip install ".[dev]" -f packages.html
-pyinstaller scripts/hapsolutely.spec
-```
 
 ## Citations
 
@@ -71,4 +76,3 @@ Networks are generated using either of *Fitchi* or *popart_networks*:
 > *Cock, P.J. et al., 2009. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics, 25(11), pp.1422-1423.*
 > <br><br>
 > *Hagberg, A., Swart, P. & S Chult, D., 2008. Exploring network structure, dynamics, and function using NetworkX.*
-
