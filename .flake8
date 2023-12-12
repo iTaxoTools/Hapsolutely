@@ -1,7 +1,0 @@
-[flake8]
-ignore = E251, E501, W503, W504
-exclude =
-    build
-    dist
-per-file-ignores =
-    src/itaxotools/hapsolutely/gui/**/__init__.py: F401, F403

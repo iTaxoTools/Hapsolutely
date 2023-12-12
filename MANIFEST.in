@@ -1,7 +1,7 @@
-include pyproject.toml
+# Include project info
 include README.md
 include LICENSE.txt
-include setup.py
+include pyproject.toml
 
 # Include data files
 include src/itaxotools/hapsolutely/gui/logos/*
