@@ -24,7 +24,14 @@ from io import StringIO
 from Bio.Align import MultipleSeqAlignment
 from Bio.Phylo import NewickIO
 from Bio.Phylo.BaseTree import Clade
-from Bio.Phylo.TreeConstruction import DistanceCalculator, DistanceTreeConstructor
+from Bio.Phylo.BaseTree import Tree as BioTree
+from Bio.Phylo.TreeConstruction import (
+    DistanceCalculator,
+    DistanceTreeConstructor,
+    NNITreeSearcher,
+    ParsimonyScorer,
+    ParsimonyTreeConstructor,
+)
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 
@@ -84,11 +91,7 @@ def _format_newick_for_fitchi(newick_string: str) -> str:
     return newick_string
 
 
-def make_tree_nj(sequences: Sequences) -> str:
-    align = MultipleSeqAlignment([SeqRecord(Seq(x.seq), id=x.id) for x in sequences])
-    calculator = DistanceCalculator("identity")
-    constructor = DistanceTreeConstructor(calculator, "nj")
-    tree = constructor.build_tree(align)
+def _tree_to_string(tree: BioTree) -> str:
     _format_clades(tree.root)
     newick_io = StringIO()
     NewickIO.write([tree], newick_io)
@@ -96,6 +99,25 @@ def make_tree_nj(sequences: Sequences) -> str:
     tree = Tree.from_newick_string(newick_string)
     newick_string = tree.get_newick_string(lengths=False, semicolon=True, comments=True)
     return _format_newick_for_fitchi(newick_string)
+
+
+def make_tree_mp(sequences: Sequences) -> str:
+    scorer = ParsimonyScorer()
+    searcher = NNITreeSearcher(scorer)
+    constructor = ParsimonyTreeConstructor(searcher)
+
+    align = MultipleSeqAlignment([SeqRecord(Seq(x.seq), id=x.id) for x in sequences])
+    tree = constructor.build_tree(align)
+    return _tree_to_string(tree)
+
+
+def make_tree_nj(sequences: Sequences) -> str:
+    calculator = DistanceCalculator("identity")
+    constructor = DistanceTreeConstructor(calculator, "nj")
+
+    align = MultipleSeqAlignment([SeqRecord(Seq(x.seq), id=x.id) for x in sequences])
+    tree = constructor.build_tree(align)
+    return _tree_to_string(tree)
 
 
 def get_tree_from_model(model: AttrDict) -> Tree:

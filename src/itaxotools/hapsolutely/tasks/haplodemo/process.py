@@ -21,7 +21,7 @@ from time import perf_counter
 
 from itaxotools.common.utility import AttrDict
 
-from .types import NetworkAlgorithm, Results
+from .types import NetworkAlgorithm, Results, TreeContructionMethod
 
 
 def initialize():
@@ -40,6 +40,7 @@ def execute(
     input_sequences: AttrDict,
     input_species: AttrDict,
     input_tree: AttrDict,
+    tree_contruction_method: TreeContructionMethod,
     network_algorithm: NetworkAlgorithm,
     transversions_only: bool,
     epsilon: int,
@@ -68,6 +69,7 @@ def execute(
         get_tree_from_model,
         make_haplo_graph,
         make_haplo_tree,
+        make_tree_mp,
         make_tree_nj,
         prune_alleles_from_haplo_graph,
         prune_alleles_from_haplo_tree,
@@ -113,7 +115,10 @@ def execute(
 
     if network_algorithm == NetworkAlgorithm.Fitchi:
         if input_tree is None:
-            newick_string = make_tree_nj(sequences)
+            if tree_contruction_method == TreeContructionMethod.MP:
+                newick_string = make_tree_mp(sequences)
+            elif tree_contruction_method == TreeContructionMethod.NJ:
+                newick_string = make_tree_nj(sequences)
         else:
             newick_string = get_newick_string_from_tree(tree)
         haplo_tree = make_haplo_tree(

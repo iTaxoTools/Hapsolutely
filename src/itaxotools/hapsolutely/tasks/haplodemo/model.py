@@ -22,9 +22,13 @@ from datetime import datetime
 from pathlib import Path
 
 from itaxotools.common.bindings import Property
+from itaxotools.common.utility import override
 from itaxotools.haplodemo.types import HaploGraph, HaploTreeNode
 from itaxotools.hapsolutely.model.phased_sequence import PhasedSequenceModel
+from itaxotools.taxi_gui import app as global_app
 from itaxotools.taxi_gui.loop import DataQuery
+from itaxotools.taxi_gui.model.common import ItemModel
+from itaxotools.taxi_gui.model.input_file import InputFileModel
 from itaxotools.taxi_gui.model.partition import PartitionModel
 from itaxotools.taxi_gui.model.tasks import SubtaskModel, TaskModel
 from itaxotools.taxi_gui.model.tree import TreeModel
@@ -38,7 +42,139 @@ from ..common.model import (
     PhasedItemProxyModel,
 )
 from . import process, title
-from .types import NetworkAlgorithm
+from .types import NetworkAlgorithm, TreeContructionMethod
+
+
+class TreeItemProxyModel(QtCore.QAbstractProxyModel):
+    ItemRole = ItemModel.ItemRole
+    MethodRole = QtCore.Qt.UserRole + 1
+
+    def __init__(self, model=None, root=None):
+        super().__init__()
+        self.methods = list(method for method in TreeContructionMethod)
+        self.displays = list(
+            f"Generate from input sequences using {method.description}"
+            for method in TreeContructionMethod
+        )
+        self.unselected = "---"
+        self.root = None
+
+        self.phased_index = QtCore.QModelIndex()
+        self.phased_model = None
+        self.extra_rows = 1 + len(TreeContructionMethod)
+
+        if model and root:
+            self.setSourceModel(model, root)
+
+    def get_default_index(self):
+        return self.index(0, 0)
+
+    def sourceDataChanged(self, topLeft, bottomRight):
+        self.dataChanged.emit(
+            self.mapFromSource(topLeft), self.mapFromSource(bottomRight)
+        )
+
+    def add_file(self, file: InputFileModel):
+        index = self.source.add_file(file, focus=False)
+        return self.mapFromSource(index)
+
+    @override
+    def setSourceModel(self, model, root):
+        super().setSourceModel(model)
+        self.root = root
+        self.source = model
+        model.dataChanged.connect(self.sourceDataChanged)
+
+    @override
+    def mapFromSource(self, sourceIndex):
+        item = sourceIndex.internalPointer()
+        if not item or item.parent != self.root:
+            return QtCore.QModelIndex()
+        return self.createIndex(item.row + self.extra_rows, 0, item)
+
+    @override
+    def mapToSource(self, proxyIndex):
+        if not proxyIndex.isValid():
+            return QtCore.QModelIndex()
+        true_row = proxyIndex.row() - self.extra_rows
+        if true_row >= 0:
+            item = proxyIndex.internalPointer()
+            source = self.sourceModel()
+            return source.createIndex(item.row, 0, item)
+        return QtCore.QModelIndex()
+
+    @override
+    def index(
+        self, row: int, column: int, parent=QtCore.QModelIndex()
+    ) -> QtCore.QModelIndex:
+        if parent.isValid() or column != 0:
+            return QtCore.QModelIndex()
+        if row < 0 or row > len(self.root.children) + self.extra_rows - 1:
+            return QtCore.QModelIndex()
+        true_row = row - self.extra_rows
+        if true_row >= 0:
+            return self.createIndex(row, 0, self.root.children[true_row])
+        return self.createIndex(row, 0)
+
+    @override
+    def parent(self, index=QtCore.QModelIndex()) -> QtCore.QModelIndex:
+        return QtCore.QModelIndex()
+
+    @override
+    def rowCount(self, parent=QtCore.QModelIndex()) -> int:
+        return len(self.root.children) + self.extra_rows
+
+    @override
+    def columnCount(self, parent=QtCore.QModelIndex()) -> int:
+        return 1
+
+    @override
+    def data(self, index: QtCore.QModelIndex, role: QtCore.Qt.ItemDataRole):
+        if not index.isValid():
+            return None
+        true_row = index.row() - self.extra_rows
+        if true_row >= 0:
+            if role == TreeItemProxyModel.MethodRole:
+                return None
+            return super().data(index, role)
+        elif true_row == -1:
+            if role == QtCore.Qt.DisplayRole:
+                return self.unselected
+            if role == TreeItemProxyModel.MethodRole:
+                return None
+            return None
+        else:
+            if role == QtCore.Qt.DisplayRole:
+                return self.displays[index.row()]
+            if role == TreeItemProxyModel.MethodRole:
+                return self.methods[index.row()]
+            return None
+
+    @override
+    def flags(self, index: QtCore.QModelIndex):
+        if not index.isValid():
+            return QtCore.Qt.NoItemFlags
+        true_row = index.row() - self.extra_rows
+        if true_row >= 0:
+            return super().flags(index)
+        elif index.row() < self.extra_rows:
+            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
+        else:
+            return QtCore.Qt.NoItemFlags
+
+
+class TreeInputModel(ImportedInputModel):
+    method = Property(TreeContructionMethod, None)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        item_model = global_app.model.items
+        self.model = TreeItemProxyModel(item_model, item_model.files)
+        self.set_index(self.model.get_default_index())
+
+    def set_index(self, index: QtCore.QModelIndex):
+        super().set_index(index)
+        self.method = self.model.data(index, role=TreeItemProxyModel.MethodRole)
 
 
 class Model(TaskModel):
@@ -61,7 +197,7 @@ class Model(TaskModel):
     input_species = Property(
         PhasedInputModel, PhasedInputModel(PartitionModel, "species")
     )
-    input_tree = Property(ImportedInputModel, ImportedInputModel(TreeModel))
+    input_tree = Property(TreeInputModel, TreeInputModel(TreeModel))
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
 
@@ -76,10 +212,6 @@ class Model(TaskModel):
         super().__init__(name)
         self.can_open = True
         self.can_save = True
-
-        self.input_tree.model.unselected = (
-            "Generate from input sequences using Neighbour Joining"
-        )
 
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
@@ -112,6 +244,8 @@ class Model(TaskModel):
             self.properties.busy_subtask,
             self.input_sequences.updated,
             self.input_species.updated,
+            self.input_tree.updated,
+            self.input_tree.properties.method,
         ]:
             self.binder.bind(handle, self.checkReady)
 
@@ -124,6 +258,9 @@ class Model(TaskModel):
             return False
         if self.input_species.object:
             if not self.input_species.is_valid():
+                return False
+        if self.network_algorithm == NetworkAlgorithm.Fitchi:
+            if self.input_tree.as_dict() is None and self.input_tree.method is None:
                 return False
         return True
 
@@ -139,6 +276,7 @@ class Model(TaskModel):
             input_sequences=self.input_sequences.as_dict(),
             input_species=self.input_species.as_dict(),
             input_tree=self.input_tree.as_dict(),
+            tree_contruction_method=self.input_tree.method,
             network_algorithm=self.network_algorithm,
             transversions_only=self.transversions_only,
             epsilon=self.epsilon,

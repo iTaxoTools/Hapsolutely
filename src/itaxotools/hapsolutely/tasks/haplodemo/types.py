@@ -40,3 +40,12 @@ class NetworkAlgorithm(Enum):
     def __init__(self, label, description):
         self.label = label
         self.description = description
+
+
+class TreeContructionMethod(Enum):
+    MP = "MP", "Maximum Parsimony"
+    NJ = "NJ", "Neighbour Joining"
+
+    def __init__(self, label, description):
+        self.label = label
+        self.description = description
