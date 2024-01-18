@@ -43,8 +43,8 @@ class NetworkAlgorithm(Enum):
 
 
 class TreeContructionMethod(Enum):
-    MP = "MP", "Maximum Parsimony"
-    NJ = "NJ", "Neighbour Joining"
+    MP = "MP", "Maximum Parsimony (slow)"
+    NJ = "NJ", "Neighbour Joining (fast)"
 
     def __init__(self, label, description):
         self.label = label

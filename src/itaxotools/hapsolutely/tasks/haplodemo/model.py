@@ -199,7 +199,7 @@ class Model(TaskModel):
     )
     input_tree = Property(TreeInputModel, TreeInputModel(TreeModel))
 
-    network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.Fitchi)
+    network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.TCS)
 
     transversions_only = Property(bool, False)
     epsilon = Property(int, 0)
