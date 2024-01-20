@@ -30,9 +30,9 @@ Download and run the standalone executables without installing Python.
 [![Release](https://img.shields.io/badge/release-0.2.0-red?style=for-the-badge)](
     https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.1)
 [![Windows](https://img.shields.io/badge/Windows-blue.svg?style=for-the-badge&logo=windows)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.0-windows-x64.exe)
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.1-windows-x64.exe)
 [![MacOS](https://img.shields.io/badge/macOS-slategray.svg?style=for-the-badge&logo=apple)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.0-macos-universal2.dmg)
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.1-macos-universal2.dmg)
 
 ## Installation
 
