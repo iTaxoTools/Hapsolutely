@@ -50,17 +50,17 @@ def write_all_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     data = stats.get_haplotypes_shared_between_subsets()
     print(yamlify(data, "Haplotypes shared between subsets"), file=file)
 
-    data = stats.get_fields_of_recombination()
-    print(yamlify(data, "Fields of recombination"), file=file)
+    data = stats.get_fields_for_recombination()
+    print(yamlify(data, "Fields for recombination"), file=file)
 
-    data = stats.get_subsets_per_field_of_recombination()
-    print(yamlify(data, "Subsets count per FOR"), file=file)
+    data = stats.get_subsets_per_field_for_recombination()
+    print(yamlify(data, "Subsets count per FFR"), file=file)
 
-    data = stats.get_fields_of_recombination_per_subset()
-    print(yamlify(data, "FOR count per subsets"), file=file)
+    data = stats.get_fields_for_recombination_per_subset()
+    print(yamlify(data, "FFR count per subsets"), file=file)
 
-    data = stats.get_fields_of_recombination_shared_between_subsets()
-    print(yamlify(data, "FORs shared between subsets"), file=file)
+    data = stats.get_fields_for_recombination_shared_between_subsets()
+    print(yamlify(data, "FFRs shared between subsets"), file=file)
 
 
 def write_partition_stats_to_file(name: str, stats: HaploStats, file: TextIO):
@@ -69,7 +69,7 @@ def write_partition_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     print(partition, file=file)
 
     data = stats.get_dataset_sizes()
-    del data["FORs"]
+    del data["FFRs"]
     print(yamlify(data, "Dataset size"), file=file)
 
     data = stats.get_haplotypes()
@@ -94,8 +94,8 @@ def write_phasing_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     data = stats.get_haplotypes()
     print(yamlify(data, "Haplotype sequences"), file=file)
 
-    data = stats.get_fields_of_recombination()
-    print(yamlify(data, "Fields of recombination"), file=file)
+    data = stats.get_fields_for_recombination()
+    print(yamlify(data, "Fields for recombination"), file=file)
 
 
 def write_basic_stats_to_file(name: str, stats: HaploStats, file: TextIO):
@@ -104,7 +104,7 @@ def write_basic_stats_to_file(name: str, stats: HaploStats, file: TextIO):
     print(partition, file=file)
 
     data = stats.get_dataset_sizes()
-    del data["FORs"]
+    del data["FFRs"]
     del data["subsets"]
     print(yamlify(data, "Dataset size"), file=file)
 

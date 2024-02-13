@@ -9,9 +9,9 @@ pixmap_medium = task_pixmaps_medium.stats
 long_description = (
     "Identify unique haplotypes in the sequence data. "
     "List haplotypes per subset and haplotypes shared between subsets. "
-    "Determine fields of recombination (FORs). "
-    "List haplotypes and subset occurences per FOR. "
-    "List FOR occurences per subset and FORs shared between subsets. "
+    "Determine fields for recombination (FFRs). "
+    "List haplotypes and subset occurences per FFR. "
+    "List FFR occurences per subset and FFRs shared between subsets. "
     "\n\n"
     "Input can be in TSV, FASTA or SPART/XML format. Output is in YAML. "
     "\n"

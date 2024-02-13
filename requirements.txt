@@ -18,7 +18,7 @@ itaxotools-convphase==0.1.3
 itaxotools-convphase-gui==0.2.0
 itaxotools-fitchi==1.3.0
 itaxotools-haplodemo==0.2.0
-itaxotools-haplostats==0.2.0
+itaxotools-haplostats==0.2.1
 itaxotools-popart-networks==0.1.2
 itaxotools-spart-parser==0.1.3
 itaxotools-taxi-gui==0.2.3

@@ -15,9 +15,9 @@ Reconstruct haplotypes and produce genealogy graphs from population data.
 
 - **Phase sequences**: Reconstruct haplotypes from sequence data
 - **Haplotype visualization**: Generate haplotype networks, genealogies and haplowebs
-- **Haplotype statistics**: Detect fields of recombinations and subset overlap
+- **Haplotype statistics**: Detect fields for recombination and subset overlap
 
-![Screenshot](https://raw.githubusercontent.com/iTaxoTools/Hapsolutely/v0.2.1/images/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/iTaxoTools/Hapsolutely/v0.2.2/images/screenshot.png)
 
 Hapsolutely is a comprehensive program that integrates [ConvPhase](https://github.com/iTaxoTools/ConvPhaseGui), [haplodemo](https://github.com/iTaxoTools/haplodemo), [popart_networks](https://github.com/iTaxoTools/popart_network) and [haplostats](https://github.com/iTaxoTools/haplostats).
 
@@ -27,12 +27,12 @@ Input files can be in TSV, FASTA or SPART/XML format.
 
 Download and run the standalone executables without installing Python.
 
-[![Release](https://img.shields.io/badge/release-0.2.0-red?style=for-the-badge)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.1)
+[![Release](https://img.shields.io/badge/release-0.2.2-red?style=for-the-badge)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.2)
 [![Windows](https://img.shields.io/badge/Windows-blue.svg?style=for-the-badge&logo=windows)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.1-windows-x64.exe)
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.2/Hapsolutely-0.2.2-windows-x64.exe)
 [![MacOS](https://img.shields.io/badge/macOS-slategray.svg?style=for-the-badge&logo=apple)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.1/Hapsolutely-0.2.1-macos-universal2.dmg)
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.2/Hapsolutely-0.2.2-macos-universal2.dmg)
 
 ## Installation
 
@@ -70,8 +70,10 @@ Networks are generated using either of *Fitchi* or *popart_networks*:
 > *Bandelt H, Forster P, Röhl A (1999). Median-joining networks for inferring intraspecific phylogenies. Mol Biol Evol 16(1):37-48.*
 > <br><br>
 > *Clement M, Snell Q, Walke P, Posada D, Crandall, K (2002). TCS: estimating gene genealogies. Proc 16th Int Parallel Distrib Process Symp 2:184.*
+> <br><br>
+> *Doyle, J. J. (1995) The irrelevance of allele tree topologies for species delimitation, and a non-topological alternative. Syst. Bot., 20, 574-588.*
 
-*BioPython* is used to create NJ trees if needed. *networkx* is used for laying out the initial graph.
+*BioPython* is used to create ML/NJ trees if needed. *networkx* is used for laying out the initial graph.
 
 > *Cock, P.J. et al., 2009. Biopython: freely available Python tools for computational molecular biology and bioinformatics. Bioinformatics, 25(11), pp.1422-1423.*
 > <br><br>

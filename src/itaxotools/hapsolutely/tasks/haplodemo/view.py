@@ -228,7 +228,7 @@ class HaploView(QtWidgets.QFrame):
         toggle_lock_labels = SideToggleButton("Lock labels")
         toggle_lock_labels.setIcon(icons.lock_labels.resource)
 
-        toggle_scene_rotation = SideToggleButton("Rotate scene")
+        toggle_scene_rotation = SideToggleButton("Rotate graph")
         toggle_scene_rotation.setIcon(icons.rotate.resource)
 
         self.node_size_dialog = NodeSizeDialog(self, scene, settings.node_sizes)
@@ -284,10 +284,10 @@ class HaploView(QtWidgets.QFrame):
         toggle_members_panel = SideToggleButton("Members panel")
         toggle_members_panel.setIcon(icons.panel.resource)
 
-        toggle_field_groups = SideToggleButton("FORs (haploweb)")
+        toggle_field_groups = SideToggleButton("FFRs (haploweb)")
         toggle_field_groups.setIcon(icons.haploweb.resource)
 
-        toggle_field_isolated = SideToggleButton("FOR singletons")
+        toggle_field_isolated = SideToggleButton("FFR singletons")
         toggle_field_isolated.setIcon(icons.singletons.resource)
 
         toggle_legend = SideToggleButton("Legend")
