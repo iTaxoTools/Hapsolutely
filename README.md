@@ -45,7 +45,7 @@ hapsolutely
 
 ## Usage
 
-Please refer to the [Hapsolutely manual](https://itaxotools.org/Hapsolutely_manual_07Nov2023.pdf) for information on how to use the program.
+Please refer to the [Hapsolutely manual](https://itaxotools.org/Hapsolutely_manual_15Feb2024.pdf) for information on how to use the program.
 
 ## Citations
 
