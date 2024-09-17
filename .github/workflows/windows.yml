@@ -1,9 +1,6 @@
 name: Windows
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
 
 env:
   ARTIFACT_EXECUTABLE: itaxotools-hapsolutely-windows

@@ -1,9 +1,6 @@
 name: macOS
 
-on:
-  push:
-    branches:
-      - main
+on: workflow_dispatch
 
 env:
   ARTIFACT_BUNDLE: itaxotools-hapsolutely-macos
