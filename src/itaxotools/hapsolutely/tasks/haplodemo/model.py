@@ -213,6 +213,19 @@ class Model(TaskModel):
         self.can_open = True
         self.can_save = True
 
+        self.menu_open.add("network", "Open haplotype network", "Open previous results")
+        self.menu_open.add("data", "Import sequences", "Import sequences & partitions")
+
+        self.menu_save.add(
+            "network", "Save haplotype network", "Save a copy of the results"
+        )
+        self.menu_save.add(
+            "members", "Export node members", "Export a list of node members"
+        )
+        self.menu_save.add("png", "Export as PNG", "Export a copy of the network")
+        self.menu_save.add("svg", "Export as SVG", "Export a copy of the network")
+        self.menu_save.add("pdf", "Export as PDF", "Export a copy of the network")
+
         self.subtask_init = SubtaskModel(self, bind_busy=False)
         self.subtask_sequences = PhasedFileInfoSubtaskModel(self)
         self.subtask_species = PhasedFileInfoSubtaskModel(self)
@@ -352,6 +365,14 @@ class Model(TaskModel):
     def open(self, path: Path):
         self.clear()
         self.subtask_sequences.start(path)
+
+    def open_network(self, path: Path):
+        print("OPEN", path)
+        pass
+
+    def save_network(self, path: Path):
+        print("SAVE", path)
+        pass
 
     def save(self, path: Path):
         pass

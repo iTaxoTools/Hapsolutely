@@ -166,7 +166,7 @@ class MemberPanel(QtWidgets.QFrame):
         layout.setSpacing(0)
         layout.addLayout(label_layout)
         layout.addWidget(view)
-        layout.addLayout(export_layout)
+        # layout.addLayout(export_layout)
 
         self.controls = AttrDict()
         self.controls.view = view
@@ -951,24 +951,53 @@ class View(TaskView):
         if spartitions and spartition:
             self.haplo_view.set_spartitions(spartitions, spartition)
 
-    def save(self):
-        path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f"{path.stem}_network")
-        scene_view = self.haplo_view.scene_view
-        filters = {
-            "PNG Files (*.png)": scene_view.export_png,
-            "SVG Files (*.svg)": scene_view.export_svg,
-            "PDF Files (*.pdf)": scene_view.export_pdf,
-        }
-        filename, format = QtWidgets.QFileDialog.getSaveFileName(
-            self.window(),
-            f"{app.config.title} - Export network",
-            dir=str(path),
-            filter=";;".join(filters.keys()),
-        )
-        if not filename:
-            return None
-        filters[format](filename)
+    def open(self, key: str):
+        match key:
+            case "network":
+                path = self.getOpenPath(
+                    "Open haplotype network",
+                    "",
+                    "YAML files (*.yaml)",
+                )
+                if path:
+                    self.object.open_network(path)
+            case "data":
+                path = self.getOpenPath("Open sequences")
+                if path:
+                    self.object.open(path)
+
+    def save(self, key: str):
+        match key:
+            case "network":
+                path = Path(self.object.input_sequences.object.info.path)
+                path = path.with_name(f"{path.stem}_network")
+                path = self.getSavePath(
+                    "Save haplotype network",
+                    str(path),
+                    "YAML files (*.yaml)",
+                )
+                if path:
+                    self.object.save_network(path)
+            case "members":
+                self.save_members()
+            case _:
+                path = Path(self.object.input_sequences.object.info.path)
+                path = path.with_name(f"{path.stem}_network")
+                scene_view = self.haplo_view.scene_view
+                filter, export_func = {
+                    "png": ("PNG files (*.png)", scene_view.export_png),
+                    "svg": ("SVG files (*.svg)", scene_view.export_svg),
+                    "pdf": ("PDF files (*.pdf)", scene_view.export_pdf),
+                }[key]
+                filename, format = QtWidgets.QFileDialog.getSaveFileName(
+                    self.window(),
+                    f"{app.config.title} - Export network",
+                    dir=str(path),
+                    filter=filter,
+                )
+                if not filename:
+                    return None
+                export_func(filename)
 
     def save_members(self):
         path = Path(self.object.input_sequences.object.info.path)
@@ -977,7 +1006,7 @@ class View(TaskView):
             self.window(),
             f"{app.config.title} - Export node members",
             dir=str(path),
-            filter="YAML Files (*.yaml)",
+            filter="YAML files (*.yaml)",
         )
         if not filename:
             return None
