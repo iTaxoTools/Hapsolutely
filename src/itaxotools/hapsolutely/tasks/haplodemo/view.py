@@ -887,6 +887,15 @@ class View(TaskView):
         self.cards.epsilon.setEnabled(editable)
         self.haplo_view.setEnabled(not editable)
 
+    def load_haplo_network(self, path: Path):
+        wait_cursor = QtGui.QCursor(QtCore.Qt.WaitCursor)
+        QtGui.QGuiApplication.setOverrideCursor(wait_cursor)
+
+        has_tree, has_web = self.haplo_view.visualizer.load_yaml(str(path))
+        self.object.open_network(has_tree, has_web)
+
+        QtGui.QGuiApplication.restoreOverrideCursor()
+
     def show_haplo_network(self):
         wait_cursor = QtGui.QCursor(QtCore.Qt.WaitCursor)
         QtGui.QGuiApplication.setOverrideCursor(wait_cursor)
@@ -913,6 +922,11 @@ class View(TaskView):
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
+            visualizer.settings.fields.show_groups = True
+            visualizer.settings.fields.show_isolated = True
+        else:
+            visualizer.settings.fields.show_groups = False
+            visualizer.settings.fields.show_isolated = False
 
         self._visualize_spartitions()
 
@@ -934,6 +948,11 @@ class View(TaskView):
 
         if self._should_draw_haploweb():
             visualizer.visualize_haploweb()
+            visualizer.settings.fields.show_groups = True
+            visualizer.settings.fields.show_isolated = True
+        else:
+            visualizer.settings.fields.show_groups = False
+            visualizer.settings.fields.show_isolated = False
 
         self._visualize_spartitions()
 
@@ -960,7 +979,7 @@ class View(TaskView):
                     "YAML files (*.yaml)",
                 )
                 if path:
-                    self.object.open_network(path)
+                    self.load_haplo_network(path)
             case "data":
                 path = self.getOpenPath("Open sequences")
                 if path:
@@ -969,15 +988,7 @@ class View(TaskView):
     def save(self, key: str):
         match key:
             case "network":
-                path = Path(self.object.input_sequences.object.info.path)
-                path = path.with_name(f"{path.stem}_network")
-                path = self.getSavePath(
-                    "Save haplotype network",
-                    str(path),
-                    "YAML files (*.yaml)",
-                )
-                if path:
-                    self.object.save_network(path)
+                self.save_network()
             case "members":
                 self.save_members()
             case _:
@@ -998,6 +1009,17 @@ class View(TaskView):
                 if not filename:
                     return None
                 export_func(filename)
+
+    def save_network(self):
+        path = Path(self.object.input_sequences.object.info.path)
+        path = path.with_name(f"{path.stem}_network")
+        path = self.getSavePath(
+            "Save haplotype network",
+            str(path),
+            "YAML files (*.yaml)",
+        )
+        if path:
+            self.haplo_view.visualizer.dump_yaml(str(path))
 
     def save_members(self):
         path = Path(self.object.input_sequences.object.info.path)

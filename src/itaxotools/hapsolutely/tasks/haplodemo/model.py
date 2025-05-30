@@ -366,13 +366,17 @@ class Model(TaskModel):
         self.clear()
         self.subtask_sequences.start(path)
 
-    def open_network(self, path: Path):
-        print("OPEN", path)
-        pass
+    def open_network(self, has_tree: bool, has_web: bool):
+        # self.haplo_tree = ...
+        # self.haplo_graph = ...
+        # self.spartitions = ...
+        # self.spartition = ...
 
-    def save_network(self, path: Path):
-        print("SAVE", path)
-        pass
+        self.can_lock_distances = has_tree
+        self.draw_haploweb = has_web
+
+        self.busy = False
+        self.done = True
 
     def save(self, path: Path):
         pass
