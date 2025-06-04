@@ -891,7 +891,9 @@ class View(TaskView):
         wait_cursor = QtGui.QCursor(QtCore.Qt.WaitCursor)
         QtGui.QGuiApplication.setOverrideCursor(wait_cursor)
 
-        has_tree, has_web = self.haplo_view.visualizer.load_yaml(str(path))
+        self.haplo_view.reset_settings()
+
+        has_tree, has_web = self.haplo_view.visualizer.load_yaml(path)
         self.object.open_network(path, has_tree, has_web)
 
         QtGui.QGuiApplication.restoreOverrideCursor()
@@ -1011,7 +1013,6 @@ class View(TaskView):
 
     def save_network(self):
         path = self.object.get_suggested_save_path("network")
-        print(">>>", path)
         path = self.getSavePath(
             "Save haplotype network",
             str(path),
