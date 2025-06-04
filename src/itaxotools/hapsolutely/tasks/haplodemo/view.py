@@ -892,7 +892,7 @@ class View(TaskView):
         QtGui.QGuiApplication.setOverrideCursor(wait_cursor)
 
         has_tree, has_web = self.haplo_view.visualizer.load_yaml(str(path))
-        self.object.open_network(has_tree, has_web)
+        self.object.open_network(path, has_tree, has_web)
 
         QtGui.QGuiApplication.restoreOverrideCursor()
 
@@ -992,8 +992,7 @@ class View(TaskView):
             case "members":
                 self.save_members()
             case _:
-                path = Path(self.object.input_sequences.object.info.path)
-                path = path.with_name(f"{path.stem}_network")
+                path = self.object.get_suggested_save_path("network")
                 scene_view = self.haplo_view.scene_view
                 filter, export_func = {
                     "png": ("PNG files (*.png)", scene_view.export_png),
@@ -1011,8 +1010,8 @@ class View(TaskView):
                 export_func(filename)
 
     def save_network(self):
-        path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f"{path.stem}_network")
+        path = self.object.get_suggested_save_path("network")
+        print(">>>", path)
         path = self.getSavePath(
             "Save haplotype network",
             str(path),
@@ -1022,8 +1021,7 @@ class View(TaskView):
             self.haplo_view.visualizer.dump_yaml(str(path))
 
     def save_members(self):
-        path = Path(self.object.input_sequences.object.info.path)
-        path = path.with_name(f"{path.stem}_members")
+        path = self.object.get_suggested_save_path("members")
         filename, format = QtWidgets.QFileDialog.getSaveFileName(
             self.window(),
             f"{app.config.title} - Export node members",

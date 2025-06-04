@@ -198,6 +198,7 @@ class Model(TaskModel):
         PhasedInputModel, PhasedInputModel(PartitionModel, "species")
     )
     input_tree = Property(TreeInputModel, TreeInputModel(TreeModel))
+    input_network = Property(Path, Path())
 
     network_algorithm = Property(NetworkAlgorithm, NetworkAlgorithm.TCS)
 
@@ -348,6 +349,7 @@ class Model(TaskModel):
         self.haplo_graph = report.result.haplo_graph
         self.spartitions = report.result.spartitions
         self.spartition = report.result.spartition
+        self.input_network = Path()
 
         self.can_lock_distances = bool(self.haplo_tree is not None)
 
@@ -366,17 +368,31 @@ class Model(TaskModel):
         self.clear()
         self.subtask_sequences.start(path)
 
-    def open_network(self, has_tree: bool, has_web: bool):
+    def open_network(self, path: Path, has_tree: bool, has_web: bool):
         # self.haplo_tree = ...
         # self.haplo_graph = ...
         # self.spartitions = ...
         # self.spartition = ...
+
+        self.input_network = path
 
         self.can_lock_distances = has_tree
         self.draw_haploweb = has_web
 
         self.busy = False
         self.done = True
+
+    def get_suggested_save_path(self, suffix: str = None) -> Path:
+        # Returns the stem of the save path, file extension added by the view
+        if self.input_network != Path():
+            path = self.input_network
+        else:
+            path = self.input_sequences.object.info.path
+        if suffix and not path.stem.endswith("_" + suffix):
+            path = path.with_name(f"{path.stem}_{suffix}")
+        else:
+            path = path.with_stem(path.stem)
+        return path
 
     def save(self, path: Path):
         pass
