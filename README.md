@@ -17,7 +17,7 @@ Reconstruct haplotypes and produce genealogy graphs from population data.
 - **Haplotype visualization**: Generate haplotype networks, genealogies and haplowebs
 - **Haplotype statistics**: Detect fields for recombination and subset overlap
 
-![Screenshot](https://raw.githubusercontent.com/iTaxoTools/Hapsolutely/v0.2.2/images/screenshot.png)
+![Screenshot](https://raw.githubusercontent.com/iTaxoTools/Hapsolutely/v0.2.3/images/screenshot.png)
 
 Hapsolutely is a comprehensive program that integrates [ConvPhase](https://github.com/iTaxoTools/ConvPhaseGui), [haplodemo](https://github.com/iTaxoTools/haplodemo), [popart_networks](https://github.com/iTaxoTools/popart_network) and [haplostats](https://github.com/iTaxoTools/haplostats).
 
@@ -27,12 +27,12 @@ Input files can be in TSV, FASTA or SPART/XML format.
 
 Download and run the standalone executables without installing Python.
 
-[![Release](https://img.shields.io/badge/release-0.2.2-red?style=for-the-badge)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.2)
-[![Windows](https://img.shields.io/badge/Windows-blue.svg?style=for-the-badge&logo=windows)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.2/Hapsolutely-0.2.2-windows-x64.exe)
+[![Release](https://img.shields.io/badge/release-0.2.3-red?style=for-the-badge)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/v0.2.3)
+[![Windows](https://img.shields.io/badge/Windows-blue.svg?style=for-the-badge&logo=data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPCEtLSBDcmVhdGVkIHdpdGggSW5rc2NhcGUgKGh0dHA6Ly93d3cuaW5rc2NhcGUub3JnLykgLS0+Cjxzdmcgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4IiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMi43IDEyLjciIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiA8ZyBmaWxsPSIjZmZmIiBzdHJva2UtbGluZWNhcD0ic3F1YXJlIiBzdHJva2Utd2lkdGg9IjMuMTc0OSI+CiAgPHJlY3QgeD0iLjc5MzczIiB5PSIuNzkzNzMiIHdpZHRoPSI1LjAyNyIgaGVpZ2h0PSI1LjAyNyIvPgogIDxyZWN0IHg9IjcuMTQzNiIgeT0iLjc5MzczIiB3aWR0aD0iNC43NjI0IiBoZWlnaHQ9IjUuMDI3Ii8+CiAgPHJlY3QgeD0iLjc5MzczIiB5PSI2Ljg3OSIgd2lkdGg9IjUuMDI3IiBoZWlnaHQ9IjUuMDI3Ii8+CiAgPHJlY3QgeD0iNy4xNDM2IiB5PSI2Ljg3OSIgd2lkdGg9IjQuNzYyNCIgaGVpZ2h0PSI1LjAyNyIvPgogPC9nPgo8L3N2Zz4K)](
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.3/Hapsolutely-0.2.3-windows-x64.exe)
 [![MacOS](https://img.shields.io/badge/macOS-slategray.svg?style=for-the-badge&logo=apple)](
-    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.2/Hapsolutely-0.2.2-macos-universal2.dmg)
+    https://github.com/iTaxoTools/Hapsolutely/releases/download/v0.2.3/Hapsolutely-0.2.3-macos-universal2.dmg)
 
 ## Installation
 
