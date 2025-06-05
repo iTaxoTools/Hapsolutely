@@ -25,6 +25,9 @@ jobs:
       - name: Install Qt dependencies
         uses: iTaxoTools/itt-common/.github/actions/test-qt@main
 
+      - name: Set up haxe
+        uses: iTaxoTools/ConvPhase/.github/actions/setup-haxe
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:

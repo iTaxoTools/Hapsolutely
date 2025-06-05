@@ -31,7 +31,7 @@ dependencies = [
     "itaxotools-haplodemo",
     "itaxotools-taxi-gui",
     "itaxotools-convphase-gui",
-    "pyside6",
+    "pyside6<6.9.0",
     "biopython",
     "pyyaml",
 ]

@@ -21,7 +21,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.x
+          python-version: 3.12
 
       - name: Install dependencies
         run: |
@@ -32,7 +32,7 @@ jobs:
       - name: Make executable
         uses: iTaxoTools/TaxIGui/.github/actions/make-executable@main
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_EXECUTABLE }}
           path: dist/*.exe

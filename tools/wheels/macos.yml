@@ -11,22 +11,16 @@
   universal2_sha256: ad704abbfbb53a79c1ba995318ef86ac9263ec8b540bc9bc4639904ee20235f2
 
 - egg: numpy
-  arm64_url: https://files.pythonhosted.org/packages/2a/17/1fdc154e75d24d8c20c42b71bae1b5cf752453f0fc3a2504bbb810293dd1/numpy-1.26.2-cp312-cp312-macosx_11_0_arm64.whl
-  arm64_sha256: 5d5244aabd6ed7f312268b9247be47343a654ebea52a60f002dc70c769048e75
-  x86_64_url: https://files.pythonhosted.org/packages/b1/97/6694e0855b11be0fd8598d484c09edd876ec738a8741025dee072f026c33/numpy-1.26.2-cp312-cp312-macosx_10_9_x86_64.whl
-  x86_64_sha256: a4cd6ed4a339c21f1d1b0fdf13426cb3b284555c27ac2f156dfdaaa7e16bfab0
-
-- egg: scipy
-  arm64_url: https://files.pythonhosted.org/packages/5e/43/abf331745a7e5f4af51f13d40e2a72f516048db41ecbcf3ac6f86ada54a3/scipy-1.11.4-cp312-cp312-macosx_12_0_arm64.whl
-  arm64_sha256: 2c6ff6ef9cc27f9b3db93a6f8b38f97387e6e0591600369a297a50a8e96e835d
-  x86_64_url: https://files.pythonhosted.org/packages/df/64/8a690570485b636da614acff35fd725fcbc487f8b1fa9bdb12871b77412f/scipy-1.11.4-cp312-cp312-macosx_10_9_x86_64.whl
-  x86_64_sha256: 028eccd22e654b3ea01ee63705681ee79933652b2d8f873e7949898dda6d11b6
+  arm64_url: https://files.pythonhosted.org/packages/66/ee/560deadcdde6c2f90200450d5938f63a34b37e27ebff162810f716f6a230/numpy-2.2.6-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: de749064336d37e340f640b05f24e9e3dd678c57318c7289d222a8a2f543e90c
+  x86_64_url: https://files.pythonhosted.org/packages/82/5d/c00588b6cf18e1da539b45d3598d3557084990dcc4331960c15ee776ee41/numpy-2.2.6-cp312-cp312-macosx_10_13_x86_64.whl
+  x86_64_sha256: 41c5a21f4a04fa86436124d388f6ed60a9343a6f767fced1a8a71c3fbca038ff
 
 - egg: pandas
-  arm64_url: https://files.pythonhosted.org/packages/0b/e0/8d97c7ecd73624f4cd5755578990b3cfbc6bbe350b8e017ede3580173a6f/pandas-2.1.4-cp312-cp312-macosx_11_0_arm64.whl
-  arm64_sha256: 8a706cfe7955c4ca59af8c7a0517370eafbd98593155b48f10f9811da440248b
-  x86_64_url: https://files.pythonhosted.org/packages/f5/16/64109832ed426d5c3e9f6b791e64a2b78d785823657640afb8f416ed1dc9/pandas-2.1.4-cp312-cp312-macosx_10_9_x86_64.whl
-  x86_64_sha256: 482d5076e1791777e1571f2e2d789e940dedd927325cc3cb6d0800c6304082f6
+  arm64_url: https://files.pythonhosted.org/packages/e1/0c/ad295fd74bfac85358fd579e271cded3ac969de81f62dd0142c426b9da91/pandas-2.2.3-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: a5a1595fe639f5988ba6a8e5bc9649af3baf26df3998a0abe56c02609392e0a4
+  x86_64_url: https://files.pythonhosted.org/packages/17/a3/fb2734118db0af37ea7433f57f722c0a56687e14b14690edff0cdb4b7e58/pandas-2.2.3-cp312-cp312-macosx_10_9_x86_64.whl
+  x86_64_sha256: b1d432e8d08679a40e2a6d8b2f9770a5c21793a6f9f47fdd52c5ce1948a5a8a9
 
 - egg: PyYAML
   arm64_url: https://files.pythonhosted.org/packages/84/02/404de95ced348b73dd84f70e15a41843d817ff8c1744516bf78358f2ffd2/PyYAML-6.0.1-cp312-cp312-macosx_11_0_arm64.whl
@@ -41,16 +35,16 @@
   x86_64_sha256: a89b8312d51715b510a4fe9fc13686283f376cfd5abca8cd1c65e4c76e21081b
 
 - egg: matplotlib
-  arm64_url: https://files.pythonhosted.org/packages/9a/b0/dd2b60f2dd90fbc21d1d3129c36a453c322d7995d5e3589f5b3c59ee528d/matplotlib-3.8.2-cp312-cp312-macosx_11_0_arm64.whl
-  arm64_sha256: 091275d18d942cf1ee9609c830a1bc36610607d8223b1b981c37d5c9fc3e46a4
-  x86_64_url: https://files.pythonhosted.org/packages/e4/1b/864d28d5a72d586ac137f4ca54d5afc8b869720e30d508dbd9adcce4d231/matplotlib-3.8.2-cp312-cp312-macosx_10_12_x86_64.whl
-  x86_64_sha256: 4c318c1e95e2f5926fba326f68177dee364aa791d6df022ceb91b8221bd0a627
+  arm64_url: https://files.pythonhosted.org/packages/0f/70/d61a591958325c357204870b5e7b164f93f2a8cca1dc6ce940f563909a13/matplotlib-3.10.3-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 2a818d8bdcafa7ed2eed74487fdb071c09c1ae24152d403952adad11fa3c65b4
+  x86_64_url: https://files.pythonhosted.org/packages/eb/43/6b80eb47d1071f234ef0c96ca370c2ca621f91c12045f1401b5c9b28a639/matplotlib-3.10.3-cp312-cp312-macosx_10_13_x86_64.whl
+  x86_64_sha256: 0ab1affc11d1f495ab9e6362b8174a25afc19c081ba5b0775ef00533a4236eea
 
 - egg: contourpy
-  arm64_url: https://files.pythonhosted.org/packages/f3/9e/8fb3f53144269d3fecdd8786d3a4686eeff55b9b35a3c0772a3f62f71e36/contourpy-1.2.0-cp312-cp312-macosx_11_0_arm64.whl
-  arm64_sha256: 9e6c93b5b2dbcedad20a2f18ec22cae47da0d705d454308063421a3b290d9ea4
-  x86_64_url: https://files.pythonhosted.org/packages/4f/03/839da46999173226bead08794cbd7b4d37c9e6b02686ca74c93556b43258/contourpy-1.2.0-cp312-cp312-macosx_10_9_x86_64.whl
-  x86_64_sha256: 575bcaf957a25d1194903a10bc9f316c136c19f24e0985a2b9b5608bdf5dbfe0
+  arm64_url: https://files.pythonhosted.org/packages/93/3b/0004767622a9826ea3d95f0e9d98cd8729015768075d61f9fea8eeca42a8/contourpy-1.3.2-cp312-cp312-macosx_11_0_arm64.whl
+  arm64_sha256: 82199cb78276249796419fe36b7386bd8d2cc3f28b3bc19fe2454fe2e26c4c15
+  x86_64_url: https://files.pythonhosted.org/packages/34/f7/44785876384eff370c251d58fd65f6ad7f39adce4a093c934d4a67a7c6b6/contourpy-1.3.2-cp312-cp312-macosx_10_13_x86_64.whl
+  x86_64_sha256: 4caf2bcd2969402bf77edc4cb6034c7dd7c0803213b3523f111eb7460a51b8d2
 
 - egg: psutil
   arm64_url: https://files.pythonhosted.org/packages/9e/cb/e4b83c27eea66bc255effc967053f6fce7c14906dd9b43a348ead9f0cfea/psutil-5.9.6-cp38-abi3-macosx_11_0_arm64.whl
