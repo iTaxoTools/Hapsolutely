@@ -26,7 +26,7 @@ jobs:
         uses: iTaxoTools/itt-common/.github/actions/test-qt@main
 
       - name: Set up haxe
-        uses: iTaxoTools/ConvPhase/.github/actions/setup-haxe
+        uses: iTaxoTools/ConvPhase/.github/actions/setup-haxe@main
 
       - name: Set up Python
         uses: actions/setup-python@v4
